@@ -1,69 +1,79 @@
-const ranks = [1, 2, 3, 4, 5, 6, 7, 8]
-const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+const teams = { WHITE: false, BLACK: true }
+const types = { RK: 0, KN: 1, BI: 2, QN: 3, KG: 4, PN: 5 }
+const files = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7 }
+const ranks = { ONE: 0, TWO: 1, THREE: 2, FOUR: 3, FIVE: 4, SIX: 5, SEVEN: 6, EIGHT: 7, NINE: 8 }
 
-const rank_set = new Set(ranks)
-const file_set = new Set(files)
-
-function position({ rank, file }) {
-    file = file.toLowerCase()
-
-    if (!file_set.has(file))
+// Piece functions
+function setLoc(file, rank) {
+    if (file < 0 || file > 9)
         throw 'You passed an invalid file'
 
-    if (!rank_set.has(rank))
+    if (rank < 0 || rank > 9)
         throw 'You passed an invalid rank'
 
-    const numeric_rank = (rank - 1) * 8
-    const numeric_file = file.charCodeAt() - 97
-
-    return numeric_rank + numeric_file
+    return rank * 8 + file
 }
 
-function testPosition() {
-    let i = 0
+function setType(type) {
+    if (type < 0 || type > 5)
+        throw 'You passed an invalid type'
 
-    for (const rank of ranks)
-        for (const file of files)
-            console.assert(position(rank, file) === i++)
+    return type << 6
 }
 
-// Team Alive  Type  ID   Loc
-// 0    0      000   0000 000000
+function setTeam(team) {
+    if (team != 0 && team != 1)
+        throw 'You passed an invalid team'
+
+    return team << 10
+}
+
+function setAlive(alive) {
+    if (alive != 0 && alive != 1)
+        throw 'You passed an invalid alive state'
+
+    return alive << 9
+}
+
+// Team Alive  Type   Loc
+// 0    0      000    000000
 
 const white = new Uint16Array([
-    (0 << 14) | (1 << 13) | (0 << 10) | (0 << 6) | (0 << 0), // rook
-    (0 << 14) | (1 << 13) | (1 << 10) | (1 << 6) | (1 << 0), // knight
-    (0 << 14) | (1 << 13) | (2 << 10) | (2 << 6) | (2 << 0), // bishop
-    (0 << 14) | (1 << 13) | (3 << 10) | (3 << 6) | (3 << 0), // queen
-    (0 << 14) | (1 << 13) | (4 << 10) | (4 << 6) | (4 << 0), // king
-    (0 << 14) | (1 << 13) | (2 << 10) | (5 << 6) | (5 << 0), // bishop
-    (0 << 14) | (1 << 13) | (1 << 10) | (6 << 6) | (6 << 0), // knight
-    (0 << 14) | (1 << 13) | (0 << 10) | (7 << 6) | (7 << 0), // rook
-    (0 << 14) | (1 << 13) | (5 << 10) | (8 << 6) | (8 << 0), // pawn
-    (0 << 14) | (1 << 13) | (5 << 10) | (9 << 6) | (9 << 0), // pawn
-    (0 << 14) | (1 << 13) | (5 << 10) | (10 << 6) | (10 << 0), // pawn
-    (0 << 14) | (1 << 13) | (5 << 10) | (11 << 6) | (11 << 0), // pawn
-    (0 << 14) | (1 << 13) | (5 << 10) | (12 << 6) | (12 << 0), // pawn
-    (0 << 14) | (1 << 13) | (5 << 10) | (13 << 6) | (13 << 0), // pawn
-    (0 << 14) | (1 << 13) | (5 << 10) | (14 << 6) | (14 << 0), // pawn
-    (0 << 14) | (1 << 13) | (5 << 10) | (15 << 6) | (15 << 0), // pawn
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.RK) | setLoc(files.A, ranks.ONE),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.KN) | setLoc(files.B, ranks.ONE),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.BI) | setLoc(files.C, ranks.ONE),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.QN) | setLoc(files.D, ranks.ONE),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.KG) | setLoc(files.E, ranks.ONE),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.BI) | setLoc(files.F, ranks.ONE),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.KN) | setLoc(files.G, ranks.ONE),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.RK) | setLoc(files.H, ranks.ONE),
+
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.A, ranks.TWO),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.B, ranks.TWO),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.C, ranks.TWO),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.D, ranks.TWO),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.E, ranks.TWO),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.F, ranks.TWO),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.G, ranks.TWO),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.H, ranks.TWO),
 ])
 
 const black = new Uint16Array([
-    (1 << 14) | (1 << 13) | (0 << 10) | (0 << 6) | (63 << 0), // rook
-    (1 << 14) | (1 << 13) | (1 << 10) | (1 << 6) | (62 << 0), // knight
-    (1 << 14) | (1 << 13) | (2 << 10) | (2 << 6) | (61 << 0), // bishop
-    (1 << 14) | (1 << 13) | (3 << 10) | (3 << 6) | (60 << 0), // queen
-    (1 << 14) | (1 << 13) | (4 << 10) | (4 << 6) | (59 << 0), // king
-    (1 << 14) | (1 << 13) | (2 << 10) | (5 << 6) | (58 << 0), // bishop
-    (1 << 14) | (1 << 13) | (1 << 10) | (6 << 6) | (57 << 0), // knight
-    (1 << 14) | (1 << 13) | (0 << 10) | (7 << 6) | (56 << 0), // rook
-    (1 << 14) | (1 << 13) | (5 << 10) | (8 << 6) | (55 << 0), // pawn
-    (1 << 14) | (1 << 13) | (5 << 10) | (9 << 6) | (54 << 0), // pawn
-    (1 << 14) | (1 << 13) | (5 << 10) | (10 << 6) | (53 << 0), // pawn
-    (1 << 14) | (1 << 13) | (5 << 10) | (11 << 6) | (52 << 0), // pawn
-    (1 << 14) | (1 << 13) | (5 << 10) | (12 << 6) | (51 << 0), // pawn
-    (1 << 14) | (1 << 13) | (5 << 10) | (13 << 6) | (50 << 0), // pawn
-    (1 << 14) | (1 << 13) | (5 << 10) | (14 << 6) | (49 << 0), // pawn
-    (1 << 14) | (1 << 13) | (5 << 10) | (15 << 6) | (48 << 0), // pawn
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.RK) | setLoc(files.A, ranks.EIGHT),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.KN) | setLoc(files.B, ranks.EIGHT),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.BI) | setLoc(files.C, ranks.EIGHT),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.QN) | setLoc(files.D, ranks.EIGHT),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.KG) | setLoc(files.E, ranks.EIGHT),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.BI) | setLoc(files.F, ranks.EIGHT),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.KN) | setLoc(files.G, ranks.EIGHT),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.RK) | setLoc(files.H, ranks.EIGHT),
+
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.A, ranks.SEVEN),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.B, ranks.SEVEN),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.C, ranks.SEVEN),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.D, ranks.SEVEN),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.E, ranks.SEVEN),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.F, ranks.SEVEN),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.G, ranks.SEVEN),
+    setTeam(teams.WHITE) | setAlive(true) | setType(types.PN) | setLoc(files.H, ranks.SEVEN),
 ])
