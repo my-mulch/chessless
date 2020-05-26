@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import ChessGame from './game.js'
+import ChessView from './view.js'
 
 ReactDOM.render(
-    <ChessGame />,
+    <ChessView />,
     document.getElementById('root')
 )
