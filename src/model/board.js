@@ -3,8 +3,8 @@ import ChessBoardSquare from './square.js'
 export default class ChessBoard extends Array {
     static NUM_RANKS = 8
     static NUM_SQUARES = 64
-    static RANKS = [0, 1, 2, 3, 4, 5, 6, 7] // Ranks and Files
-    static FILES = [0, 1, 2, 3, 4, 5, 6, 7] // Ranks and Files
+    static RANKS = [0, 1, 2, 3, 4, 5, 6, 7]
+    static FILES = [0, 1, 2, 3, 4, 5, 6, 7]
 
     static indexOf(file, rank) {
         return rank * ChessBoard.NUM_RANKS + file

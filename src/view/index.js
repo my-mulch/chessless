@@ -30,15 +30,13 @@ export default class ChessView extends React.Component {
 
         if (!this.state.game.turn.team)
             ranks.reverse()
-    
-        return ranks.map(function (rank) {
-            return <tr key={rank}>
+
+        return ranks.map(rank => (
+            <tr key={rank}>
                 <th>{rank + 1}</th>
-                {files.map(function (file) {
-                    return this.renderSquare(file, rank)
-                }, this)}
+                {files.map(file => this.renderSquare(file, rank))}
             </tr>
-        }, this)
+        ))
     }
 
     renderSquare(file, rank) {
