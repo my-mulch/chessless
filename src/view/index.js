@@ -8,7 +8,6 @@ export default class ChessView extends React.Component {
         super()
 
         this.state = { game: new ChessGame() }
-        console.log(this.state)
     }
 
     renderHeader() {
@@ -25,21 +24,35 @@ export default class ChessView extends React.Component {
         </tr>
     }
 
+    renderBoard() {
+        const ranks = this.state.game.board.constructor.RANKS
+        const files = this.state.game.board.constructor.FILES
+
+        if (!this.state.game.turn.team)
+            ranks.reverse()
+    
+        return ranks.map(function (rank) {
+            return <tr key={rank}>
+                <th>{rank + 1}</th>
+                {files.map(function (file) {
+                    return this.renderSquare(file, rank)
+                }, this)}
+            </tr>
+        }, this)
+    }
+
+    renderSquare(file, rank) {
+        return <td
+            key={file}
+            className={this.state.game.board.getSquare(file, rank).toString()}>
+        </td>
+    }
+
     render() {
         return <table className="chess-board">
             <tbody>
                 {this.renderHeader()}
-                {[0, 1, 2, 3, 4, 5, 6, 7].map(function (rank, i) {
-                    return <tr>
-                        <th>{rank}</th>
-
-                        {[0, 1, 2, 3, 4, 5, 6, 7].map(function (file, j) {
-                            const square = this.state.game.board.getSquare(rank, file)
-
-                            return <td className={square.toString()}></td>
-                        }, this)}
-                    </tr>
-                }, this)}
+                {this.renderBoard()}
             </tbody>
         </table>
     }

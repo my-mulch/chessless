@@ -15,12 +15,12 @@
     height: 5em;
 }
 
-.chess-board .light {
-    background: #eee;
+.chess-board .dark {
+    background: rgb(175, 138, 105);
 }
 
-.chess-board .dark {
-    background: #000;
+.chess-board .light {
+    background: rgb(237, 218, 185);
 }
 
 .chess-board .white-bishop {
@@ -31,6 +31,66 @@
 
 .chess-board .black-bishop {
     background-image: url('../img/black_bishop.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .white-knight {
+    background-image: url('../img/white_knight.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .black-knight {
+    background-image: url('../img/black_knight.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .white-rook {
+    background-image: url('../img/white_rook.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .black-rook {
+    background-image: url('../img/black_rook.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .white-queen {
+    background-image: url('../img/white_queen.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .black-queen {
+    background-image: url('../img/black_queen.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .white-king {
+    background-image: url('../img/white_king.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .black-king {
+    background-image: url('../img/black_king.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .white-pawn {
+    background-image: url('../img/white_pawn.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .black-pawn {
+    background-image: url('../img/black_pawn.png');
     background-repeat: no-repeat;
     background-size:5em 5em;
 }

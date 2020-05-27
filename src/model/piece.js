@@ -1,7 +1,7 @@
 
 export default class ChessPiece {
-    static TEAM_NAMES = ['WHITE', 'BLACK']
-    static PIECE_NAMES = ['ROOK', 'KNIGHT', 'BISHOP', 'QUEEN', 'KING', 'PAWN']
+    static TEAM_NAMES = ['white', 'black']
+    static PIECE_NAMES = ['rook', 'knight', 'bishop', 'queen', 'king', 'pawn']
     static PIECE_TYPES = { RK: 0, KN: 1, BI: 2, QN: 3, KG: 4, PN: 5 }
 
     constructor(team, type, location) {
