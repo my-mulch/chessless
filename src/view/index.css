@@ -1,0 +1,36 @@
+.chess-board {
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.chess-board th {
+    padding: .5em;
+}
+
+.chess-board td {
+    border: 1px solid;
+    width: 5em;
+    height: 5em;
+}
+
+.chess-board .light {
+    background: #eee;
+}
+
+.chess-board .dark {
+    background: #000;
+}
+
+.chess-board .white-bishop {
+    background-image: url('../img/white_bishop.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
+
+.chess-board .black-bishop {
+    background-image: url('../img/black_bishop.png');
+    background-repeat: no-repeat;
+    background-size:5em 5em;
+}
