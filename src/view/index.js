@@ -11,38 +11,33 @@ export default class ChessView extends React.Component {
     }
 
     renderHeader() {
+        const board = this.state.game.board
+
         return <tr>
             <th></th>
-            <th>a</th>
-            <th>b</th>
-            <th>c</th>
-            <th>d</th>
-            <th>e</th>
-            <th>f</th>
-            <th>g</th>
-            <th>h</th>
+            {board.files.map((file, fi) =>
+                <th key={fi}>{file}</th>
+            )}
         </tr>
     }
 
     renderBoard() {
-        const ranks = this.state.game.board.constructor.RANKS
-        const files = this.state.game.board.constructor.FILES
+        const board = this.state.game.board
 
-        if (!this.state.game.turn.team)
-            ranks.reverse()
-
-        return ranks.map(rank => (
-            <tr key={rank}>
-                <th>{rank + 1}</th>
-                {files.map(file => this.renderSquare(file, rank))}
+        return board.ranks.map((rank, ri) =>
+            <tr key={ri}>
+                <th>{rank}</th>
+                {board.files.map((file) => this.renderSquare(rank, file))}
             </tr>
-        ))
+        )
     }
 
-    renderSquare(file, rank) {
-        return <td
-            key={file}
-            className={this.state.game.board.getSquare(file, rank).toString()}>
+    renderSquare(rank, file) {
+        const board = this.state.game.board
+        const key = board.constructor.indexOf(rank, file)
+
+        return <td key={key}
+            className={board.getSquare(rank, file).toString()}>
         </td>
     }
 

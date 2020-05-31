@@ -1,12 +1,12 @@
 
 export default class ChessBoardSquare {
-    static COLORS = ['dark', 'light']
     static DARK = 'dark'
     static LIGHT = 'light'
+    static COLORS = [ChessBoardSquare.DARK, ChessBoardSquare.LIGHT]
 
-    constructor(color) {
+    constructor(color, piece) {
         this.color = ChessBoardSquare.COLORS[color]
-        this.piece = null
+        this.piece = piece
     }
 
     toString() {
