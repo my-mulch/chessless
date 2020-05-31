@@ -12,7 +12,7 @@ export default class ChessPiece {
     }
 
     toString() {
-        const team = ChessPiece.TEAM_NAMES[Number(this.team)]
+        const team = ChessPiece.TEAM_NAMES[+this.team]
         const type = ChessPiece.PIECE_NAMES[this.type]
 
         return `${team}-${type}`

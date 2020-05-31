@@ -42,6 +42,11 @@ export default class ChessView extends React.Component {
     }
 
     render() {
+        if (!this.state.game.turn) {
+            this.state.game.board.ranks.reverse()
+            this.state.game.board.files.reverse()
+        }
+
         return <table className="chess-board">
             <tbody>
                 {this.renderHeader()}
