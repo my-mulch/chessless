@@ -10,13 +10,10 @@ export default class ChessTeam extends Array {
 
         this.team = team
 
-        if (this.team === ChessTeam.WHITE) {
-            this.push(...this.initPieces())
-            this.push(...this.initPawns())
-        } else {
-            this.push(...this.initPawns())
-            this.push(...this.initPieces())
-        }
+        if (this.team === ChessTeam.WHITE)
+            this.push(...this.initPieces(), ...this.initPawns())
+        else
+            this.push(...this.initPawns(), ...this.initPieces())
     }
 
     initPawns() {
