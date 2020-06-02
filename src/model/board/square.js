@@ -12,6 +12,6 @@ export default class ChessSquare {
     }
 
     toString() {
-        return `${this.color} ${this.piece ? this.piece.toString() : ''}`
+        return `${this.color} ${this.piece ? this.piece : ''}`
     }
 }

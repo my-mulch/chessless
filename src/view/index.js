@@ -39,15 +39,13 @@ export default class ChessView extends React.Component {
         const key = board.constructor.indexOf(rank, file)
 
         return <td key={key}
-            className={board.getSquare(rank, file).toString()}>
+            className={board.getSquare(rank, file)}>
         </td>
     }
 
     render() {
-        if (!this.state.game.turn) {
-            this.state.game.board.ranks.reverse()
-            this.state.game.board.files.reverse()
-        }
+        if (!this.state.game.turn)
+            this.state.game.board.flip()
 
         return <table className="chess-board">
             <tbody>
