@@ -31,3 +31,5 @@ const game = new ChessGame()
 const pawn = game.turn[8]
 
 console.log(pawn)
+
+pawn.getMoves(game.board)

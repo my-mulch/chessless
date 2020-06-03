@@ -12,6 +12,12 @@ export default class ChessBoard extends Array {
             file = ChessBoard.FILE_TO_INDEX[file]
         }
 
+        if (rank === undefined || file === undefined)
+            return null
+
+        if (rank < 0 || rank > 7 || file < 0 || file > 7)
+            return null
+
         return rank * ChessBoard.NUM_RANKS + file
     }
 
