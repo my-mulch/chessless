@@ -8,8 +8,6 @@ export default class ChessView extends React.Component {
         super()
 
         this.state = { game: new ChessGame() }
-
-        console.log(this.state)
     }
 
     renderHeader() {

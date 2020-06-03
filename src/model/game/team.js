@@ -1,8 +1,8 @@
 import ChessPieces from '../pieces'
 
 export default class ChessTeam extends Array {
-    static BLACK = true
-    static WHITE = false
+    static BLACK = 'black'
+    static WHITE = 'white'
     static NUM_PIECES = 16
 
     constructor(team) {

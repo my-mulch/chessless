@@ -21,4 +21,13 @@ export default class ChessGame {
     changeTurn() {
         this.turn = this.white ? this.black : this.white
     }
+
+    getMoves() {
+        return this.turn.getMoves(this.board)
+    }
 }
+
+const game = new ChessGame()
+const pawn = game.turn[8]
+
+console.log(pawn)

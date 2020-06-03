@@ -1,7 +1,5 @@
 
 export default class ChessPiece {
-    static TEAM_NAMES = ['white', 'black']
-
     constructor(team) {
         this.team = team
         this.rank = null
@@ -11,10 +9,7 @@ export default class ChessPiece {
     }
 
     toString() {
-        const team = ChessPiece.TEAM_NAMES[+this.team]
-        const type = this.constructor.name.toLowerCase()
-
-        return `${team}-${type}`
+        return `${this.team}-${this.constructor.name.toLowerCase()}`
     }
 }
 
