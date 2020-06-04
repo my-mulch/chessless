@@ -30,9 +30,9 @@ export default class ChessPiece {
 
         return this.file + offset
     }
-
-    prevRank(offset = -1) { return this.nextRank(offset) }
-    prevFile(offset = -1) { return this.nextFile(offset) }
+    
+    prevRank(offset = 1) { return this.nextRank(offset * -1) }
+    prevFile(offset = 1) { return this.nextFile(offset * -1) }
 
     toString() {
         return `${this.team}-${this.constructor.name.toLowerCase()}`

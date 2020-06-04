@@ -29,7 +29,7 @@ export default class ChessGame {
 }
 
 const game = new ChessGame()
-const pawn = game.turn[8]
 
-const moves = pawn.getMoves(game)
+const moves = game.turn.getMoves(game)
+
 console.log(moves)
