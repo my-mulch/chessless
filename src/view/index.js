@@ -8,6 +8,11 @@ export default class ChessView extends React.Component {
         super()
 
         this.state = { game: new ChessGame() }
+        this.handleClick = this.handleClick.bind(this)
+    }
+
+    handleClick(event) {
+
     }
 
     renderHeader() {
@@ -45,7 +50,7 @@ export default class ChessView extends React.Component {
         if (!this.state.game.turn)
             this.state.game.board.flip()
 
-        return <table className="chess-board">
+        return <table className={this.state.game.board.constructor.name}>
             <tbody>
                 {this.renderHeader()}
                 {this.renderBoard()}

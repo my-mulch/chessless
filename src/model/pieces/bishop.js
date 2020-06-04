@@ -33,10 +33,10 @@ export default class Bishop extends ChessPiece {
 
     getMoves(game) {
         return [
-            ...this.getDiagonal(game, this.nextRank, this.nextFile),
-            ...this.getDiagonal(game, this.nextRank, this.prevFile),
-            ...this.getDiagonal(game, this.prevRank, this.prevFile),
-            ...this.getDiagonal(game, this.prevRank, this.nextFile),
+            ...this.bishopMove(game, this.nextRank.bind(this), this.nextFile.bind(this)),
+            ...this.bishopMove(game, this.nextRank.bind(this), this.prevFile.bind(this)),
+            ...this.bishopMove(game, this.prevRank.bind(this), this.prevFile.bind(this)),
+            ...this.bishopMove(game, this.prevRank.bind(this), this.nextFile.bind(this)),
         ]
     }
 }
