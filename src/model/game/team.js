@@ -1,16 +1,21 @@
-import ChessPieces from '../pieces'
+import Pawn from '../pieces/pawn'
+import Rook from '../pieces/rook'
+import King from '../pieces/king'
+import Queen from '../pieces/queen'
+import Knight from '../pieces/knight'
+import Bishop from '../pieces/bishop'
+
+import ChessPiece from '../pieces/piece'
 
 export default class ChessTeam extends Array {
-    static BLACK = 'black'
-    static WHITE = 'white'
     static NUM_PIECES = 16
 
-    constructor(team) {
+    constructor(name) {
         super()
 
-        this.team = team
+        this.name = name
 
-        if (this.team === ChessTeam.WHITE)
+        if (this.name === ChessPiece.WHITE)
             this.push(...this.initPieces(), ...this.initPawns())
         else
             this.push(...this.initPawns(), ...this.initPieces())
@@ -18,27 +23,26 @@ export default class ChessTeam extends Array {
 
     initPawns() {
         return [
-            new ChessPieces.Pawn(this.team),
-            new ChessPieces.Pawn(this.team),
-            new ChessPieces.Pawn(this.team),
-            new ChessPieces.Pawn(this.team),
-            new ChessPieces.Pawn(this.team),
-            new ChessPieces.Pawn(this.team),
-            new ChessPieces.Pawn(this.team),
-            new ChessPieces.Pawn(this.team)]
+            new Pawn(this.name),
+            new Pawn(this.name),
+            new Pawn(this.name),
+            new Pawn(this.name),
+            new Pawn(this.name),
+            new Pawn(this.name),
+            new Pawn(this.name),
+            new Pawn(this.name)]
     }
 
     initPieces() {
         return [
-            new ChessPieces.Rook(this.team),
-            new ChessPieces.Knight(this.team),
-            new ChessPieces.Bishop(this.team),
-            new ChessPieces.Queen(this.team),
-            new ChessPieces.King(this.team),
-            new ChessPieces.Bishop(this.team),
-            new ChessPieces.Knight(this.team),
-            new ChessPieces.Rook(this.team)
-        ]
+            new Rook(this.name),
+            new Knight(this.name),
+            new Bishop(this.name),
+            new Queen(this.name),
+            new King(this.name),
+            new Bishop(this.name),
+            new Knight(this.name),
+            new Rook(this.name)]
     }
 
     getMoves(board) {

@@ -1,5 +1,10 @@
 
 export default class ChessPiece {
+    static FORWARD = 1
+    static BACKWARD = -1
+    static BLACK = 'black'
+    static WHITE = 'white'
+
     constructor(team) {
         this.team = team
         this.rank = null
@@ -7,6 +12,27 @@ export default class ChessPiece {
         this.alive = true
         this.history = []
     }
+
+    orient(offset) {
+        return this.team === ChessPiece.WHITE
+            ? offset * ChessPiece.FORWARD
+            : offset * ChessPiece.BACKWARD
+    }
+
+    nextRank(offset = 1) {
+        offset = this.orient(offset)
+
+        return this.rank + offset
+    }
+
+    nextFile(offset = 1) {
+        offset = this.orient(offset)
+
+        return this.file + offset
+    }
+
+    prevRank(offset = -1) { return this.nextRank(offset) }
+    prevFile(offset = -1) { return this.nextFile(offset) }
 
     toString() {
         return `${this.team}-${this.constructor.name.toLowerCase()}`

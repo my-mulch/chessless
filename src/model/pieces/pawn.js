@@ -14,17 +14,17 @@ export default class Pawn extends ChessPiece {
                 game.history.lastMove.piece === square.piece && // was the last piece to move
                 game.history.lastMove.type === this.pawnDoublePush.name // last move was a double push
 
-        }).map(function (square) {
+        }, this).map(function (square) {
             return new ChessMove(
                 this.enpassant.name, // Move type
                 game.board.getSquare(this.rank, this.file), // from square
                 game.board.getSquare(this.nextRank(), square.file), // to square
                 square // capture square (only for enpassant)
             )
-        })
+        }, this)
     }
 
-    pawnCapture() {
+    pawnCapture(game) {
         return [
             game.board.getSquare(this.nextRank(), this.nextFile()),
             game.board.getSquare(this.nextRank(), this.prevFile())
@@ -32,16 +32,16 @@ export default class Pawn extends ChessPiece {
             return square &&
                 square.piece &&
                 square.piece.team !== this.team
-        }).map(function (square) {
+        }, this).map(function (square) {
             return new ChessMove(
                 this.pawnCapture.name,
                 game.board.getSquare(this.rank, this.file), // from square
                 square // to square
             )
-        })
+        }, this)
     }
 
-    pawnSinglePush() {
+    pawnSinglePush(game) {
         return [
             game.board.getSquare(this.nextRank(), this.file),
         ].filter(function (square) {
@@ -52,10 +52,10 @@ export default class Pawn extends ChessPiece {
                 game.board.getSquare(this.rank, this.file), // from square
                 square // to square
             )
-        })
+        }, this)
     }
 
-    pawnDoublePush() {
+    pawnDoublePush(game) {
         const squares = [
             game.board.getSquare(this.nextRank(1), this.file),
             game.board.getSquare(this.nextRank(2), this.file),

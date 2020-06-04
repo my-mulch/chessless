@@ -1,11 +1,18 @@
 
 export default class ChessMove {
-    constructor(start, end, capture) {
-        this.end = end
-        this.start = start
+    constructor(type, from, to, capture = null) {
+        this.to = to
+        this.from = from
+        this.type = type
+
+        // for enpassant wherein capture square is different than piece location
         this.capture = capture
 
-        this.piece = start.piece
-        this.type = null
+        // for simplicity
+        this.piece = from.piece
+    }
+
+    make() {
+
     }
 }

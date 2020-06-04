@@ -1,10 +1,11 @@
 import ChessTeam from './team'
 import ChessBoard from '../board'
+import ChessPiece from '../pieces/piece'
 
 export default class ChessGame {
     constructor() {
-        this.black = new ChessTeam(ChessTeam.BLACK)
-        this.white = new ChessTeam(ChessTeam.WHITE)
+        this.black = new ChessTeam(ChessPiece.BLACK)
+        this.white = new ChessTeam(ChessPiece.WHITE)
 
         this.turn = this.white
 
@@ -30,6 +31,5 @@ export default class ChessGame {
 const game = new ChessGame()
 const pawn = game.turn[8]
 
-console.log(pawn)
-
-pawn.getMoves(game.board)
+const moves = pawn.getMoves(game)
+console.log(moves)
