@@ -36,7 +36,7 @@ export default class Pawn extends ChessPiece {
             return new ChessMove({
                 type: this.pawnCapture.name,
                 from: game.board.getSquare(this.rank, this.file),
-                to: square,
+                to: square
             })
         }, this)
     }

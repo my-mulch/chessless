@@ -45,11 +45,11 @@ export default class ChessTeam extends Array {
             new Rook(this.name)]
     }
 
-    getMoves(board) {
+    getMoves(game) {
         const moves = []
 
         for (const piece of this)
-            moves.push(...piece.getMoves(board))
+            moves.push(...piece.getMoves(game))
 
         return moves
     }
