@@ -11,8 +11,8 @@ export default class Pawn extends ChessPiece {
                 square.piece &&
                 square.piece.team !== this.team &&
                 square.piece.constructor === Pawn &&
-                game.history.lastMove.piece === square.piece &&
-                game.history.lastMove.type === this.pawnDoublePush.name
+                game.history[game.history.length - 1].piece === square.piece &&
+                game.history[game.history.length - 1].type === this.pawnDoublePush.name
 
         }, this).map(function (square) {
             return new ChessMove({

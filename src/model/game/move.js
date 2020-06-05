@@ -8,8 +8,4 @@ export default class ChessMove {
         this.piece = this.from.piece
         this.capture = this.to.piece || capture
     }
-
-    make() {
-
-    }
 }

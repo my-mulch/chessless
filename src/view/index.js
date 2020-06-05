@@ -4,53 +4,62 @@ import ChessGame from '../model/game'
 import './index.css'
 
 export default class ChessView extends React.Component {
+    static SQUARE_COLORS = ['dark', 'light']
+
     constructor() {
         super()
 
-        this.state = { game: new ChessGame() }
-        this.handleClick = this.handleClick.bind(this)
+        this.state = {
+            game: new ChessGame(),
+            ranks: [8, 7, 6, 5, 4, 3, 2, 1],
+            files: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+            selected: null
+        }
+
+        this.handleMouseUp = this.handleMouseUp.bind(this)
+        this.handleMouseDown = this.handleMouseDown.bind(this)
     }
 
-    handleClick(event) {
-
-    }
+    handleMouseUp(_, index) { }
+    handleMouseDown(_, index) { }
 
     renderHeader() {
-        const board = this.state.game.board
-
         return <tr>
             <th></th>
-            {board.files.map((file, fi) =>
-                <th key={fi}>{file}</th>
-            )}
+            {this.state.files.map(file =>
+                <th key={file}>{file}</th>)}
         </tr>
     }
 
     renderBoard() {
-        const board = this.state.game.board
-
-        return board.ranks.map((rank, ri) =>
+        return this.state.ranks.map((rank, ri) =>
             <tr key={ri}>
                 <th>{rank}</th>
-                {board.files.map((file) => this.renderSquare(rank, file))}
+                {this.state.files.map((file) => this.renderSquare(rank, file))}
             </tr>
         )
     }
 
     renderSquare(rank, file) {
         const board = this.state.game.board
-        const key = board.constructor.indexOf(rank, file)
 
-        return <td key={key}
-            className={board.getSquare(rank, file)}>
+        const key = board.constructor.indexOf(rank, file)
+        const rankNum = board.constructor.RANK_TO_INDEX[rank]
+        const fileNum = board.constructor.FILE_TO_INDEX[file]
+
+        const color = ChessView.SQUARE_COLORS[(rankNum + fileNum) % 2]
+
+        return <td
+            key={key}
+            onMouseUp={event => this.handleMouseUp(event, key)}
+            onMouseDown={event => this.handleMouseDown(event, key)}
+            className={[board.getSquare(rank, file), color].join(' ')}>
         </td>
     }
 
     render() {
-        if (!this.state.game.turn)
-            this.state.game.board.flip()
-
-        return <table className={this.state.game.board.constructor.name}>
+        return <table
+            className={this.state.game.board.constructor.name}>
             <tbody>
                 {this.renderHeader()}
                 {this.renderBoard()}
