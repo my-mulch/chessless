@@ -2,85 +2,111 @@ import ChessPiece from './piece'
 import ChessMove from '../game/move'
 
 export default class Pawn extends ChessPiece {
-    enpassant(game) {
-        return [
-            game.board.getSquare(this.rank, this.prevFile()),
-            game.board.getSquare(this.rank, this.nextFile())
-        ].filter(function (square) {
-            return square &&
-                square.piece &&
-                square.piece.team !== this.team &&
-                square.piece.constructor === Pawn &&
-                game.history[game.history.length - 1].piece === square.piece &&
-                game.history[game.history.length - 1].type === this.pawnDoublePush.name
+    enpassant(game, from) {
+        const ChessBoard = game.board.constructor
+        const [rank, file] = ChessBoard.rankAndFileOf(from)
 
-        }, this).map(function (square) {
-            return new ChessMove({
-                type: this.enpassant.name,
-                from: game.board.getSquare(this.rank, this.file),
-                to: game.board.getSquare(this.nextRank(), square.file),
-                capture: square.piece
-            })
-        }, this)
-    }
-
-    pawnCapture(game) {
-        return [
-            game.board.getSquare(this.nextRank(), this.nextFile()),
-            game.board.getSquare(this.nextRank(), this.prevFile())
-        ].filter(function (square) {
-            return square &&
-                square.piece &&
-                square.piece.team !== this.team
-        }, this).map(function (square) {
-            return new ChessMove({
-                type: this.pawnCapture.name,
-                from: game.board.getSquare(this.rank, this.file),
-                to: square
-            })
-        }, this)
-    }
-
-    pawnSinglePush(game) {
-        return [
-            game.board.getSquare(this.nextRank(), this.file),
-        ].filter(function (square) {
-            return square && !square.piece
-        }).map(function (square) {
-            return new ChessMove({
-                type: this.pawnSinglePush.name,
-                from: game.board.getSquare(this.rank, this.file),
-                to: square
-            })
-        }, this)
-    }
-
-    pawnDoublePush(game) {
         const squares = [
-            game.board.getSquare(this.nextRank(1), this.file),
-            game.board.getSquare(this.nextRank(2), this.file),
-        ].filter(function (square) {
-            return square && !square.piece
-        })
+            [rank, this.prev(file)],
+            [rank, this.next(file)],
+        ]
 
-        if (squares.length === 2)
-            return [
-                new ChessMove({
-                    type: this.pawnDoublePush.name,
-                    from: game.board.getSquare(this.rank, this.file),
-                    to: squares[1]
-                })
-            ]
+        const possibleEnpassant = function ([rank, file]) {
+            const square = game.board.getSquare(rank, file)
 
-        return []
+            return square !== undefined && // in bounds
+                square !== null && // not empty
+                square.team !== this.team && // other team
+                square.constructor === Pawn && // is pawn
+                game.history[game.history.length - 1].move.piece === square && // was the last to move
+                game.history[game.history.length - 1].move.type === this.pawnDoublePush.name // was a double pawn push
+
+        }.bind(this)
+
+        const moves = function ([rank, file]) {
+            return new ChessMove(
+                this.enpassant.name, // type
+                from, // from square
+                ChessBoard.indexOf(this.next(rank), file), // to square
+                game.board.getSquare(rank, file) // capture square
+            )
+        }.bind(this)
+
+        return squares.filter(possibleEnpassant).map(moves)
     }
 
-    getMoves(game) {
+    pawnCapture(game, from) {
+        const ChessBoard = game.board.constructor
+        const [rank, file] = ChessBoard.rankAndFileOf(from)
+
+        const squares = [
+            ChessBoard.indexOf(this.next(rank), this.next(file)),
+            ChessBoard.indexOf(this.next(rank), this.prev(file))
+        ]
+
+        const possiblePawnCapture = function (to) {
+            const square = game.board[to]
+
+            return square !== undefined &&
+                square !== null &&
+                square.team !== this.team
+
+        }.bind(this)
+
+        const moves = function (to) {
+            return new ChessMove(this.pawnCapture.name, from, to)
+        }.bind(this)
+
+        return squares.filter(possiblePawnCapture).map(moves)
+    }
+
+    pawnSinglePush(game, from) {
+        const ChessBoard = game.board.constructor
+        const [rank, file] = ChessBoard.rankAndFileOf(from)
+
+        const squares = [
+            ChessBoard.indexOf(this.next(rank), file),
+        ]
+
+        const possibleSinglePush = function (to) {
+            const square = game.board[to]
+
+            return square === null
+        }
+
+        const moves = function (to) {
+            return new ChessMove(this.pawnSinglePush.name, from, to)
+        }.bind(this)
+
+        return squares.filter(possibleSinglePush).map(moves)
+    }
+
+    pawnDoublePush(game, from) {
+        const ChessBoard = game.board.constructor
+        const [rank, file] = ChessBoard.rankAndFileOf(from)
+
+        const squares = [
+            ChessBoard.indexOf(this.next(rank, 1), file),
+            ChessBoard.indexOf(this.next(rank, 2), file),
+        ]
+
+        const squareIsEmpty = function (to) {
+            const square = game.board[to]
+
+            return square === null
+        }
+
+        return squares.every(squareIsEmpty)
+            ? [new ChessMove(this.pawnDoublePush.name, from, ChessBoard.indexOf(this.next(rank, 2), file))]
+            : []
+    }
+
+    getMoves(game, rank, file) {
         return [
-            ...this.enpassant(game),
-            ...this.pawnCapture(game),
-            ...this.pawnSinglePush(game),
-            ...this.pawnDoublePush(game),
+            ...this.enpassant(game, rank, file),
+            ...this.pawnCapture(game, rank, file),
+            ...this.pawnSinglePush(game, rank, file),
+            ...this.pawnDoublePush(game, rank, file),
         ]
     }
 }

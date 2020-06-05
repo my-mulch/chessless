@@ -16,4 +16,22 @@ export default class ChessGame {
             ...ChessTeam.init(ChessPiece.BLACK),
         )
     }
+
+    getMoves() {
+        const moves = []
+
+        for (let index = 0; index < this.board.length; index++) {
+            const piece = this.board[index]
+
+            if (piece && piece.team === this.turn)
+                moves.push(...piece.getMoves(this, index))
+        }
+
+        return moves
+    }
 }
+
+const game = new ChessGame()
+const moves = game.getMoves()
+
+console.log(moves)
