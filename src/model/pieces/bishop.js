@@ -2,54 +2,46 @@ import ChessPiece from './piece'
 import ChessMove from '../game/move'
 
 export default class Bishop extends ChessPiece {
-    bishopMove(game, rank, file) {
-        const moves = []
-        const square = game.board.getSquare(rank, file)
+    bishopMove(game, from) {
+        let allMoves = []
+        const ChessBoard = game.board.constructor
+        const [rank, file] = ChessBoard.rankAndFileOf(from)
 
-        let runner = square
+        const possibleBishopMove = function (to) {
+            const square = game.board[to]
 
+            return square !== undefined &&
+                (square === null || square.team !== this.team)
+        }.bind(this)
 
-        return moves
+        const moves = function (to) {
+            return new ChessMove(this.bishopMove.name, from, to)
+        }.bind(this)
+
+        const squareOutOfBounds = function (square) { return square === undefined }
+
+        let i = 1
+        while (true) {
+            const squares = [
+                ChessBoard.indexOf(this.next(rank, i), this.next(file, i)),
+                ChessBoard.indexOf(this.next(rank, i), this.prev(file, i)),
+                ChessBoard.indexOf(this.prev(rank, i), this.prev(file, i)),
+                ChessBoard.indexOf(this.prev(rank, i), this.next(file, i)),
+            ]
+
+            if (squares.every(squareOutOfBounds))
+                break
+
+            allMoves = allMoves.concat(squares.filter(possibleBishopMove).map(moves))
+
+            i++
+        }
+
+        return allMoves
     }
 
-    getMoves(game, rank, file) {
-        return []
+    getMoves(game, from) {
+        return this.bishopMove(game, from)
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// let runner = game.board.getSquare(nextRank(), nextFile())
-
-// let i = 2
-// while (runner && !runner.piece) {
-//     moves.push(new ChessMove({
-//         type: this.bishopMove.name,
-//         from: square,
-//         to: runner
-//     }))
-
-//     runner = game.board.getSquare(nextRank(i), nextFile(i))
-// }
-
-
-// if (runner && runner.piece && runner.piece.team !== this.team)
-//     moves.push(new ChessMove({
-//         type: this.bishopMove.name,
-//         from: square,
-//         to: runner,
-//         capture: runner.piece
-//     }))

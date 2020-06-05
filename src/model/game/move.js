@@ -1,9 +1,8 @@
 
 export default class ChessMove {
-    constructor(type, from, to, capture = null) {
+    constructor(type, from, to) {
         this.type = type
-        this.from = from
         this.to = to
-        this.capture = capture
+        this.from = from
     }
 }

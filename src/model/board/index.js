@@ -11,10 +11,10 @@ export default class ChessBoard extends Array {
         }
 
         if (rank === undefined || file === undefined)
-            return null
+            return undefined
 
         if (rank < 0 || rank > 7 || file < 0 || file > 7)
-            return null
+            return undefined
 
         return rank * ChessBoard.NUM_RANKS + file
     }

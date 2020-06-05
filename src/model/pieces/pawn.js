@@ -7,12 +7,12 @@ export default class Pawn extends ChessPiece {
         const [rank, file] = ChessBoard.rankAndFileOf(from)
 
         const squares = [
-            [rank, this.prev(file)],
-            [rank, this.next(file)],
+            ChessBoard.indexOf(rank, this.prev(file)),
+            ChessBoard.indexOf(rank, this.next(file))
         ]
 
-        const possibleEnpassant = function ([rank, file]) {
-            const square = game.board.getSquare(rank, file)
+        const possibleEnpassant = function (to) {
+            const square = game.board[to]
 
             return square !== undefined && // in bounds
                 square !== null && // not empty
@@ -23,13 +23,8 @@ export default class Pawn extends ChessPiece {
 
         }.bind(this)
 
-        const moves = function ([rank, file]) {
-            return new ChessMove(
-                this.enpassant.name, // type
-                from, // from square
-                ChessBoard.indexOf(this.next(rank), file), // to square
-                game.board.getSquare(rank, file) // capture square
-            )
+        const moves = function (to) {
+            return new ChessMove(this.enpassant.name, from, to)
         }.bind(this)
 
         return squares.filter(possibleEnpassant).map(moves)
