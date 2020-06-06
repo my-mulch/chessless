@@ -8,6 +8,9 @@ export default class ChessPiece {
     constructor(team) {
         this.team = team
         this.alive = true
+        
+        this.next = this.next.bind(this)
+        this.prev = this.prev.bind(this)
     }
 
     orient(offset) {

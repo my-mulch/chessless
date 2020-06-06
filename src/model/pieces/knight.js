@@ -2,7 +2,7 @@ import ChessPiece from './piece'
 import ChessMove from '../game/move'
 
 export default class Knight extends ChessPiece {
-    knightMove(game, from) {
+    getMoves(game, from) {
         const ChessBoard = game.board.constructor
         const [rank, file] = ChessBoard.rankAndFileOf(from)
 
@@ -27,13 +27,9 @@ export default class Knight extends ChessPiece {
         }.bind(this)
 
         const moves = function (to) {
-            return new ChessMove(this.knightMove.name, from, to)
-        }.bind(this)
+            return new ChessMove(from, to)
+        }
 
         return squares.filter(possibleKnightMove).map(moves)
-    }
-
-    getMoves(game, from) {
-        return this.knightMove(game, from)
     }
 }
