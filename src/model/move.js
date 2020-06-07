@@ -32,10 +32,10 @@ export default class ChessMove {
 
     static diagonals(game, piece, from) {
         return [
-            ...this.lineMoveHelper(game, piece, from, piece.next, piece.next),
-            ...this.lineMoveHelper(game, piece, from, piece.next, piece.prev),
-            ...this.lineMoveHelper(game, piece, from, piece.prev, piece.prev),
-            ...this.lineMoveHelper(game, piece, from, piece.prev, piece.next),
+            ...this.lineMoveHelper(game, piece, from, piece.next.bind(piece), piece.next.bind(piece)),
+            ...this.lineMoveHelper(game, piece, from, piece.next.bind(piece), piece.prev.bind(piece)),
+            ...this.lineMoveHelper(game, piece, from, piece.prev.bind(piece), piece.prev.bind(piece)),
+            ...this.lineMoveHelper(game, piece, from, piece.prev.bind(piece), piece.next.bind(piece)),
         ]
     }
 }

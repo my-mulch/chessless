@@ -1,16 +1,17 @@
 import React from 'react'
-import ChessGame from '../model/game'
+import ChessTurn from '../model/turn.js'
 
 import './index.css'
 
 export default class ChessView extends React.Component {
-    static SQUARE_COLORS = ['dark', 'light']
+    static RANK_TO_INDEX = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6, 8: 7 }
+    static FILE_TO_INDEX = { a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7 }
 
     constructor() {
         super()
 
         this.state = {
-            game: new ChessGame({}),
+            game: new ChessTurn(),
             ranks: [8, 7, 6, 5, 4, 3, 2, 1],
             files: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
             selected: null
@@ -25,10 +26,10 @@ export default class ChessView extends React.Component {
     handleMouseUp(event, index) {
         event.preventDefault()
 
-        this.setState(state => ({
-            game: state.game.makeMove(state.selected, index),
-            selected: null
-        }))
+        // this.setState(state => ({
+        //     game: state.game.makeMove(state.selected, index),
+        //     selected: null
+        // }))
         // console.log(this.state.game.board)
     }
 
@@ -36,8 +37,9 @@ export default class ChessView extends React.Component {
 
         event.preventDefault()
 
-        this.setState({ selected: index })
+        console.log(this.state.game.board[index])
 
+        // this.setState({ selected: index })
     }
 
     renderHeader() {
@@ -59,18 +61,17 @@ export default class ChessView extends React.Component {
 
     renderSquare(rank, file) {
         const board = this.state.game.board
+        
+        const numRank = ChessView.RANK_TO_INDEX[rank]
+        const numFile = ChessView.FILE_TO_INDEX[file]
 
-        const key = board.constructor.indexOf(rank, file)
-        const rankNum = board.constructor.RANK_TO_INDEX[rank]
-        const fileNum = board.constructor.FILE_TO_INDEX[file]
-
-        const color = ChessView.SQUARE_COLORS[(rankNum + fileNum) % 2]
+        const key = board.constructor.indexOf(numRank, numFile)
 
         return <td
             key={key}
             onMouseUp={event => this.handleMouseUp(event, key)}
             onMouseDown={event => this.handleMouseDown(event, key)}
-            className={[board.getSquare(rank, file), color].join(' ')}>
+            className={board.describeSquare(numRank, numFile)}>
         </td>
     }
 

@@ -1,19 +1,20 @@
 import ChessTeam from './team'
-import ChessBoard from '../board'
-import ChessPiece from '../pieces/piece'
+import ChessBoard from './board'
+import ChessPiece from './piece'
 
-export default class ChessGame {
-    constructor({
-        turn = ChessPiece.WHITE,
-        board = new ChessBoard(
+export default class ChessTurn {
+    constructor(
+        team = ChessPiece.WHITE,
+        board = new ChessBoard([
             ...ChessTeam.init(ChessPiece.WHITE),
-            null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null,
-            ...ChessTeam.init(ChessPiece.BLACK))
-    }) {
-        this.turn = turn
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            ...ChessTeam.init(ChessPiece.BLACK)
+        ])
+    ) {
+        this.team = team
         this.board = board
     }
 
@@ -23,7 +24,7 @@ export default class ChessGame {
         for (let index = 0; index < this.board.length; index++) {
             const piece = this.board[index]
 
-            if (piece && piece.team === this.turn)
+            if (piece && piece.team === this.team)
                 moves.push(...piece.getMoves(this, index))
         }
 
@@ -41,7 +42,7 @@ export default class ChessGame {
                     : ChessPiece.WHITE
 
                 game.board[to] = game.board[from]
-                game.board[from] = null
+                game.board[from] = 0
 
                 break
             }
@@ -51,11 +52,6 @@ export default class ChessGame {
     }
 
     clone() {
-        return new ChessGame({
-            turn: this.turn.slice(),
-            board: this.board.clone()
-        })
+        return new ChessTurn(this.team, this.board.slice())
     }
 }
-
-
