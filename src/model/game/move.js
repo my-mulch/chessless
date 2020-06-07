@@ -19,11 +19,12 @@ export default class ChessMove {
 
             const square = game.board[to]
 
-            if (square === undefined ||
-                square.team === piece.team)
+            if (square === undefined || (square && square.team === piece.team))
                 break
 
             moves.push(new ChessMove(from, to))
+
+            i++
         }
 
         return moves

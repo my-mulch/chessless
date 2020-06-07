@@ -29,4 +29,10 @@ export default class ChessBoard extends Array {
     getSquare(rank, file) {
         return this[ChessBoard.indexOf(rank, file)]
     }
+
+    clone() {
+        return this.map(function (square) {
+            return square && square.clone()
+        })
+    }
 }

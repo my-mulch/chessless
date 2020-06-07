@@ -5,12 +5,19 @@ export default class ChessPiece {
     static BLACK = 'black'
     static WHITE = 'white'
 
-    constructor(team) {
+    constructor({ team = null, alive = true }) {
         this.team = team
-        this.alive = true
-        
+        this.alive = alive
+
         this.next = this.next.bind(this)
         this.prev = this.prev.bind(this)
+    }
+
+    clone() {
+        return new this.constructor({
+            team: this.team.slice(), 
+            alive: this.alive
+        })
     }
 
     orient(offset) {

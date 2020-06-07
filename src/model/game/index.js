@@ -3,18 +3,18 @@ import ChessBoard from '../board'
 import ChessPiece from '../pieces/piece'
 
 export default class ChessGame {
-    constructor() {
-        this.turn = ChessPiece.WHITE
-        this.history = []
-
-        this.board = new ChessBoard(
+    constructor({
+        turn = ChessPiece.WHITE,
+        board = new ChessBoard(
             ...ChessTeam.init(ChessPiece.WHITE),
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null,
-            ...ChessTeam.init(ChessPiece.BLACK),
-        )
+            ...ChessTeam.init(ChessPiece.BLACK))
+    }) {
+        this.turn = turn
+        this.board = board
     }
 
     getMoves() {
@@ -29,9 +29,33 @@ export default class ChessGame {
 
         return moves
     }
+
+    makeMove(from, to) {
+        const game = this.clone()
+        const moves = this.getMoves()
+
+        for (const move of moves) {
+            if (move.from === from && move.to === to) {
+                game.turn = game.turn === ChessPiece.WHITE
+                    ? ChessPiece.BLACK
+                    : ChessPiece.WHITE
+
+                game.board[to] = game.board[from]
+                game.board[from] = null
+
+                break
+            }
+        }
+
+        return game
+    }
+
+    clone() {
+        return new ChessGame({
+            turn: this.turn.slice(),
+            board: this.board.clone()
+        })
+    }
 }
 
-const game = new ChessGame()
-const moves = game.getMoves()
 
-console.log(moves)

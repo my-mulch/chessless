@@ -16,27 +16,27 @@ export default class ChessTeam {
 
     static initPawns(team) {
         return [
-            new Pawn(team),
-            new Pawn(team),
-            new Pawn(team),
-            new Pawn(team),
-            new Pawn(team),
-            new Pawn(team),
-            new Pawn(team),
-            new Pawn(team)
+            new Pawn({ team }),
+            new Pawn({ team }),
+            new Pawn({ team }),
+            new Pawn({ team }),
+            new Pawn({ team }),
+            new Pawn({ team }),
+            new Pawn({ team }),
+            new Pawn({ team })
         ]
     }
 
     static initPieces(team) {
         return [
-            new Rook(team),
-            new Knight(team),
-            new Bishop(team),
-            new Queen(team),
-            new King(team),
-            new Bishop(team),
-            new Knight(team),
-            new Rook(team)
+            new Rook({ team }),
+            new Knight({ team }),
+            new Bishop({ team }),
+            new Queen({ team }),
+            new King({ team }),
+            new Bishop({ team }),
+            new Knight({ team }),
+            new Rook({ team })
         ]
     }
 }

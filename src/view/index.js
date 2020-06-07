@@ -10,18 +10,35 @@ export default class ChessView extends React.Component {
         super()
 
         this.state = {
-            game: new ChessGame(),
+            game: new ChessGame({}),
             ranks: [8, 7, 6, 5, 4, 3, 2, 1],
             files: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
             selected: null
         }
 
+        window.game = this
+
         this.handleMouseUp = this.handleMouseUp.bind(this)
         this.handleMouseDown = this.handleMouseDown.bind(this)
     }
 
-    handleMouseUp(_, index) { }
-    handleMouseDown(_, index) { }
+    handleMouseUp(event, index) {
+        event.preventDefault()
+
+        this.setState(state => ({
+            game: state.game.makeMove(state.selected, index),
+            selected: null
+        }))
+        // console.log(this.state.game.board)
+    }
+
+    handleMouseDown(event, index) {
+
+        event.preventDefault()
+
+        this.setState({ selected: index })
+
+    }
 
     renderHeader() {
         return <tr>
