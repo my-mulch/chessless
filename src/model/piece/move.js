@@ -1,3 +1,4 @@
+import ChessPiece from './index'
 
 export default class ChessMove {
     static TO_BIT = 4
@@ -47,6 +48,18 @@ export default class ChessMove {
 
     static setType(move, type) {
         return type | (move & ChessMove.TYPE_MASK)
+    }
+
+    static isEmptySquareOrOtherTeam(square, piece) {
+        return square !== undefined
+            && (square || // is empty
+                ChessPiece.getTeam(square) !== ChessPiece.getTeam(piece))
+    }
+
+    static isOtherTeam(square, piece) {
+        return square !== undefined
+            && square
+            && ChessPiece.getTeam(square) !== ChessPiece.getTeam(piece)
     }
 }
 

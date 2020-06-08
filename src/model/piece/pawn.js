@@ -1,26 +1,15 @@
+import ChessMove from './move'
+import ChessPiece from './index'
 
 export default class Pawn {
-    pawnCapture(game, from) {
-        const ChessBoard = game.board.constructor
-        const [rank, file] = ChessBoard.rankAndFileOf(from)
-
+    pawnCapture(game, piece, from) {
         const squares = [
-            ChessBoard.indexOf(this.next(rank), this.next(file)),
-            ChessBoard.indexOf(this.next(rank), this.prev(file))
+            ChessPiece.FORWARD_LEFT(piece, from),
+            ChessPiece.FORWARD_RIGHT(piece, from)
         ]
 
-        const possiblePawnCapture = function (to) {
-            const square = game.board[to]
-
-            return square !== undefined &&
-                square !== null &&
-                square.team !== this.team
-
-        }.bind(this)
-
-        const moves = function (to) {
-            return new ChessMove(from, to)
-        }
+        const possiblePawnCapture = (to) => ChessMove.isOtherTeam(piece, game.board[to])
+        const moves = (to) => ChessMove.create(from, to, this.pawnCapture.name)
 
         return squares.filter(possiblePawnCapture).map(moves)
     }
