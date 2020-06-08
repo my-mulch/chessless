@@ -4,6 +4,9 @@ export default class ChessPiece {
     static TEAM_MASK = 254
     static TYPE_MASK = 241
 
+    static RANK_STEP_SIZE = 8
+    static FILE_STEP_SIZE = 1
+
     static FORWARD = 1
     static BACKWARD = -1
 
@@ -26,7 +29,6 @@ export default class ChessPiece {
         [ChessPiece.QUEEN]: 'queen',
         [ChessPiece.KING]: 'king'
     }
-
 
     static toString(piece) {
         const team = ChessPiece.getTeam(piece)
@@ -53,15 +55,43 @@ export default class ChessPiece {
 
     static orient(piece) {
         return ChessPiece.getTeam(piece) === ChessPiece.BLACK
-            ? ChessPiece.BACKWARD
-            : ChessPiece.FORWARD
+            ? ChessPiece.RIGHT
+            : ChessPiece.LEFT
     }
 
-    static next(piece, direction, offset = 1) {
-        return ChessPiece.orient(piece) * offset + direction
+    static nextRank(piece, from, distance = ChessPiece.FORWARD) {
+        return ChessPiece.orient(piece) * ChessPiece.RANK_STEP_SIZE * distance + from
     }
 
-    static prev(piece, direction, offset = 1) {
-        return ChessPiece.next(piece, direction, offset * ChessPiece.BACKWARD)
+    static nextFile(piece, from, distance = ChessPiece.FORWARD) {
+        return ChessPiece.orient(piece) * ChessPiece.FILE_STEP_SIZE * distance + from
+    }
+
+    static prevRank(piece, from, distance = ChessPiece.FORWARD) {
+        return ChessPiece.nextRank(piece, from, distance * ChessPiece.BACKWARD)
+    }
+
+    static prevFile(piece, from, distance = ChessPiece.FORWARD) {
+        return ChessPiece.nextFile(piece, from, distance * ChessPiece.BACKWARD)
+    }
+
+    static forwardRight(piece, from, distance = ChessPiece.FORWARD) {
+        return ChessPiece.nextRank(piece, from, distance)
+            + ChessPiece.nextFile(piece, from, distance)
+    }
+
+    static forwardLeft(piece, from, distance = ChessPiece.FORWARD) {
+        return ChessPiece.nextRank(piece, from, distance)
+            + ChessPiece.prevFile(piece, from, distance)
+    }
+
+    static backwardLeft(piece, from, distance = ChessPiece.FORWARD) {
+        return ChessPiece.prevRank(piece, from, distance)
+            + ChessPiece.prevFile(piece, from, distance)
+    }
+
+    static backwardRight(piece, from, distance = ChessPiece.FORWARD) {
+        return ChessPiece.prevRank(piece, from, distance)
+            + ChessPiece.nextFile(piece, from, distance)
     }
 }

@@ -8,10 +8,10 @@ export default class Pawn {
             ChessPiece.FORWARD_RIGHT(piece, from)
         ]
 
-        const possiblePawnCapture = (to) => ChessMove.isOtherTeam(piece, game.board[to])
+        const captures = (to) => ChessMove.isOtherTeam(piece, game.board[to])
         const moves = (to) => ChessMove.create(from, to, this.pawnCapture.name)
 
-        return squares.filter(possiblePawnCapture).map(moves)
+        return squares.filter(captures).map(moves)
     }
 
     pawnSinglePush(game, from) {
