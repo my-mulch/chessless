@@ -1,17 +1,14 @@
+import ChessMove from './move'
 import ChessTeam from './team'
 import ChessBoard from './board'
 import ChessPiece from './piece'
-
-import ChessMove from './moves/move'
-import ChessMoves from './moves/'
 
 export default class ChessTurn {
     constructor(
         team = ChessPiece.WHITE,
         board = new ChessBoard([
+            ...ChessTeam.init(ChessPiece.WHITE),
             0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            6, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
@@ -34,10 +31,9 @@ export default class ChessTurn {
             if (!piece)
                 continue
 
-            moves.push(...ChessMoves[type].getMoves(this, piece, index))
+            moves.push(...ChessMove[type](this, piece, index))
         }
 
-        console.log(moves)
         return new Uint32Array(moves)
     }
 
