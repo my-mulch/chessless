@@ -1,4 +1,4 @@
-import ChessPiece from './piece'
+import ChessPiece from './piece/'
 
 export default class ChessTeam {
     static NUM_PAWNS = 8

@@ -1,4 +1,4 @@
-import ChessPiece from './piece'
+import ChessPiece from './piece/'
 
 export default class ChessBoard extends Uint8Array {
     static NUM_RANKS = 8

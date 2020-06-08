@@ -1,7 +1,5 @@
-import ChessPiece from './piece'
-import ChessMove from '../game/move'
 
-export default class Pawn extends ChessPiece {
+export default class Pawn {
     pawnCapture(game, from) {
         const ChessBoard = game.board.constructor
         const [rank, file] = ChessBoard.rankAndFileOf(from)
