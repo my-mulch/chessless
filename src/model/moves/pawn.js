@@ -1,5 +1,5 @@
 import ChessMove from './move'
-import ChessPiece from './index'
+import ChessPiece from '../piece'
 
 export default class Pawn {
     static pawnCapture(game, piece, from) {

@@ -1,5 +1,5 @@
 import ChessMove from './move'
-import ChessPiece from './index'
+import ChessPiece from '../piece'
 
 export default class Knight {
     static knightMove(game, piece, from) {
@@ -17,7 +17,7 @@ export default class Knight {
             ChessPiece.backward(piece, ChessPiece.left(piece, from, 2)),
         ]
 
-        const knightMoves = (to) => ChessMove.isEmptySquareOrOtherTeam(game.board[to], piece)
+        const knightMoves = (to) => ChessMove.isEmptySquareOrOtherTeam(piece, game.board[to])
         const moves = (to) => ChessMove.create(from, to, Knight.knightMove.name)
 
         return squares.filter(knightMoves).map(moves)

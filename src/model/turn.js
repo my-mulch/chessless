@@ -1,13 +1,9 @@
 import ChessTeam from './team'
 import ChessBoard from './board'
-import ChessPiece from './piece/'
+import ChessPiece from './piece'
 
-import Pawn from './piece/pawn'
-import Rook from './piece/rook'
-import King from './piece/king'
-import Queen from './piece/queen'
-import Knight from './piece/knight'
-import Bishop from './piece/bishop'
+import ChessMove from './moves/move'
+import ChessMoves from './moves/'
 
 export default class ChessTurn {
     constructor(
@@ -19,11 +15,12 @@ export default class ChessTurn {
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             ...ChessTeam.init(ChessPiece.BLACK)
-        ])
+        ]),
+        moves = null
     ) {
         this.team = team
         this.board = board
-        this.moves = this.getMoves()
+        this.moves = moves || this.getMoves()
     }
 
     getMoves() {
@@ -31,43 +28,41 @@ export default class ChessTurn {
 
         for (let index = 0; index < this.board.length; index++) {
             const piece = this.board[index]
+            const type = ChessPiece.getType(piece)
 
             if (!piece)
                 continue
 
-            switch (ChessPiece.getType(piece)) {
-                case ChessPiece.ROOK:
-                    moves.push(...Rook.getMoves(this, piece, index))
-                    continue
-
-                case ChessPiece.KING:
-                    moves.push(...King.getMoves(this, piece, index))
-                    continue
-
-                case ChessPiece.PAWN:
-                    moves.push(...Pawn.getMoves(this, piece, index))
-                    continue
-
-                case ChessPiece.KNIGHT:
-                    moves.push(...Knight.getMoves(this, piece, index))
-                    continue
-
-                case ChessPiece.BISHOP:
-                    moves.push(...Bishop.getMoves(this, piece, index))
-                    continue
-
-                case ChessPiece.QUEEN:
-                    moves.push(...Queen.getMoves(this, piece, index))
-                    continue
-            }
+            moves.push(...ChessMoves[type].getMoves(this, piece, index))
         }
 
+        console.log(moves)
         return new Uint32Array(moves)
     }
 
-    makeMove(from, to) { }
+    makeMove(from, to) {
+        const game = this.clone()
+
+        for (const move of game.moves) {
+            if (from === ChessMove.getFrom(move)
+                && to === ChessMove.getTo(move)) {
+
+                game.board[to] = game.board[from]
+                game.board[from] = 0
+
+                game.team = Number(!game.team)
+            }
+        }
+
+        game.moves = game.getMoves()
+
+        return game
+    }
 
     clone() {
-        return new ChessTurn(this.team, this.board.slice())
+        return new ChessTurn(
+            this.team,
+            this.board.slice(),
+            this.moves.slice())
     }
 }

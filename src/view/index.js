@@ -1,5 +1,6 @@
 import React from 'react'
-import ChessTurn from '../model/turn.js'
+import ChessTurn from '../model/turn'
+import { indexOf } from '../model/utils'
 
 import './index.css'
 
@@ -26,20 +27,16 @@ export default class ChessView extends React.Component {
     handleMouseUp(event, index) {
         event.preventDefault()
 
-        // this.setState(state => ({
-        //     game: state.game.makeMove(state.selected, index),
-        //     selected: null
-        // }))
-        // console.log(this.state.game.board)
+        this.setState(state => ({
+            game: state.game.makeMove(state.selected, index),
+            selected: null
+        }))
     }
 
     handleMouseDown(event, index) {
-
         event.preventDefault()
 
-        console.log(this.state.game.board[index])
-
-        // this.setState({ selected: index })
+        this.setState({ selected: index })
     }
 
     renderHeader() {
@@ -61,11 +58,11 @@ export default class ChessView extends React.Component {
 
     renderSquare(rank, file) {
         const board = this.state.game.board
-        
+
         const numRank = ChessView.RANK_TO_INDEX[rank]
         const numFile = ChessView.FILE_TO_INDEX[file]
 
-        const key = board.constructor.indexOf(numRank, numFile)
+        const key = indexOf(numRank, numFile)
 
         return <td
             key={key}

@@ -1,3 +1,4 @@
+import { rankAndFileOf, indexOf } from './utils'
 
 export default class ChessPiece {
     static TEAM_BIT = 1
@@ -60,11 +61,25 @@ export default class ChessPiece {
     }
 
     static forward(piece, from, distance = 1) {
-        return ChessPiece.orient(piece) * ChessPiece.FORWARD_STEP * distance + from
+        if (!from) return undefined
+
+        const [rank, file] = rankAndFileOf(from)
+
+        const newRank = rank + ChessPiece.orient(piece) * distance
+        const newFile = file
+
+        return indexOf(newRank, newFile)
     }
 
     static right(piece, from, distance = 1) {
-        return ChessPiece.orient(piece) * ChessPiece.RIGHT_STEP * distance + from
+        if (!from) return undefined
+
+        const [rank, file] = rankAndFileOf(from)
+
+        const newRank = rank
+        const newFile = file + ChessPiece.orient(piece) * distance
+
+        return indexOf(newRank, newFile)
     }
 
     static backward(piece, from, distance = 1) {
@@ -76,22 +91,18 @@ export default class ChessPiece {
     }
 
     static forwardRight(piece, from, distance = 1) {
-        return ChessPiece.forward(piece, from, distance)
-            + ChessPiece.right(piece, from, distance)
+        return ChessPiece.forward(piece, ChessPiece.right(piece, from, distance), distance)
     }
 
     static forwardLeft(piece, from, distance = 1) {
-        return ChessPiece.forward(piece, from, distance)
-            + ChessPiece.left(piece, from, distance)
+        return ChessPiece.forward(piece, ChessPiece.left(piece, from, distance), distance)
     }
 
     static backwardLeft(piece, from, distance = 1) {
-        return ChessPiece.backward(piece, from, distance)
-            + ChessPiece.left(piece, from, distance)
+        return ChessPiece.backward(piece, ChessPiece.left(piece, from, distance), distance)
     }
 
     static backwardRight(piece, from, distance = 1) {
-        return ChessPiece.backward(piece, from, distance)
-            + ChessPiece.right(piece, from, distance)
+        return ChessPiece.backward(piece, ChessPiece.right(piece, from, distance), distance)
     }
 }
