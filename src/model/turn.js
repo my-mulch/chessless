@@ -37,27 +37,27 @@ export default class ChessTurn {
 
             switch (ChessPiece.getType(piece)) {
                 case ChessPiece.ROOK:
-                    moves.push(...Rook.getMoves(game, piece, from))
+                    moves.push(...Rook.getMoves(this, piece, index))
                     continue
 
                 case ChessPiece.KING:
-                    moves.push(...King.getMoves(game, piece, from))
+                    moves.push(...King.getMoves(this, piece, index))
                     continue
 
                 case ChessPiece.PAWN:
-                    moves.push(...Pawn.getMoves(game, piece, from))
+                    moves.push(...Pawn.getMoves(this, piece, index))
                     continue
 
                 case ChessPiece.KNIGHT:
-                    moves.push(...Knight.getMoves(game, piece, from))
+                    moves.push(...Knight.getMoves(this, piece, index))
                     continue
 
                 case ChessPiece.BISHOP:
-                    moves.push(...Bishop.getMoves(game, piece, from))
+                    moves.push(...Bishop.getMoves(this, piece, index))
                     continue
 
                 case ChessPiece.QUEEN:
-                    moves.push(...Queen.getMoves(game, piece, from))
+                    moves.push(...Queen.getMoves(this, piece, index))
                     continue
             }
         }

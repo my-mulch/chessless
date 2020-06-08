@@ -26,6 +26,15 @@ export default class ChessMove {
     static KING = 8
     static CASTLE = 9
 
+    static create(from, to, type) {
+        let move = 0
+
+        move = ChessMove.setTo(move, to)
+        move = ChessMove.setFrom(move, from)
+        move = ChessMove.setType(move, type)
+
+        return move
+    }
     static getTo(move) {
         return (move & ChessMove.FROM_MASK) >> ChessMove.TO_BIT
     }

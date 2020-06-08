@@ -1,5 +1,7 @@
 
-
 export default class Queen {
-    getMoves(board) { return [] }
+    static getMoves(game, piece, from) {
+        return []
+    }
 }
+

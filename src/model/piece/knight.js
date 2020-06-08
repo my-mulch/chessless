@@ -1,33 +1,29 @@
+import ChessMove from './move'
+import ChessPiece from './index'
 
 export default class Knight {
-    getMoves(game, from) {
-        const ChessBoard = game.board.constructor
-        const [rank, file] = ChessBoard.rankAndFileOf(from)
-
+    static knightMove(game, piece, from) {
         const squares = [
-            ChessBoard.indexOf(this.next(rank, 2), this.next(file)),
-            ChessBoard.indexOf(this.next(rank, 2), this.prev(file)),
+            ChessPiece.left(piece, ChessPiece.forward(piece, from, 2)),
+            ChessPiece.right(piece, ChessPiece.forward(piece, from, 2)),
 
-            ChessBoard.indexOf(this.next(rank), this.next(file, 2)),
-            ChessBoard.indexOf(this.prev(rank), this.next(file, 2)),
+            ChessPiece.forward(piece, ChessPiece.right(piece, from, 2)),
+            ChessPiece.backward(piece, ChessPiece.right(piece, from, 2)),
 
-            ChessBoard.indexOf(this.next(rank), this.prev(file, 2)),
-            ChessBoard.indexOf(this.prev(rank), this.prev(file, 2)),
+            ChessPiece.left(piece, ChessPiece.backward(piece, from, 2)),
+            ChessPiece.right(piece, ChessPiece.backward(piece, from, 2)),
 
-            ChessBoard.indexOf(this.prev(rank, 2), this.next(file)),
-            ChessBoard.indexOf(this.prev(rank, 2), this.prev(file))
+            ChessPiece.forward(piece, ChessPiece.left(piece, from, 2)),
+            ChessPiece.backward(piece, ChessPiece.left(piece, from, 2)),
         ]
 
-        const possibleKnightMove = function (to) {
-            const square = game.board[to]
+        const knightMoves = (to) => ChessMove.isEmptySquareOrOtherTeam(game.board[to], piece)
+        const moves = (to) => ChessMove.create(from, to, Knight.knightMove.name)
 
-            return square !== undefined && (square === null || square.team !== this.team)
-        }.bind(this)
+        return squares.filter(knightMoves).map(moves)
+    }
 
-        const moves = function (to) {
-            return new ChessMove(from, to)
-        }
-
-        return squares.filter(possibleKnightMove).map(moves)
+    static getMoves(game, piece, from) {
+        return this.knightMove(game, piece, from)
     }
 }

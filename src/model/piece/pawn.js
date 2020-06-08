@@ -14,7 +14,7 @@ export default class Pawn {
         return squares.filter(captures).map(moves)
     }
 
-    static pawnSinglePush(game, from) {
+    static pawnSinglePush(game, piece, from) {
         const squares = [ChessPiece.forward(piece, from)]
 
         const squareIsEmpty = (to) => !game.board[to]
@@ -23,7 +23,7 @@ export default class Pawn {
         return squares.filter(squareIsEmpty).map(moves)
     }
 
-    static pawnDoublePush(game, from) {
+    static pawnDoublePush(game, piece, from) {
         const squares = [
             ChessPiece.forward(piece, from, 1),
             ChessPiece.forward(piece, from, 2)

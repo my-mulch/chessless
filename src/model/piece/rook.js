@@ -1,4 +1,7 @@
 
 export default class Rook {
-    getMoves(board) { return [] }
+    static getMoves(game, piece, from) {
+        return []
+    }
 }
+

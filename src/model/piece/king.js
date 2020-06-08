@@ -1,4 +1,6 @@
 
 export default class King {
-    getMoves(board) { return [] }
+    static getMoves(game, piece, from) {
+        return []
+    }
 }
