@@ -61,7 +61,7 @@ export default class ChessPiece {
     }
 
     static forward(piece, from, distance = 1) {
-        if (!from) return undefined
+        if (isNaN(from)) return undefined
 
         const [rank, file] = rankAndFileOf(from)
 
@@ -72,7 +72,7 @@ export default class ChessPiece {
     }
 
     static right(piece, from, distance = 1) {
-        if (!from) return undefined
+        if (isNaN(from)) return undefined
 
         const [rank, file] = rankAndFileOf(from)
 

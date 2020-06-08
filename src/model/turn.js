@@ -9,8 +9,9 @@ export default class ChessTurn {
     constructor(
         team = ChessPiece.WHITE,
         board = new ChessBoard([
-            ...ChessTeam.init(ChessPiece.WHITE),
             0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            6, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
