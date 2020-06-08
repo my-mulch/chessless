@@ -2,64 +2,46 @@ import ChessMove from './move'
 import ChessPiece from './index'
 
 export default class Pawn {
-    pawnCapture(game, piece, from) {
+    static pawnCapture(game, piece, from) {
         const squares = [
-            ChessPiece.FORWARD_LEFT(piece, from),
-            ChessPiece.FORWARD_RIGHT(piece, from)
+            ChessPiece.forwardLeft(piece, from),
+            ChessPiece.forwardRight(piece, from)
         ]
 
         const captures = (to) => ChessMove.isOtherTeam(piece, game.board[to])
-        const moves = (to) => ChessMove.create(from, to, this.pawnCapture.name)
+        const moves = (to) => ChessMove.create(from, to, Pawn.pawnCapture.name)
 
         return squares.filter(captures).map(moves)
     }
 
-    pawnSinglePush(game, from) {
-        const ChessBoard = game.board.constructor
-        const [rank, file] = ChessBoard.rankAndFileOf(from)
+    static pawnSinglePush(game, from) {
+        const squares = [ChessPiece.forward(piece, from)]
 
-        const squares = [
-            ChessBoard.indexOf(this.next(rank), file),
-        ]
+        const squareIsEmpty = (to) => !game.board[to]
+        const moves = (to) => ChessMove.create(from, to, Pawn.pawnSinglePush.name)
 
-        const possibleSinglePush = function (to) {
-            const square = game.board[to]
-
-            return square === null
-        }
-
-        const moves = function (to) {
-            return new ChessMove(from, to)
-        }
-
-        return squares.filter(possibleSinglePush).map(moves)
+        return squares.filter(squareIsEmpty).map(moves)
     }
 
-    pawnDoublePush(game, from) {
-        const ChessBoard = game.board.constructor
-        const [rank, file] = ChessBoard.rankAndFileOf(from)
-
+    static pawnDoublePush(game, from) {
         const squares = [
-            ChessBoard.indexOf(this.next(rank, 1), file),
-            ChessBoard.indexOf(this.next(rank, 2), file),
+            ChessPiece.forward(piece, from, 1),
+            ChessPiece.forward(piece, from, 2)
         ]
 
-        const squareIsEmpty = function (to) {
-            const square = game.board[to]
-
-            return square === null
-        }
+        const squareIsEmpty = (to) => !game.board[to]
+        const to = ChessPiece.forward(piece, from, 2)
 
         return squares.every(squareIsEmpty)
-            ? [new ChessMove(from, ChessBoard.indexOf(this.next(rank, 2), file))]
+            ? [ChessMove.create(from, to, Pawn.pawnDoublePush.name)]
             : []
     }
 
-    getMoves(game, rank, file) {
+    static getMoves(game, piece, from) {
         return [
-            ...this.pawnCapture(game, rank, file),
-            ...this.pawnSinglePush(game, rank, file),
-            ...this.pawnDoublePush(game, rank, file),
+            ...Pawn.pawnCapture(game, piece, from),
+            ...Pawn.pawnSinglePush(game, piece, from),
+            ...Pawn.pawnDoublePush(game, piece, from),
         ]
     }
 }
