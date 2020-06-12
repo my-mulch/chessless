@@ -12,8 +12,8 @@ export default class ChessTeam {
     static initPawns(team) {
         return new Array(ChessTeam.NUM_PAWNS)
             .fill(ChessPiece.PAWN)
-            .map(function (piece) {
-                return ChessPiece.setTeam(piece, team)
+            .map(function (type) {
+                return ChessPiece.create(team, type)
             })
     }
 
@@ -21,8 +21,8 @@ export default class ChessTeam {
         const { ROOK, KNIGHT, BISHOP, QUEEN, KING } = ChessPiece
 
         return [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK]
-            .map(function (piece) {
-                return ChessPiece.setTeam(piece, team)
+            .map(function (type) {
+                return ChessPiece.create(team, type)
             })
     }
 }

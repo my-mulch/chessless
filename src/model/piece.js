@@ -1,12 +1,19 @@
 import { rankAndFileOf, indexOf } from './utils'
 
 export default class ChessPiece {
-    static TEAM_BIT = 1
-    static TEAM_MASK = 254
-    static TYPE_MASK = 241
+    static TEAM_BIT = 0
+    static GET_TEAM = 1
+    static CLEAR_TEAM = 254
 
-    static RIGHT_STEP = 1
-    static FORWARD_STEP = 8
+    static TYPE_BIT = 1
+    static GET_TYPE = 14
+    static CLEAR_TYPE = 241
+
+    static ID_BIT = 4
+    static GET_ID = 240
+    static CLEAR_ID = 15
+
+    static ID = 0
 
     static FORWARD = 1
     static BACKWARD = -1
@@ -14,12 +21,12 @@ export default class ChessPiece {
     static BLACK = 1
     static WHITE = 0
 
-    static PAWN = 2
-    static ROOK = 4
-    static KNIGHT = 6
-    static BISHOP = 8
-    static QUEEN = 10
-    static KING = 12
+    static PAWN = 1
+    static ROOK = 2
+    static KNIGHT = 3
+    static BISHOP = 4
+    static QUEEN = 5
+    static KING = 6
 
     static TEAMS = ['white', 'black']
     static NAMES = {
@@ -31,6 +38,16 @@ export default class ChessPiece {
         [ChessPiece.KING]: 'king'
     }
 
+    static create(team, type) {
+        let piece = 0
+
+        piece = ChessPiece.setTeam(piece, team)
+        piece = ChessPiece.setType(piece, type)
+        piece = ChessPiece.setId(piece, ChessPiece.ID++)
+
+        return piece
+    }
+
     static toString(piece) {
         const team = ChessPiece.getTeam(piece)
         const type = ChessPiece.getType(piece)
@@ -38,20 +55,28 @@ export default class ChessPiece {
         return `${ChessPiece.TEAMS[team]}-${ChessPiece.NAMES[type]}`
     }
 
+    static getId(piece) {
+        return (piece & ChessPiece.GET_ID) >> ChessPiece.ID_BIT
+    }
+
+    static setId(piece, id) {
+        return (piece & ChessPiece.CLEAR_ID) | (id << ChessPiece.ID_BIT)
+    }
+
     static getType(piece) {
-        return piece & ChessPiece.TEAM_MASK
+        return (piece & ChessPiece.GET_TYPE) >> ChessPiece.TYPE_BIT
     }
 
     static setType(piece, type) {
-        return (piece & ChessPiece.TYPE_MASK) | type
+        return (piece & ChessPiece.CLEAR_TYPE) | (type << ChessPiece.TYPE_BIT)
     }
 
     static getTeam(piece) {
-        return piece & ChessPiece.BLACK
+        return piece & ChessPiece.GET_TEAM
     }
 
     static setTeam(piece, team) {
-        return (piece & ChessPiece.TEAM_MASK) | team
+        return (piece & ChessPiece.CLEAR_TEAM) | team
     }
 
     static orient(piece) {

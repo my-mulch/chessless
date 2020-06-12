@@ -1,33 +1,28 @@
 import ChessPiece from './piece'
 
 export default class ChessMove {
-    static TO_BIT = 4
-    static FROM_BIT = 10
-    static TYPE_BIT = 0
+    static GET_TO = 63
+    static CLEAR_TO = 4032
 
-    static TO_MASK = 64527
-    static FROM_MASK = 1023
-    static TYPE_MASK = 131056
+    static BIT_FROM = 6
+    static CLEAR_FROM = 63
 
-    static create(from, to, type) {
+
+    static create(from, to) {
         let move = 0
 
         move = ChessMove.setTo(move, to)
         move = ChessMove.setFrom(move, from)
-        move = ChessMove.setType(move, type)
 
         return move
     }
 
     // Getters and setters
-    static getTo(move) { return (move & ChessMove.FROM_MASK) >> ChessMove.TO_BIT }
-    static setTo(move, to) { return (to << ChessMove.TO_BIT) | (move & ChessMove.TO_MASK) }
+    static getTo(move) { return move & ChessMove.GET_TO }
+    static setTo(move, to) { return (move & ChessMove.CLEAR_TO) | to }
 
-    static getFrom(move) { return move >> ChessMove.FROM_BIT }
-    static setFrom(move, from) { return (from << ChessMove.FROM_BIT) | (move & ChessMove.FROM_MASK) }
-
-    static getType(move) { return move & ChessMove.MAX_TYPE }
-    static setType(move, type) { return type | (move & ChessMove.TYPE_MASK) }
+    static getFrom(move) { return move >> ChessMove.BIT_FROM }
+    static setFrom(move, from) { return (move & ChessMove.CLEAR_FROM) | (from << ChessMove.BIT_FROM) }
 
     // Move checks
     static isEmptySquareOrOtherTeam(piece, square) {
@@ -42,14 +37,20 @@ export default class ChessMove {
             && ChessPiece.getTeam(square) !== ChessPiece.getTeam(piece)
     }
 
+    static putsKingInCheck(game, piece, from, to) {
+        
+
+    }
+
 
     // Queen, Rook, and Bishop
     static getLines(game, piece, from, direction) {
         const moves = []
-        
+
         let to = direction(piece, from)
-        while (ChessMove.isEmptySquareOrOtherTeam(piece, game.board[to])) {
-            moves.push(ChessMove.create(from, to, piece))
+        while (ChessMove.isEmptySquareOrOtherTeam(piece, game.board[to])
+            && !ChessMove.putsKingInCheck(game, piece, from, to)) {
+            moves.push(ChessMove.create(from, to))
             to = direction(piece, to)
         }
 
@@ -104,7 +105,7 @@ export default class ChessMove {
         ]
 
         const knightMoves = (to) => ChessMove.isEmptySquareOrOtherTeam(piece, game.board[to])
-        const moves = (to) => ChessMove.create(from, to, piece)
+        const moves = (to) => ChessMove.create(from, to)
 
         return squares.filter(knightMoves).map(moves)
     }
@@ -130,7 +131,7 @@ export default class ChessMove {
         ]
 
         const captures = (to) => ChessMove.isOtherTeam(piece, game.board[to])
-        const moves = (to) => ChessMove.create(from, to, piece)
+        const moves = (to) => ChessMove.create(from, to)
 
         return squares.filter(captures).map(moves)
     }
@@ -139,7 +140,7 @@ export default class ChessMove {
         const squares = [ChessPiece.forward(piece, from)]
 
         const squareIsEmpty = (to) => !game.board[to]
-        const moves = (to) => ChessMove.create(from, to, piece)
+        const moves = (to) => ChessMove.create(from, to)
 
         return squares.filter(squareIsEmpty).map(moves)
     }
@@ -154,7 +155,7 @@ export default class ChessMove {
         const to = ChessPiece.forward(piece, from, 2)
 
         return squares.every(squareIsEmpty)
-            ? [ChessMove.create(from, to, piece)]
+            ? [ChessMove.create(from, to)]
             : []
     }
 }
