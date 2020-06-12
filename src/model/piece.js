@@ -55,29 +55,14 @@ export default class ChessPiece {
         return `${ChessPiece.TEAMS[team]}-${ChessPiece.NAMES[type]}`
     }
 
-    static getId(piece) {
-        return (piece & ChessPiece.GET_ID) >> ChessPiece.ID_BIT
-    }
+    static getId(piece) { return (piece & ChessPiece.GET_ID) >> ChessPiece.ID_BIT }
+    static setId(piece, id) { return (piece & ChessPiece.CLEAR_ID) | (id << ChessPiece.ID_BIT) }
 
-    static setId(piece, id) {
-        return (piece & ChessPiece.CLEAR_ID) | (id << ChessPiece.ID_BIT)
-    }
+    static getType(piece) { return (piece & ChessPiece.GET_TYPE) >> ChessPiece.TYPE_BIT }
+    static setType(piece, type) { return (piece & ChessPiece.CLEAR_TYPE) | (type << ChessPiece.TYPE_BIT) }
 
-    static getType(piece) {
-        return (piece & ChessPiece.GET_TYPE) >> ChessPiece.TYPE_BIT
-    }
-
-    static setType(piece, type) {
-        return (piece & ChessPiece.CLEAR_TYPE) | (type << ChessPiece.TYPE_BIT)
-    }
-
-    static getTeam(piece) {
-        return piece & ChessPiece.GET_TEAM
-    }
-
-    static setTeam(piece, team) {
-        return (piece & ChessPiece.CLEAR_TEAM) | team
-    }
+    static getTeam(piece) { return piece & ChessPiece.GET_TEAM }
+    static setTeam(piece, team) { return (piece & ChessPiece.CLEAR_TEAM) | team }
 
     static orient(piece) {
         return ChessPiece.getTeam(piece) === ChessPiece.BLACK

@@ -1,16 +1,22 @@
 import ChessPiece from './piece'
 
 export default class ChessMove {
+    static TO_BIT = 0
     static GET_TO = 63
-    static CLEAR_TO = 4032
+    static CLEAR_TO = 65472
 
-    static BIT_FROM = 6
-    static CLEAR_FROM = 63
+    static FROM_BIT = 6
+    static GET_FROM = 4032
+    static CLEAR_FROM = 61503
 
+    static ID_BIT = 12
+    static GET_ID = 61440
+    static CLEAR_ID = 4095
 
-    static create(from, to) {
+    static create(from, to, id) {
         let move = 0
 
+        move = ChessMove.setId(move, id)
         move = ChessMove.setTo(move, to)
         move = ChessMove.setFrom(move, from)
 
@@ -21,8 +27,11 @@ export default class ChessMove {
     static getTo(move) { return move & ChessMove.GET_TO }
     static setTo(move, to) { return (move & ChessMove.CLEAR_TO) | to }
 
-    static getFrom(move) { return move >> ChessMove.BIT_FROM }
-    static setFrom(move, from) { return (move & ChessMove.CLEAR_FROM) | (from << ChessMove.BIT_FROM) }
+    static getFrom(move) { return (move & ChessMove.GET_FROM) >> ChessMove.FROM_BIT }
+    static setFrom(move, from) { return (move & ChessMove.CLEAR_FROM) | (from << ChessMove.FROM_BIT) }
+
+    static getId(move) { return (move & ChessMove.GET_ID) >> ChessMove.ID_BIT }
+    static setId(move, id) { return (move & ChessMove.CLEAR_ID) | (id << ChessMove.ID_BIT) }
 
     // Move checks
     static isEmptySquareOrOtherTeam(piece, square) {
@@ -38,7 +47,7 @@ export default class ChessMove {
     }
 
     static putsKingInCheck(game, piece, from, to) {
-        
+
 
     }
 

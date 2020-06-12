@@ -14,11 +14,13 @@ export default class ChessTurn {
             0, 0, 0, 0, 0, 0, 0, 0,
             ...ChessTeam.init(ChessPiece.BLACK)
         ]),
-        moves = null
+        moves = null,
+        history = new Set()
     ) {
         this.team = team
         this.board = board
         this.moves = moves || this.getMoves()
+        this.history = history
     }
 
     getMoves() {
@@ -49,6 +51,8 @@ export default class ChessTurn {
         game.team = Number(!game.team)
         game.moves = game.getMoves()
 
+        this.history.add(move)
+        
         return game
     }
 
@@ -56,7 +60,8 @@ export default class ChessTurn {
         return new ChessTurn(
             this.team,
             this.board.slice(),
-            new Set(this.moves)
+            new Set(this.moves),
+            this.history
         )
     }
 }
