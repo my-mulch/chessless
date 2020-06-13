@@ -133,8 +133,58 @@ export default class ChessMove {
     }
 
     // King
+    static kingIsInCheck() { return false }
+
+    static castleRight(game, piece, from) {
+        if (ChessMove.kingIsInCheck())
+            return []
+
+        const rookSquare = ChessPiece.right(piece, from, 3)
+        const rook = game.board[rookSquare]
+
+        if (!rook ||
+            ChessPiece.getType(rook) !== ChessPiece.ROOK ||
+            game.history.filter(move => ChessMove.getPiece(move) === rook).length)
+            return []
+
+        const squares = [
+            ChessPiece.right(piece, from, 1),
+            ChessPiece.right(piece, from, 2)
+        ]
+
+        const safeMoves = (to) =>
+            !game.board[to] &&
+            !ChessMove.putsKingInCheck(game, piece, from, to)
+
+        if (squares.filter(safeMoves).length !== 2)
+            return []
+
+        return [ChessMove.create(from, squares[1], piece)]
+    }
+
     static [ChessPiece.KING](game, piece, from) {
-        return []
+        const squares = [
+            ChessPiece.left(piece, from),
+            ChessPiece.right(piece, from),
+            ChessPiece.forward(piece, from),
+            ChessPiece.backward(piece, from),
+            ChessPiece.forwardLeft(piece, from),
+            ChessPiece.backwardLeft(piece, from),
+            ChessPiece.forwardRight(piece, from),
+            ChessPiece.backwardRight(piece, from),
+        ]
+
+        const safeMoves = (to) =>
+            ChessMove.isEmptySquareOrOtherTeam(piece, game.board[to]) &&
+            !ChessMove.putsKingInCheck(game, piece, from, to)
+
+        const moves = (to) => ChessMove.create(from, to, piece)
+
+        return [
+            // ...ChessMove.castleLeft(game, piece, from),
+            ...ChessMove.castleRight(game, piece, from),
+            ...squares.filter(safeMoves).map(moves)
+        ]
     }
 
     // Pawn
@@ -168,6 +218,14 @@ export default class ChessMove {
     }
 
     static pawnDoublePush(game, piece, from) {
+        if (game.history.filter(function (move) {
+            const curPiece = piece
+            const oldPiece = ChessMove.getPiece(move)
+
+            return curPiece === oldPiece
+        }).length)
+            return []
+
         const squares = [
             ChessPiece.forward(piece, from, 1),
             ChessPiece.forward(piece, from, 2)
