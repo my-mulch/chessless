@@ -43,6 +43,7 @@ export default class ChessTurn {
         const game = this.clone()
         const piece = game.board[from]
         const move = ChessMove.create(from, to, piece)
+        const distance = to - from
 
         if (!game.moves.has(move))
             return game
@@ -52,6 +53,19 @@ export default class ChessTurn {
         game.board[to] = game.board[from]
         game.board[from] = 0
         game.team = Number(!game.team)
+
+        if (distance === 2 && ChessPiece.getType(piece) === ChessPiece.KING) {
+            const rook = game.board[to + 1]
+            game.board[from + 1] = rook
+            game.board[to + 1] = 0
+        }
+
+        if (distance === -2 && ChessPiece.getType(piece) === ChessPiece.KING) {
+            const rook = game.board[to - 2]
+            game.board[from - 1] = rook
+            game.board[to - 2] = 0
+        }
+
         game.moves = game.getMoves()
 
         return game

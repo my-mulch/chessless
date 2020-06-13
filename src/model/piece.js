@@ -95,6 +95,22 @@ export default class ChessPiece {
         return indexOf(newRank, newFile)
     }
 
+    static queenSide(piece, from, distance = 1) {
+        const team = ChessPiece.getTeam(piece)
+
+        return team === ChessPiece.WHITE
+            ? ChessPiece.left(piece, from, distance)
+            : ChessPiece.right(piece, from, distance)
+    }
+
+    static kingSide(piece, from, distance = 1) {
+        const team = ChessPiece.getTeam(piece)
+
+        return team === ChessPiece.WHITE
+            ? ChessPiece.right(piece, from, distance)
+            : ChessPiece.left(piece, from, distance)
+    }
+
     static backward(piece, from, distance = 1) {
         return ChessPiece.forward(piece, from, distance * ChessPiece.BACKWARD)
     }

@@ -135,11 +135,11 @@ export default class ChessMove {
     // King
     static kingIsInCheck() { return false }
 
-    static castleRight(game, piece, from) {
+    static castleQueenSide(game, piece, from) {
         if (ChessMove.kingIsInCheck())
             return []
 
-        const rookSquare = ChessPiece.right(piece, from, 3)
+        const rookSquare = ChessPiece.queenSide(piece, from, 4)
         const rook = game.board[rookSquare]
 
         if (!rook ||
@@ -148,8 +148,35 @@ export default class ChessMove {
             return []
 
         const squares = [
-            ChessPiece.right(piece, from, 1),
-            ChessPiece.right(piece, from, 2)
+            ChessPiece.queenSide(piece, from, 1),
+            ChessPiece.queenSide(piece, from, 2),
+        ]
+
+        const safeMoves = (to) =>
+            !game.board[to] &&
+            !ChessMove.putsKingInCheck(game, piece, from, to)
+
+        if (squares.filter(safeMoves).length !== 2)
+            return []
+
+        return [ChessMove.create(from, squares[1], piece)]
+    }
+
+    static castleKingSide(game, piece, from) {
+        if (ChessMove.kingIsInCheck())
+            return []
+
+        const rookSquare = ChessPiece.kingSide(piece, from, 3)
+        const rook = game.board[rookSquare]
+
+        if (!rook ||
+            ChessPiece.getType(rook) !== ChessPiece.ROOK ||
+            game.history.filter(move => ChessMove.getPiece(move) === rook).length)
+            return []
+
+        const squares = [
+            ChessPiece.kingSide(piece, from, 1),
+            ChessPiece.kingSide(piece, from, 2)
         ]
 
         const safeMoves = (to) =>
@@ -181,9 +208,9 @@ export default class ChessMove {
         const moves = (to) => ChessMove.create(from, to, piece)
 
         return [
-            // ...ChessMove.castleLeft(game, piece, from),
-            ...ChessMove.castleRight(game, piece, from),
-            ...squares.filter(safeMoves).map(moves)
+            ...squares.filter(safeMoves).map(moves),
+            ...ChessMove.castleKingSide(game, piece, from),
+            ...ChessMove.castleQueenSide(game, piece, from),
         ]
     }
 
