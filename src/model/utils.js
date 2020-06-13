@@ -13,3 +13,7 @@ export const indexOf = function (rank, file) {
 
     return rank * NUM_RANKS + file
 }
+
+export const bitMask = function (from, to = 0) {
+    return 2 ** from - 2 ** to
+}

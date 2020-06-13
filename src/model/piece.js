@@ -1,17 +1,20 @@
 import { rankAndFileOf, indexOf } from './utils'
+import { bitMask } from './utils'
 
 export default class ChessPiece {
     static TEAM_BIT = 0
-    static GET_TEAM = 1
-    static CLEAR_TEAM = 254
-
     static TYPE_BIT = 1
-    static GET_TYPE = 14
-    static CLEAR_TYPE = 241
-
     static ID_BIT = 4
-    static GET_ID = 240
-    static CLEAR_ID = 15
+    static WORD_BIT = 8
+
+    static GET_TEAM = bitMask(ChessPiece.TYPE_BIT, ChessPiece.TEAM_BIT)
+    static CLEAR_TEAM = bitMask(ChessPiece.WORD_BIT, ChessPiece.TYPE_BIT) | bitMask(ChessPiece.TEAM_BIT)
+
+    static GET_TYPE = bitMask(ChessPiece.ID_BIT, ChessPiece.TYPE_BIT)
+    static CLEAR_TYPE = bitMask(ChessPiece.WORD_BIT, ChessPiece.ID_BIT) | bitMask(ChessPiece.TYPE_BIT)
+
+    static GET_ID = bitMask(ChessPiece.WORD_BIT, ChessPiece.ID_BIT)
+    static CLEAR_ID = bitMask(ChessPiece.WORD_BIT, ChessPiece.WORD_BIT) | bitMask(ChessPiece.ID_BIT)
 
     static ID = 0
 
@@ -61,8 +64,8 @@ export default class ChessPiece {
     static getType(piece) { return (piece & ChessPiece.GET_TYPE) >> ChessPiece.TYPE_BIT }
     static setType(piece, type) { return (piece & ChessPiece.CLEAR_TYPE) | (type << ChessPiece.TYPE_BIT) }
 
-    static getTeam(piece) { return piece & ChessPiece.GET_TEAM }
-    static setTeam(piece, team) { return (piece & ChessPiece.CLEAR_TEAM) | team }
+    static getTeam(piece) { return (piece & ChessPiece.GET_TEAM) >> ChessPiece.TEAM_BIT }
+    static setTeam(piece, team) { return (piece & ChessPiece.CLEAR_TEAM) | (team << ChessPiece.TEAM_BIT) }
 
     static orient(piece) {
         return ChessPiece.getTeam(piece) === ChessPiece.BLACK

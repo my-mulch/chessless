@@ -41,7 +41,8 @@ export default class ChessTurn {
 
     makeMove(from, to) {
         const game = this.clone()
-        const move = ChessMove.create(from, to)
+        const piece = game.board[from]
+        const move = ChessMove.create(from, to, piece)
 
         if (!game.moves.has(move))
             return game
@@ -52,7 +53,7 @@ export default class ChessTurn {
         game.moves = game.getMoves()
 
         this.history.add(move)
-        
+
         return game
     }
 
