@@ -20,17 +20,23 @@ export default class ChessTurn {
         this.team = team
         this.board = board
         this.history = history
-        this.moves = moves || this.getMoves()
+        this.moves = moves || this.getMoves(this.team)
     }
 
-    getMoves() {
+    sauce() {
+        debugger
+
+        this.getMoves()
+    }
+
+    getMoves(team) {
         const moves = []
 
         for (let index = 0; index < this.board.length; index++) {
             const piece = this.board[index]
             const type = ChessPiece.getType(piece)
 
-            if (!piece)
+            if (!piece || ChessPiece.getTeam(piece) !== team)
                 continue
 
             moves.push(...ChessMove[type](this, piece, index))
@@ -41,6 +47,7 @@ export default class ChessTurn {
 
     makeMove(from, to) {
         const game = this.clone()
+
         const piece = game.board[from]
         const move = ChessMove.create(from, to, piece)
         const distance = to - from
@@ -66,7 +73,7 @@ export default class ChessTurn {
             game.board[to - 2] = 0
         }
 
-        game.moves = game.getMoves()
+        game.moves = game.getMoves(game.team)
 
         return game
     }

@@ -3,6 +3,10 @@ import ChessPiece from './piece'
 export default class ChessTeam {
     static NUM_PAWNS = 8
 
+    static switch(team) {
+        return Number(!team)
+    }
+
     static init(team) {
         return team === ChessPiece.BLACK
             ? [...ChessTeam.initPawns(team), ...ChessTeam.initPieces(team)]

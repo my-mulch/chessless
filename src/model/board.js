@@ -2,7 +2,6 @@ import ChessPiece from './piece'
 import { indexOf } from './utils'
 
 export default class ChessBoard extends Uint8Array {
-    static NUM_RANKS = 8
     static SQUARE_COLORS = ['dark', 'light']
 
     describeSquare(rank, file) {

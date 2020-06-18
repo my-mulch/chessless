@@ -1,137 +1,117 @@
-import { rankAndFileOf, indexOf } from './utils'
-import { bitMask } from './utils'
+import { rankAndFileOf, indexOf, numeric } from './utils'
 
-export default class ChessPiece {
-    static TEAM_BIT = 0
-    static TYPE_BIT = 1
-    static ID_BIT = 4
-    static WORD_BIT = 8
+export default numeric({ // data type is represented by an integer
+    Team: [1, 0], // 1 bits
+    Type: [4, 1], // 3 bits
+    Id: [8, 4], // 4 bits
+}, class ChessPiece {
+        static ID = 0
 
-    static GET_TEAM = bitMask(ChessPiece.TYPE_BIT, ChessPiece.TEAM_BIT)
-    static CLEAR_TEAM = bitMask(ChessPiece.WORD_BIT, ChessPiece.TYPE_BIT) | bitMask(ChessPiece.TEAM_BIT)
+        static FORWARD = 1
+        static BACKWARD = -1
 
-    static GET_TYPE = bitMask(ChessPiece.ID_BIT, ChessPiece.TYPE_BIT)
-    static CLEAR_TYPE = bitMask(ChessPiece.WORD_BIT, ChessPiece.ID_BIT) | bitMask(ChessPiece.TYPE_BIT)
+        static BLACK = 1
+        static WHITE = 0
 
-    static GET_ID = bitMask(ChessPiece.WORD_BIT, ChessPiece.ID_BIT)
-    static CLEAR_ID = bitMask(ChessPiece.WORD_BIT, ChessPiece.WORD_BIT) | bitMask(ChessPiece.ID_BIT)
+        static PAWN = 1
+        static ROOK = 2
+        static KNIGHT = 3
+        static BISHOP = 4
+        static QUEEN = 5
+        static KING = 6
 
-    static ID = 0
+        static TEAMS = ['white', 'black']
+        static NAMES = {
+            [this.PAWN]: 'pawn',
+            [this.ROOK]: 'rook',
+            [this.KNIGHT]: 'knight',
+            [this.BISHOP]: 'bishop',
+            [this.QUEEN]: 'queen',
+            [this.KING]: 'king'
+        }
 
-    static FORWARD = 1
-    static BACKWARD = -1
+        static create(team, type) {
+            let piece = 0
 
-    static BLACK = 1
-    static WHITE = 0
+            piece = ChessPiece.setTeam(piece, team)
+            piece = ChessPiece.setType(piece, type)
+            piece = ChessPiece.setId(piece, ChessPiece.ID++)
 
-    static PAWN = 1
-    static ROOK = 2
-    static KNIGHT = 3
-    static BISHOP = 4
-    static QUEEN = 5
-    static KING = 6
+            return piece
+        }
 
-    static TEAMS = ['white', 'black']
-    static NAMES = {
-        [ChessPiece.PAWN]: 'pawn',
-        [ChessPiece.ROOK]: 'rook',
-        [ChessPiece.KNIGHT]: 'knight',
-        [ChessPiece.BISHOP]: 'bishop',
-        [ChessPiece.QUEEN]: 'queen',
-        [ChessPiece.KING]: 'king'
-    }
+        static toString(piece) {
+            const team = ChessPiece.getTeam(piece)
+            const type = ChessPiece.getType(piece)
 
-    static create(team, type) {
-        let piece = 0
+            return `${ChessPiece.TEAMS[team]}-${ChessPiece.NAMES[type]}`
+        }
 
-        piece = ChessPiece.setTeam(piece, team)
-        piece = ChessPiece.setType(piece, type)
-        piece = ChessPiece.setId(piece, ChessPiece.ID++)
+        static orient(piece) {
+            return ChessPiece.getTeam(piece) === ChessPiece.BLACK
+                ? ChessPiece.BACKWARD
+                : ChessPiece.FORWARD
+        }
 
-        return piece
-    }
+        static forward(piece, from, distance = 1) {
+            if (isNaN(from)) return undefined
 
-    static toString(piece) {
-        const team = ChessPiece.getTeam(piece)
-        const type = ChessPiece.getType(piece)
+            const [rank, file] = rankAndFileOf(from)
 
-        return `${ChessPiece.TEAMS[team]}-${ChessPiece.NAMES[type]}`
-    }
+            const newRank = rank + ChessPiece.orient(piece) * distance
+            const newFile = file
 
-    static getId(piece) { return (piece & ChessPiece.GET_ID) >> ChessPiece.ID_BIT }
-    static setId(piece, id) { return (piece & ChessPiece.CLEAR_ID) | (id << ChessPiece.ID_BIT) }
+            return indexOf(newRank, newFile)
+        }
 
-    static getType(piece) { return (piece & ChessPiece.GET_TYPE) >> ChessPiece.TYPE_BIT }
-    static setType(piece, type) { return (piece & ChessPiece.CLEAR_TYPE) | (type << ChessPiece.TYPE_BIT) }
+        static right(piece, from, distance = 1) {
+            if (isNaN(from)) return undefined
 
-    static getTeam(piece) { return (piece & ChessPiece.GET_TEAM) >> ChessPiece.TEAM_BIT }
-    static setTeam(piece, team) { return (piece & ChessPiece.CLEAR_TEAM) | (team << ChessPiece.TEAM_BIT) }
+            const [rank, file] = rankAndFileOf(from)
 
-    static orient(piece) {
-        return ChessPiece.getTeam(piece) === ChessPiece.BLACK
-            ? ChessPiece.BACKWARD
-            : ChessPiece.FORWARD
-    }
+            const newRank = rank
+            const newFile = file + ChessPiece.orient(piece) * distance
 
-    static forward(piece, from, distance = 1) {
-        if (isNaN(from)) return undefined
+            return indexOf(newRank, newFile)
+        }
 
-        const [rank, file] = rankAndFileOf(from)
+        static queenSide(piece, from, distance = 1) {
+            const team = ChessPiece.getTeam(piece)
 
-        const newRank = rank + ChessPiece.orient(piece) * distance
-        const newFile = file
+            return team === ChessPiece.WHITE
+                ? ChessPiece.left(piece, from, distance)
+                : ChessPiece.right(piece, from, distance)
+        }
 
-        return indexOf(newRank, newFile)
-    }
+        static kingSide(piece, from, distance = 1) {
+            const team = ChessPiece.getTeam(piece)
 
-    static right(piece, from, distance = 1) {
-        if (isNaN(from)) return undefined
+            return team === ChessPiece.WHITE
+                ? ChessPiece.right(piece, from, distance)
+                : ChessPiece.left(piece, from, distance)
+        }
 
-        const [rank, file] = rankAndFileOf(from)
+        static backward(piece, from, distance = 1) {
+            return ChessPiece.forward(piece, from, distance * ChessPiece.BACKWARD)
+        }
 
-        const newRank = rank
-        const newFile = file + ChessPiece.orient(piece) * distance
+        static left(piece, from, distance = 1) {
+            return ChessPiece.right(piece, from, distance * ChessPiece.BACKWARD)
+        }
 
-        return indexOf(newRank, newFile)
-    }
+        static forwardRight(piece, from, distance = 1) {
+            return ChessPiece.forward(piece, ChessPiece.right(piece, from, distance), distance)
+        }
 
-    static queenSide(piece, from, distance = 1) {
-        const team = ChessPiece.getTeam(piece)
+        static forwardLeft(piece, from, distance = 1) {
+            return ChessPiece.forward(piece, ChessPiece.left(piece, from, distance), distance)
+        }
 
-        return team === ChessPiece.WHITE
-            ? ChessPiece.left(piece, from, distance)
-            : ChessPiece.right(piece, from, distance)
-    }
+        static backwardLeft(piece, from, distance = 1) {
+            return ChessPiece.backward(piece, ChessPiece.left(piece, from, distance), distance)
+        }
 
-    static kingSide(piece, from, distance = 1) {
-        const team = ChessPiece.getTeam(piece)
-
-        return team === ChessPiece.WHITE
-            ? ChessPiece.right(piece, from, distance)
-            : ChessPiece.left(piece, from, distance)
-    }
-
-    static backward(piece, from, distance = 1) {
-        return ChessPiece.forward(piece, from, distance * ChessPiece.BACKWARD)
-    }
-
-    static left(piece, from, distance = 1) {
-        return ChessPiece.right(piece, from, distance * ChessPiece.BACKWARD)
-    }
-
-    static forwardRight(piece, from, distance = 1) {
-        return ChessPiece.forward(piece, ChessPiece.right(piece, from, distance), distance)
-    }
-
-    static forwardLeft(piece, from, distance = 1) {
-        return ChessPiece.forward(piece, ChessPiece.left(piece, from, distance), distance)
-    }
-
-    static backwardLeft(piece, from, distance = 1) {
-        return ChessPiece.backward(piece, ChessPiece.left(piece, from, distance), distance)
-    }
-
-    static backwardRight(piece, from, distance = 1) {
-        return ChessPiece.backward(piece, ChessPiece.right(piece, from, distance), distance)
-    }
-}
+        static backwardRight(piece, from, distance = 1) {
+            return ChessPiece.backward(piece, ChessPiece.right(piece, from, distance), distance)
+        }
+    })

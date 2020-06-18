@@ -18,7 +18,7 @@ export default class ChessView extends React.Component {
             selected: null
         }
 
-        window.game = this
+        window.game = this.state.game
 
         this.handleMouseUp = this.handleMouseUp.bind(this)
         this.handleMouseDown = this.handleMouseDown.bind(this)
