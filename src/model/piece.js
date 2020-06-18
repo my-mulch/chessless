@@ -1,7 +1,7 @@
 import { rankAndFileOf, indexOf, numeric } from './utils'
 
 export default numeric({ // data type is represented by an integer
-    Team: [1, 0], // 1 bits
+    Team: [1, 0], // 1 bit
     Type: [4, 1], // 3 bits
     Id: [8, 4], // 4 bits
 }, class ChessPiece {
