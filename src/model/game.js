@@ -38,8 +38,20 @@ export default class ChessGame {
         this.history = history
     }
 
-    getMoves() {
-        this.moves = new ChessMoveList()
+    switchTeams() {
+        this.team = Number(!this.team)
+    }
+
+    getOtherTeamMoves(onlyAttack = true) {
+        this.switchTeams()
+        const moves = this.getMoves(onlyAttack)
+        this.switchTeams()
+
+        return moves
+    }
+
+    getMoves(onlyAttack = false) {
+        const moves = new ChessMoveList()
 
         for (let index = 0; index < this.board.length; index++) {
             const piece = this.board[index]
@@ -48,15 +60,16 @@ export default class ChessGame {
             if (!piece || ChessPiece.getTeam(piece) !== this.team)
                 continue
 
-            ChessGame.PIECES[type].getMoves(this, index)
+            ChessGame.PIECES[type].getMoves(this, moves, index, onlyAttack)
         }
 
-        return this
+        return moves
     }
 
     makeMove(from, to) {
-        const game = this.clone().getMoves()
-        const move = game.moves.get(from, to)
+        const game = this.clone()
+        const moves = game.getMoves()
+        const move = moves.get(from, to)
 
         if (!move) return game
 
@@ -67,7 +80,7 @@ export default class ChessGame {
         move.make(game)
 
         // Switch teams
-        game.team = Number(!game.team)
+        game.switchTeams()
 
         return game
     }

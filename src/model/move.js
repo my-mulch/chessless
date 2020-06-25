@@ -25,6 +25,7 @@ export default class ChessMove {
     static find({
         type, // the move type we are trying to find
         game, // the current game object
+        moves,
         from, // where we are moving from
         movement, // how the piece moves
         steps = Infinity, // how many steps we take in given direction
@@ -34,11 +35,11 @@ export default class ChessMove {
         let piece = game.board[from], to = movement(piece, from), s = 0
 
         while (s++ < steps && game.board[to] === 0) {
-            stepFn(type, game, from, to)
+            stepFn(type, game, moves, from, to)
             to = movement(piece, to)
         }
 
-        endFn(type, game, from, to)
+        endFn(type, game, moves, from, to)
     }
 
     // Move makers
@@ -56,16 +57,16 @@ export default class ChessMove {
 
     // Step and End Fns
     static noop() { }
-    
-    static empty(type, game, from, to) {
-        game.moves.add(new ChessMove(type, from, to))
+
+    static empty(type, game, moves, from, to) {
+        moves.add(new ChessMove(type, from, to))
     }
 
-    static capture(type, game, from, to) {
+    static capture(type, game, moves, from, to) {
         const otherSquare = game.board[to]
         const otherPiece = ChessPiece.unpack(game.board[to])
 
         if (otherSquare && otherPiece.team !== game.team)
-            game.moves.add(new ChessMove(type, from, to))
+            moves.add(new ChessMove(type, from, to))
     }
 }

@@ -2,14 +2,26 @@ import ChessMove from '../move'
 import ChessPiece from '../piece'
 
 export default class King {
-    static getMoves(game, from) {
-        ChessMove.find({ type: ChessMove.KING, game, from, movement: ChessPiece.left, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, from, movement: ChessPiece.right, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, from, movement: ChessPiece.forward, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, from, movement: ChessPiece.backward, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, from, movement: ChessPiece.forwardLeft, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, from, movement: ChessPiece.forwardRight, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, from, movement: ChessPiece.backwardLeft, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, from, movement: ChessPiece.backwardRight, steps: 1 })
+    static isInCheck(game, from) {
+        const otherMoves = game.getOtherTeamMoves()
+        
+        console.log(from, otherMoves)
+
+        return Boolean(otherMoves[from])
+    }
+
+    static getMoves(game, moves, from, onlyAttack) {
+        if (!onlyAttack)
+            King.isInCheck(game, from)
+
+
+        ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.left, steps: 1 })
+        ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.right, steps: 1 })
+        ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.forward, steps: 1 })
+        ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.backward, steps: 1 })
+        ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.forwardLeft, steps: 1 })
+        ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.forwardRight, steps: 1 })
+        ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.backwardLeft, steps: 1 })
+        ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.backwardRight, steps: 1 })
     }
 }
