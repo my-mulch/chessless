@@ -1,6 +1,7 @@
 import ChessPiece from './piece'
 
 export default class ChessTeam {
+    static PIECE_ID = 0
     static NUM_PAWNS = 8
 
     static switch(team) {
@@ -17,7 +18,7 @@ export default class ChessTeam {
         return new Array(ChessTeam.NUM_PAWNS)
             .fill(ChessPiece.PAWN)
             .map(function (type) {
-                return ChessPiece.create(team, type)
+                return ChessPiece.create({ team, type, id: ChessTeam.PIECE_ID++ })
             })
     }
 
@@ -26,7 +27,7 @@ export default class ChessTeam {
 
         return [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK]
             .map(function (type) {
-                return ChessPiece.create(team, type)
+                return ChessPiece.create({ team, type, id: ChessTeam.PIECE_ID++ })
             })
     }
 }

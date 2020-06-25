@@ -9,40 +9,23 @@ export default numeric({
     ToPrimary: [6, 0]
 }, class ChessMove {
         static PAWN_DOUBLE_PUSH = 1
-
-        static create(
-            fromPrimary,
-            toPrimary,
-            fromSecondary = fromPrimary,
-            toSecondary = fromPrimary,
-            type
-        ) {
-            let move = 0
-
-            move = ChessMove.setFromPrimary(move, fromPrimary)
-            move = ChessMove.setToPrimary(move, toPrimary)
-            move = ChessMove.setFromSecondary(move, fromSecondary)
-            move = ChessMove.setToSecondary(move, toSecondary)
-            move = ChessMove.setType(move, type)
-
-            return move
-        }
-
-        static unpack(move) {
-            return [
-                ChessMove.getFromPrimary(move),
-                ChessMove.getToPrimary(move),
-                ChessMove.getFromSecondary(move),
-                ChessMove.getToSecondary(move),
-                ChessMove.getType(move)
-            ]
-        }
+        static PAWN_SINGLE_PUSH = 2
+        static PAWN_CAPTURE = 3
+        static ENPASSANT = 4
+        static PROMOTION = 5
+        static ROOK = 6
+        static KNIGHT = 7
+        static BISHOP = 8
+        static QUEEN = 9
+        static KING = 10
+        static CASTLE = 11
 
         static key(from, to) {
-            return ChessMove.create(from, to, null, null)
+            return ChessMove.create({ fromPrimary: from, toPrimary: to })
         }
 
         static find({
+            type, // the move type we are trying to find
             game, // the current game object
             from, // where we are moving from
             movement, // how the piece moves
@@ -54,33 +37,37 @@ export default numeric({
 
             let s = 0
             while (game.board[to] === 0 && s < steps) {
-                stepFn(game, from, to)
+                stepFn(type, game, from, to)
                 to = movement(game.board[from], to)
                 s++
             }
 
-            return endFn(game, from, to, movement)
+            return endFn(type, game, from, to)
         }
 
         static makeMove(game, move) {
-            const [fromPrimary, toPrimary, fromSecondary, toSecondary] = ChessMove.unpack(move)
+            move = ChessMove.unpack(move)
 
-            game.board[toPrimary] = game.board[fromPrimary]
-            game.board[fromPrimary] = 0
+            game.board[move.toPrimary] = game.board[move.fromPrimary]
+            game.board[move.fromPrimary] = 0
 
-            game.board[toSecondary] = game.board[fromSecondary]
-            game.board[fromSecondary] = 0
+            game.board[move.toSecondary] = game.board[move.fromSecondary]
+            game.board[move.fromSecondary] = 0
         }
 
         static isOtherTeam(game, from) {
 
         }
 
-        static emptyMove(game, from, to) {
-            game.moves[ChessMove.key(from, to)] = ChessMove.create(from, to)
+        static emptyMove(type, game, from, to) {
+            game.moves[ChessMove.key(from, to)] = ChessMove.create({
+                type,
+                fromPrimary: from,
+                toPrimary: to
+            })
         }
 
-        static captureMove(game, from, to) {
+        static captureMove(type, game, from, to) {
             if (game.board[to] === 0)
                 return
 
@@ -88,7 +75,11 @@ export default numeric({
             const fromTeam = ChessPiece.getTeam(game.board[from])
 
             if (toTeam !== fromTeam)
-                game.moves[ChessMove.key(from, to)] = ChessMove.create(from, to)
+                game.moves[ChessMove.key(from, to)] = ChessMove.create({
+                    type,
+                    fromPrimary: from,
+                    toPrimary: to
+                })
         }
 
         static noop() { }

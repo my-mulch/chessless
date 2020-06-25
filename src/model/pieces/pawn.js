@@ -46,7 +46,13 @@ export default class Pawn {
     static captureEnpassant(direction) {
         return function (game, from, to) {
             game.moves[ChessMove.key(from, to)] =
-                ChessMove.create(from, to, direction(game.board[from]))
+                ChessMove.create({
+                    type: ChessMove.ENPASSANT,
+                    fromPrimary: from,
+                    toPrimary: to,
+                    fromSecondary: from,
+                    toSecondary: direction(game.board[from])
+                })
         }
     }
 

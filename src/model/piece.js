@@ -1,9 +1,9 @@
 import { rankAndFileOf, indexOf, numeric } from './utils'
 
 export default numeric({ // data type is represented by an integer
-    Team: [1, 0], // 1 bit
-    Type: [4, 1], // 3 bits
     Id: [8, 4], // 4 bits
+    Type: [4, 1], // 3 bits
+    Team: [1, 0], // 1 bit
 }, class ChessPiece {
         static ID = 0
 
@@ -28,16 +28,6 @@ export default numeric({ // data type is represented by an integer
             [this.BISHOP]: 'bishop',
             [this.QUEEN]: 'queen',
             [this.KING]: 'king'
-        }
-
-        static create(team, type) {
-            let piece = 0
-
-            piece = ChessPiece.setTeam(piece, team)
-            piece = ChessPiece.setType(piece, type)
-            piece = ChessPiece.setId(piece, ChessPiece.ID++)
-
-            return piece
         }
 
         static toString(piece) {
