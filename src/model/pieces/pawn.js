@@ -62,7 +62,8 @@ export default class Pawn {
             move.fromSecondary = from
             move.toSecondary = direction(game.board[from], from)
 
-            moves.add(move)
+            if (ChessMove.isLegal(game, move, level))
+                moves.add(move)
         }
     }
 
