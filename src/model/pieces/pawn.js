@@ -38,20 +38,24 @@ export default class Pawn {
 
     // Enpassant checks
     static canEnpassant(game, from, direction) {
-        return ChessMove.isOtherTeam(game, direction(game.board[from])) &&
-            ChessPiece.isPawn(game, direction(game.board[from])) &&
-            ChessMove.getType(game.history.lastMove()) === ChessMove.PAWN_DOUBLE_PUSH
+        const piece = game.board[from]
+        const otherSquare = direction(piece, from)
+
+        return ChessMove.isOtherTeam(game, otherSquare) &&
+            ChessPiece.isPawn(game, otherSquare) &&
+            game.history.lastMove().type === ChessMove.PAWN_DOUBLE_PUSH &&
+            game.board[game.history.lastMove().toPrimary] === game.board[otherSquare]
     }
 
     static captureEnpassant(direction) {
-        return function (game, from, to) {
+        return function (type, game, from, to) {
             game.moves[ChessMove.key(from, to)] =
                 ChessMove.create({
-                    type: ChessMove.ENPASSANT,
+                    type,
                     fromPrimary: from,
                     toPrimary: to,
                     fromSecondary: from,
-                    toSecondary: direction(game.board[from])
+                    toSecondary: direction(game.board[from], from)
                 })
         }
     }

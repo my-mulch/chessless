@@ -53,13 +53,13 @@ export default numeric({
 
             if (!move.toSecondary && !move.fromSecondary)
                 return
-                
+
             game.board[move.toSecondary] = game.board[move.fromSecondary]
             game.board[move.fromSecondary] = 0
         }
 
         static isOtherTeam(game, from) {
-
+            return game.team !== ChessPiece.getTeam(game.board[from])
         }
 
         static emptyMove(type, game, from, to) {

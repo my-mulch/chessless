@@ -29,6 +29,10 @@ export default numeric({ // data type is represented by an integer
             [this.QUEEN]: 'queen',
             [this.KING]: 'king'
         }
+        
+        static isPawn(game, from){
+            return ChessPiece.getType(game.board[from]) === ChessPiece.PAWN
+        }
 
         static toString(piece) {
             const team = ChessPiece.getTeam(piece)

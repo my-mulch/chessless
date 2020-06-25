@@ -16,6 +16,6 @@ export default class ChessHistory {
     }
 
     lastMove() {
-        return this.moves[this.moves.length - 1]
+        return ChessMove.unpack(this.moves[this.moves.length - 1])
     }
 }
