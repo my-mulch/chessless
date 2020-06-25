@@ -9,7 +9,7 @@ export default numeric({
     ToPrimary: [6, 0]
 }, class ChessMove {
         static PAWN_DOUBLE_PUSH = 1
-        
+
         static create(
             fromPrimary,
             toPrimary,
@@ -42,24 +42,24 @@ export default numeric({
             return ChessMove.create(from, to, null, null)
         }
 
-        static find(
+        static find({
             game, // the current game object
             from, // where we are moving from
-            direction, // how the piece moves
+            movement, // how the piece moves
             steps = Infinity, // how many steps we take in given direction
             stepFn = ChessMove.emptyMove, // stepFn determines what to do while we travel outward from a piece
             endFn = ChessMove.captureMove, // endFn determines what we do once we've reached a piece
-        ) {
-            let to = direction(game.board[from], from)
+        }) {
+            let to = movement(game.board[from], from)
 
             let s = 0
             while (game.board[to] === 0 && s < steps) {
                 stepFn(game, from, to)
-                to = direction(game.board[from], to)
+                to = movement(game.board[from], to)
                 s++
             }
 
-            return endFn(game, from, to, direction)
+            return endFn(game, from, to, movement)
         }
 
         static makeMove(game, move) {
