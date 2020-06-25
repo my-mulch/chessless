@@ -60,7 +60,7 @@ export const numeric = function (mappings, _class) {
     _class[UNPACK] = new Function(`value`, [ // eslint-disable-line
         `return {`,
         fields.map(function (field) {
-            return `${field.toLowerCase()}:this.${GET}${field}(value)`
+            return `${lowerCaseFirst(field)}:this.${GET}${field}(value)`
         }).join(COMMA),
         `}`
     ].join(NEW_LINE))

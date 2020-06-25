@@ -52,14 +52,13 @@ export default class ChessGame {
 
             ChessGame.PIECES[type].getMoves(this, index)
         }
-
-        return this.moves
     }
 
     makeMove(from, to) {
         const game = this.clone()
         const move = game.moves[ChessMove.key(from, to)]
 
+        console.log(move)
         if (!move) return game
 
         // Save the board and move

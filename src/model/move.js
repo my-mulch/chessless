@@ -51,6 +51,9 @@ export default numeric({
             game.board[move.toPrimary] = game.board[move.fromPrimary]
             game.board[move.fromPrimary] = 0
 
+            if (!move.toSecondary && !move.fromSecondary)
+                return
+                
             game.board[move.toSecondary] = game.board[move.fromSecondary]
             game.board[move.fromSecondary] = 0
         }
