@@ -5,16 +5,10 @@ export default class King {
     static isInCheck(game, from) {
         const otherMoves = game.getOtherTeamMoves()
         
-        console.log(from, otherMoves)
-
         return Boolean(otherMoves[from])
     }
 
-    static getMoves(game, moves, from, onlyAttack) {
-        if (!onlyAttack)
-            King.isInCheck(game, from)
-
-
+    static getMoves(game, moves, from) {
         ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.left, steps: 1 })
         ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.right, steps: 1 })
         ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.forward, steps: 1 })

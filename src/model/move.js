@@ -25,7 +25,7 @@ export default class ChessMove {
     static find({
         type, // the move type we are trying to find
         game, // the current game object
-        moves,
+        moves, // the current moves
         from, // where we are moving from
         movement, // how the piece moves
         steps = Infinity, // how many steps we take in given direction

@@ -1,13 +1,13 @@
 
 export default class ChessMoveList extends Object {
     add(move) {
-        if (!this[move.from])
-            this[move.from] = { [move.to]: move }
+        if (!this[move.to])
+            this[move.to] = { [move.from]: move }
         else
-            this[move.from][move.to] = move
+            this[move.to][move.from] = move
     }
 
     get(from, to) {
-        try { return this[from][to] } catch (_) { return null }
+        try { return this[to][from] } catch (_) { return null }
     }
 }
