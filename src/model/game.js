@@ -49,25 +49,25 @@ export default class ChessGame {
                 return i
     }
 
-    getOtherTeamMoves(onlyAttack = true) {
+    getOtherTeamMoves(level) {
         this.switchTeams()
-        const moves = this.getMoves(onlyAttack)
+        const moves = this.getMoves(level)
         this.switchTeams()
 
         return moves
     }
 
-    getMoves(onlyAttack = false) {
+    getMoves(level = 0) {
         const moves = new ChessMoveList()
 
-        for (let index = 0; index < this.board.length; index++) {
-            const piece = this.board[index]
+        for (let from = 0; from < this.board.length; from++) {
+            const piece = this.board[from]
             const type = ChessPiece.getType(piece)
 
             if (!piece || ChessPiece.getTeam(piece) !== this.team)
                 continue
 
-            ChessGame.PIECES[type].getMoves(this, moves, index, onlyAttack)
+            ChessGame.PIECES[type].getMoves(this, moves, level, from)
         }
 
         return moves

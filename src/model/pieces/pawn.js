@@ -11,11 +11,12 @@ export default class Pawn {
         return ChessPiece.forward(piece, from, 2)
     }
 
-    static getDoublePush(game, moves, from) {
+    static getDoublePush(game, moves, level, from) {
         ChessMove.find({
             type: ChessMove.PAWN_DOUBLE_PUSH,
             game,
             moves,
+            level,
             from,
             movement: Pawn.doublePush,
             steps: 1
@@ -23,11 +24,12 @@ export default class Pawn {
     }
 
     // Single push checks
-    static getSinglePush(game, moves, from) {
+    static getSinglePush(game, moves, level, from) {
         ChessMove.find({
             type: ChessMove.PAWN_SINGLE_PUSH,
             game,
             moves,
+            level,
             from,
             movement: ChessPiece.forward,
             steps: 1,
@@ -54,7 +56,7 @@ export default class Pawn {
     }
 
     static captureEnpassant(direction) {
-        return function (type, game, moves, from, to) {
+        return function (type, game, moves, level, from, to) {
             const move = new ChessMove(type, from, to)
 
             move.fromSecondary = from
@@ -64,11 +66,12 @@ export default class Pawn {
         }
     }
 
-    static getEnpassant(game, moves, from, movement, direction) {
+    static getEnpassant(game, moves, level, from, movement, direction) {
         ChessMove.find({
             type: ChessMove.ENPASSANT,
             game,
             moves,
+            level,
             from,
             movement,
             steps: 1,
@@ -78,11 +81,12 @@ export default class Pawn {
     }
 
     // Capture checks
-    static getCaptures(game, moves, from, movement) {
+    static getCaptures(game, moves, level, from, movement) {
         ChessMove.find({
             type: ChessMove.PAWN_CAPTURE,
             game,
             moves,
+            level,
             from,
             movement,
             steps: 1,
@@ -90,23 +94,23 @@ export default class Pawn {
         })
     }
 
-    static getMoves(game, moves, from) {
+    static getMoves(game, moves, level, from) {
         // Double push
         if (Pawn.canDoublePush(game, from))
-            Pawn.getDoublePush(game, moves, from)
+            Pawn.getDoublePush(game, moves, level, from)
 
         // Enpassant left and right
         if (Pawn.canEnpassant(game, from, ChessPiece.left))
-            Pawn.getEnpassant(game, moves, from, ChessPiece.forwardLeft, ChessPiece.left)
+            Pawn.getEnpassant(game, moves, level, from, ChessPiece.forwardLeft, ChessPiece.left)
 
         if (Pawn.canEnpassant(game, from, ChessPiece.right))
-            Pawn.getEnpassant(game, moves, from, ChessPiece.forwardRight, ChessPiece.right)
+            Pawn.getEnpassant(game, moves, level, from, ChessPiece.forwardRight, ChessPiece.right)
 
         // Single push
-        Pawn.getSinglePush(game, moves, from)
+        Pawn.getSinglePush(game, moves, level, from)
 
         // Captures
-        Pawn.getCaptures(game, moves, from, ChessPiece.forwardLeft)
-        Pawn.getCaptures(game, moves, from, ChessPiece.forwardRight)
+        Pawn.getCaptures(game, moves, level, from, ChessPiece.forwardLeft)
+        Pawn.getCaptures(game, moves, level, from, ChessPiece.forwardRight)
     }
 }
