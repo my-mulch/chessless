@@ -2,12 +2,6 @@ import ChessMove from '../move'
 import ChessPiece from '../piece'
 
 export default class King {
-    static isInCheck(game, from) {
-        const otherMoves = game.getOtherTeamMoves()
-        
-        return Boolean(otherMoves[from])
-    }
-
     static getMoves(game, moves, from) {
         ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.left, steps: 1 })
         ChessMove.find({ type: ChessMove.KING, game, moves, from, movement: ChessPiece.right, steps: 1 })

@@ -42,6 +42,13 @@ export default class ChessGame {
         this.team = Number(!this.team)
     }
 
+    getKing() {
+        for (let i = 0; i < this.board.length; i++)
+            if (ChessPiece.getTeam(this.board[i]) === this.team &&
+                ChessPiece.getType(this.board[i]) === ChessPiece.KING)
+                return i
+    }
+
     getOtherTeamMoves(onlyAttack = true) {
         this.switchTeams()
         const moves = this.getMoves(onlyAttack)

@@ -58,15 +58,39 @@ export default class ChessMove {
     // Step and End Fns
     static noop() { }
 
+    static isCheck(game, king) {
+        const otherMoves = game.getOtherTeamMoves()
+
+        return Boolean(otherMoves[king])
+    }
+
+    static isLegal(game, move) {
+        // Clone the game
+        const newGame = game.clone()
+
+        // Make the move
+        move.make(newGame)
+
+        // Check for `check`
+        return !ChessMove.isCheck(newGame, newGame.getKing())
+    }
+
     static empty(type, game, moves, from, to) {
-        moves.add(new ChessMove(type, from, to))
+        const move = new ChessMove(type, from, to)
+
+        if (ChessMove.isLegal(game, move))
+            moves.add(move)
     }
 
     static capture(type, game, moves, from, to) {
+        const move = new ChessMove(type, from, to)
+
         const otherSquare = game.board[to]
         const otherPiece = ChessPiece.unpack(game.board[to])
 
-        if (otherSquare && otherPiece.team !== game.team)
-            moves.add(new ChessMove(type, from, to))
+        if (otherSquare &&
+            otherPiece.team !== game.team &&
+            ChessMove.isLegal(game, move))
+            moves.add(move)
     }
 }
