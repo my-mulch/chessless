@@ -1,4 +1,3 @@
-import ChessMove from './move'
 
 export default class ChessHistory {
     constructor() {
@@ -12,10 +11,10 @@ export default class ChessHistory {
         this.boards.push(board)
 
         // The piece has moved
-        this.moved.add(board[ChessMove.getFromPrimary(move)])
+        this.moved.add(board[move.from])
     }
 
     lastMove() {
-        return ChessMove.unpack(this.moves[this.moves.length - 1])
+        return this.moves[this.moves.length - 1]
     }
 }

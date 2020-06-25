@@ -1,8 +1,8 @@
-import ChessMove from './move'
 import ChessTeam from './team'
 import ChessBoard from './board'
 import ChessPiece from './piece'
 import ChessHistory from './history'
+import ChessMoveList from './movelist'
 
 import Pawn from './pieces/pawn'
 import Rook from './pieces/rook'
@@ -36,12 +36,10 @@ export default class ChessGame {
         this.team = team
         this.board = board
         this.history = history
-
-        this.getMoves()
     }
 
     getMoves() {
-        this.moves = {}
+        this.moves = new ChessMoveList()
 
         for (let index = 0; index < this.board.length; index++) {
             const piece = this.board[index]
@@ -52,11 +50,13 @@ export default class ChessGame {
 
             ChessGame.PIECES[type].getMoves(this, index)
         }
+
+        return this
     }
 
     makeMove(from, to) {
-        const game = this.clone()
-        const move = game.moves[ChessMove.key(from, to)]
+        const game = this.clone().getMoves()
+        const move = game.moves.get(from, to)
 
         if (!move) return game
 
@@ -64,7 +64,7 @@ export default class ChessGame {
         this.history.add(this.board, move)
 
         // Make the move
-        ChessMove.makeMove(game, move)
+        move.make(game)
 
         // Switch teams
         game.team = Number(!game.team)

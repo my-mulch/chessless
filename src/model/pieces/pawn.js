@@ -17,9 +17,7 @@ export default class Pawn {
             game,
             from,
             movement: Pawn.doublePush,
-            steps: 1,
-            stepFn: ChessMove.empty,
-            endFn: ChessMove.noop
+            steps: 1
         })
     }
 
@@ -31,32 +29,36 @@ export default class Pawn {
             from,
             movement: ChessPiece.forward,
             steps: 1,
-            stepFn: ChessMove.empty,
             endFn: ChessMove.noop
         })
     }
 
     // Enpassant checks
     static canEnpassant(game, from, direction) {
-        const piece = game.board[from]
-        const otherSquare = direction(piece, from)
+        if (!game.history.moves.length)
+            return false
 
-        return ChessMove.isOtherTeam(game, otherSquare) &&
-            ChessPiece.isPawn(game, otherSquare) &&
-            game.history.lastMove().type === ChessMove.PAWN_DOUBLE_PUSH &&
-            game.board[game.history.lastMove().toPrimary] === game.board[otherSquare]
+        const piece = game.board[from]
+
+        const otherSquare = direction(piece, from)
+        const otherPiece = game.board[otherSquare]
+
+        const isOtherTeam = ChessPiece.getTeam(otherPiece) !== game.team
+        const otherIsPawn = ChessPiece.getType(otherPiece) === ChessPiece.PAWN
+        const lastMoveDoublePush = game.history.lastMove().type === ChessMove.PAWN_DOUBLE_PUSH
+        const lastMoveWasOtherPiece = game.board[game.history.lastMove().to] === otherPiece
+
+        return isOtherTeam && otherIsPawn && lastMoveDoublePush && lastMoveWasOtherPiece
     }
 
     static captureEnpassant(direction) {
         return function (type, game, from, to) {
-            game.moves[ChessMove.key(from, to)] =
-                ChessMove.create({
-                    type,
-                    fromPrimary: from,
-                    toPrimary: to,
-                    fromSecondary: from,
-                    toSecondary: direction(game.board[from], from)
-                })
+            const move = new ChessMove(type, from, to)
+
+            move.fromSecondary = from
+            move.toSecondary = direction(game.board[from], from)
+
+            game.moves.add(move)
         }
     }
 

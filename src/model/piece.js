@@ -5,8 +5,6 @@ export default numeric({ // data type is represented by an integer
     Type: [4, 1], // 3 bits
     Team: [1, 0], // 1 bit
 }, class ChessPiece {
-        static ID = 0
-
         static FORWARD = 1
         static BACKWARD = -1
 
@@ -29,8 +27,8 @@ export default numeric({ // data type is represented by an integer
             [this.QUEEN]: 'queen',
             [this.KING]: 'king'
         }
-        
-        static isPawn(game, from){
+
+        static isPawn(game, from) {
             return ChessPiece.getType(game.board[from]) === ChessPiece.PAWN
         }
 
@@ -85,27 +83,24 @@ export default numeric({ // data type is represented by an integer
                 : ChessPiece.left(piece, from, distance)
         }
 
-        static backward(piece, from, distance = 1) {
-            return ChessPiece.forward(piece, from, distance * ChessPiece.BACKWARD)
-        }
+        // Pawn moves
+        static doublePush(piece, from) { return ChessPiece.forward(piece, from, 2) }
 
-        static left(piece, from, distance = 1) {
-            return ChessPiece.right(piece, from, distance * ChessPiece.BACKWARD)
-        }
+        // Piece moves
+        static left(piece, from, distance = 1) { return ChessPiece.right(piece, from, distance * ChessPiece.BACKWARD) }
+        static backward(piece, from, distance = 1) { return ChessPiece.forward(piece, from, distance * ChessPiece.BACKWARD) }
+        static forwardRight(piece, from, distance = 1) { return ChessPiece.forward(piece, ChessPiece.right(piece, from, distance), distance) }
+        static forwardLeft(piece, from, distance = 1) { return ChessPiece.forward(piece, ChessPiece.left(piece, from, distance), distance) }
+        static backwardLeft(piece, from, distance = 1) { return ChessPiece.backward(piece, ChessPiece.left(piece, from, distance), distance) }
+        static backwardRight(piece, from, distance = 1) { return ChessPiece.backward(piece, ChessPiece.right(piece, from, distance), distance) }
 
-        static forwardRight(piece, from, distance = 1) {
-            return ChessPiece.forward(piece, ChessPiece.right(piece, from, distance), distance)
-        }
-
-        static forwardLeft(piece, from, distance = 1) {
-            return ChessPiece.forward(piece, ChessPiece.left(piece, from, distance), distance)
-        }
-
-        static backwardLeft(piece, from, distance = 1) {
-            return ChessPiece.backward(piece, ChessPiece.left(piece, from, distance), distance)
-        }
-
-        static backwardRight(piece, from, distance = 1) {
-            return ChessPiece.backward(piece, ChessPiece.right(piece, from, distance), distance)
-        }
+        // Knight moves
+        static hopForwardLeft(piece, from) { return ChessPiece.left(piece, ChessPiece.forward(piece, from, 2)) }
+        static hopForwardRight(piece, from) { return ChessPiece.right(piece, ChessPiece.forward(piece, from, 2)) }
+        static hopRightForward(piece, from) { return ChessPiece.forward(piece, ChessPiece.right(piece, from, 2)) }
+        static hopRightBackward(piece, from) { return ChessPiece.backward(piece, ChessPiece.right(piece, from, 2)) }
+        static hopBackwardLeft(piece, from) { return ChessPiece.left(piece, ChessPiece.backward(piece, from, 2)) }
+        static hopBackwardRight(piece, from) { return ChessPiece.right(piece, ChessPiece.backward(piece, from, 2)) }
+        static hopLeftForward(piece, from) { return ChessPiece.forward(piece, ChessPiece.left(piece, from, 2)) }
+        static hopLeftBackward(piece, from) { return ChessPiece.backward(piece, ChessPiece.left(piece, from, 2)) }
     })
