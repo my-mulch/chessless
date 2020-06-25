@@ -1,5 +1,5 @@
 import React from 'react'
-import ChessTurn from '../model/turn'
+import ChessGame from '../model/game'
 import { indexOf } from '../model/utils'
 
 import './index.css'
@@ -12,13 +12,13 @@ export default class ChessView extends React.Component {
         super()
 
         this.state = {
-            game: new ChessTurn(),
+            game: new ChessGame(),
             ranks: [8, 7, 6, 5, 4, 3, 2, 1],
             files: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
             selected: null
         }
 
-        window.game = this.state.game
+        window.game = this
 
         this.handleMouseUp = this.handleMouseUp.bind(this)
         this.handleMouseDown = this.handleMouseDown.bind(this)

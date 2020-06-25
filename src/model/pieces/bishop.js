@@ -3,9 +3,9 @@ import ChessPiece from '../piece'
 
 export default class Bishop {
     static getMoves(game, from) {
-        ChessMove.move(game, from, ChessPiece.forwardLeft)
-        ChessMove.move(game, from, ChessPiece.forwardRight)
-        ChessMove.move(game, from, ChessPiece.backwardLeft)
-        ChessMove.move(game, from, ChessPiece.backwardRight)
+        ChessMove.find(game, from, ChessPiece.forwardLeft)
+        ChessMove.find(game, from, ChessPiece.forwardRight)
+        ChessMove.find(game, from, ChessPiece.backwardLeft)
+        ChessMove.find(game, from, ChessPiece.backwardRight)
     }
 }

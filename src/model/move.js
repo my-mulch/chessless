@@ -2,52 +2,85 @@ import ChessPiece from './piece'
 import { numeric } from './utils'
 
 export default numeric({
-    To: [6, 0],
-    From: [12, 6],
-    Piece: [20, 12],
-    Type: [24, 20]
+    Type: [32, 24],
+    FromSecondary: [24, 18],
+    ToSecondary: [18, 12],
+    FromPrimary: [12, 6],
+    ToPrimary: [6, 0]
 }, class ChessMove {
-        static create(from, to, piece, type = 0) {
+        static PAWN_DOUBLE_PUSH = 1
+        
+        static create(
+            fromPrimary,
+            toPrimary,
+            fromSecondary = fromPrimary,
+            toSecondary = fromPrimary,
+            type
+        ) {
             let move = 0
 
-            move = ChessMove.setTo(move, to)
-            move = ChessMove.setFrom(move, from)
+            move = ChessMove.setFromPrimary(move, fromPrimary)
+            move = ChessMove.setToPrimary(move, toPrimary)
+            move = ChessMove.setFromSecondary(move, fromSecondary)
+            move = ChessMove.setToSecondary(move, toSecondary)
             move = ChessMove.setType(move, type)
-            move = ChessMove.setPiece(move, piece)
 
             return move
         }
 
-        static toString(move) {
-            const to = ChessMove.getTo(move)
-            const from = ChessMove.getFrom(move)
-            const piece = ChessMove.getPiece(move)
-
-            return `${ChessPiece.toString(piece)}: ${to}-${from}`
+        static unpack(move) {
+            return [
+                ChessMove.getFromPrimary(move),
+                ChessMove.getToPrimary(move),
+                ChessMove.getFromSecondary(move),
+                ChessMove.getToSecondary(move),
+                ChessMove.getType(move)
+            ]
         }
 
-        static move(game, from, direction,
+        static key(from, to) {
+            return ChessMove.create(from, to, null, null)
+        }
+
+        static find(
+            game, // the current game object
+            from, // where we are moving from
+            direction, // how the piece moves
             steps = Infinity, // how many steps we take in given direction
-            step = ChessMove.empty, // step determines what to do while we travel outward from a piece
-            end = ChessMove.capture, // end determines what we do once we've reached a piece
+            stepFn = ChessMove.emptyMove, // stepFn determines what to do while we travel outward from a piece
+            endFn = ChessMove.captureMove, // endFn determines what we do once we've reached a piece
         ) {
             let to = direction(game.board[from], from)
 
             let s = 0
             while (game.board[to] === 0 && s < steps) {
-                step(game, from, to)
+                stepFn(game, from, to)
                 to = direction(game.board[from], to)
                 s++
             }
 
-            return end(game, from, to, direction)
+            return endFn(game, from, to, direction)
         }
 
-        static empty(game, from, to) {
-            game.moves.push(ChessMove.create(from, to, game.board[from]))
+        static makeMove(game, move) {
+            const [fromPrimary, toPrimary, fromSecondary, toSecondary] = ChessMove.unpack(move)
+
+            game.board[toPrimary] = game.board[fromPrimary]
+            game.board[fromPrimary] = 0
+
+            game.board[toSecondary] = game.board[fromSecondary]
+            game.board[fromSecondary] = 0
         }
 
-        static capture(game, from, to) {
+        static isOtherTeam(game, from) {
+
+        }
+
+        static emptyMove(game, from, to) {
+            game.moves[ChessMove.key(from, to)] = ChessMove.create(from, to)
+        }
+
+        static captureMove(game, from, to) {
             if (game.board[to] === 0)
                 return
 
@@ -55,7 +88,7 @@ export default numeric({
             const fromTeam = ChessPiece.getTeam(game.board[from])
 
             if (toTeam !== fromTeam)
-                game.moves.push(ChessMove.create(from, to, game.board[from]))
+                game.moves[ChessMove.key(from, to)] = ChessMove.create(from, to)
         }
 
         static noop() { }

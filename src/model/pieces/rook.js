@@ -3,9 +3,9 @@ import ChessPiece from '../piece'
 
 export default class Rook {
     static getMoves(game, from) {
-        ChessMove.move(game, from, ChessPiece.left)
-        ChessMove.move(game, from, ChessPiece.right)
-        ChessMove.move(game, from, ChessPiece.forward)
-        ChessMove.move(game, from, ChessPiece.backward)
+        ChessMove.find(game, from, ChessPiece.left)
+        ChessMove.find(game, from, ChessPiece.right)
+        ChessMove.find(game, from, ChessPiece.forward)
+        ChessMove.find(game, from, ChessPiece.backward)
     }
 }

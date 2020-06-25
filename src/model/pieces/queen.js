@@ -3,13 +3,13 @@ import ChessPiece from '../piece'
 
 export default class Queen {
     static getMoves(game, from) {
-        ChessMove.move(game, from, ChessPiece.left)
-        ChessMove.move(game, from, ChessPiece.right)
-        ChessMove.move(game, from, ChessPiece.forward)
-        ChessMove.move(game, from, ChessPiece.backward)
-        ChessMove.move(game, from, ChessPiece.forwardLeft)
-        ChessMove.move(game, from, ChessPiece.forwardRight)
-        ChessMove.move(game, from, ChessPiece.backwardLeft)
-        ChessMove.move(game, from, ChessPiece.backwardRight)
+        ChessMove.find(game, from, ChessPiece.left)
+        ChessMove.find(game, from, ChessPiece.right)
+        ChessMove.find(game, from, ChessPiece.forward)
+        ChessMove.find(game, from, ChessPiece.backward)
+        ChessMove.find(game, from, ChessPiece.forwardLeft)
+        ChessMove.find(game, from, ChessPiece.forwardRight)
+        ChessMove.find(game, from, ChessPiece.backwardLeft)
+        ChessMove.find(game, from, ChessPiece.backwardRight)
     }
 }
