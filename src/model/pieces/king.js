@@ -2,6 +2,37 @@ import ChessMove from '../move'
 import ChessPiece from '../piece'
 
 export default class King {
+    static getQueenSideCastle(type, game, moves, level, from) {
+        if (level)
+            return
+
+        const kingPosition = from
+        const king = game.board[kingPosition]
+        const kingPositionNew = ChessPiece.queenSide(king, kingPosition, 2)
+
+        const rookPosition = ChessPiece.queenSide(king, kingPosition, 4)
+        const rook = game.board[rookPosition]
+        const rookPositionNew = ChessPiece.queenSide(king, kingPosition, 1)
+
+        const kingIsInCheck = ChessMove.isCheck(game, kingPosition, level)
+
+        const legalCastle = [
+            new ChessMove(type, kingPosition, ChessPiece.queenSide(king, kingPosition, 1)),
+            new ChessMove(type, kingPosition, ChessPiece.queenSide(king, kingPosition, 2)),
+        ].every(function (move) {
+            return ChessMove.isLegal(game, move, level) && game.board[move.to] === 0
+        })
+
+        const rookHasntMoved = !game.history.moved.has(rook)
+        const kingHasntMoved = !game.history.moved.has(king)
+
+        if (!kingIsInCheck && legalCastle && rookHasntMoved && kingHasntMoved) {
+            moves.add(new ChessMove(type,
+                kingPosition, kingPositionNew,
+                rookPosition, rookPositionNew))
+        }
+    }
+
     static getKingSideCastle(type, game, moves, level, from) {
         if (level)
             return
@@ -17,8 +48,8 @@ export default class King {
         const kingIsInCheck = ChessMove.isCheck(game, kingPosition, level)
 
         const legalCastle = [
-            new ChessMove(type, kingPosition, rookPositionNew),
-            new ChessMove(type, kingPosition, kingPositionNew)
+            new ChessMove(type, kingPosition, ChessPiece.kingSide(king, kingPosition, 1)),
+            new ChessMove(type, kingPosition, ChessPiece.kingSide(king, kingPosition, 2)),
         ].every(function (move) {
             return ChessMove.isLegal(game, move, level) && game.board[move.to] === 0
         })
@@ -43,6 +74,17 @@ export default class King {
             movement: ChessMove.noop,
             stepFn: ChessMove.noop,
             endFn: King.getKingSideCastle
+        })
+
+        ChessMove.find({
+            type: ChessMove.CASTLE_QUEEN_SIDE,
+            game,
+            moves,
+            level,
+            from,
+            movement: ChessMove.noop,
+            stepFn: ChessMove.noop,
+            endFn: King.getQueenSideCastle
         })
 
         ChessMove.find({ type: ChessMove.KING, game, moves, level, from, movement: ChessPiece.left, steps: 1 })

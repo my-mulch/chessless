@@ -52,7 +52,7 @@ export default class ChessMove {
     make(game) {
         this.helper(game, this.from, this.to)
 
-        if (this.toSecondary && this.fromSecondary)
+        if (this.toSecondary || this.fromSecondary)
             this.helper(game, this.fromSecondary, this.toSecondary)
     }
 
