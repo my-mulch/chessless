@@ -2,39 +2,24 @@ import ChessMove from '../move'
 import ChessPiece from '../piece'
 
 export default class Pawn {
+    static moveFinder(type, game, moves, isAttacking, from) {
+        return ChessMove.find.bind(
+            null, // context
+            type, // move type
+            game, // game
+            moves, // moveslist
+            isAttacking, // movestyle
+            from // from position
+        )
+    }
+
     // Double push checks
     static canDoublePush(game, from) {
         return !game.history.moved.has(game.board[from])
     }
 
-    static doublePush(piece, from) {
+    static moveDoublePush(piece, from) {
         return ChessPiece.forward(piece, from, 2)
-    }
-
-    static getDoublePush(game, moves, level, from) {
-        ChessMove.find({
-            type: ChessMove.PAWN_DOUBLE_PUSH,
-            game,
-            moves,
-            level,
-            from,
-            movement: Pawn.doublePush,
-            steps: 1
-        })
-    }
-
-    // Single push checks
-    static getSinglePush(game, moves, level, from) {
-        ChessMove.find({
-            type: ChessMove.PAWN_SINGLE_PUSH,
-            game,
-            moves,
-            level,
-            from,
-            movement: ChessPiece.forward,
-            steps: 1,
-            endFn: ChessMove.noop
-        })
     }
 
     // Enpassant checks
@@ -43,75 +28,54 @@ export default class Pawn {
             return false
 
         const piece = game.board[from]
-
         const otherSquare = direction(piece, from)
         const otherPiece = game.board[otherSquare]
 
-        const isOtherTeam = ChessPiece.getTeam(otherPiece) !== game.team
-        const otherIsPawn = ChessPiece.getType(otherPiece) === ChessPiece.PAWN
-        const lastMoveDoublePush = game.history.lastMove().type === ChessMove.PAWN_DOUBLE_PUSH
-        const lastMoveWasOtherPiece = game.board[game.history.lastMove().to] === otherPiece
-
-        return isOtherTeam && otherIsPawn && lastMoveDoublePush && lastMoveWasOtherPiece
+        return ChessPiece.getTeam(otherPiece) !== game.team &&
+            ChessPiece.getType(otherPiece) === ChessPiece.PAWN &&
+            game.history.lastMove().type === ChessMove.PAWN_DOUBLE_PUSH &&
+            game.board[game.history.lastMove().to] === otherPiece
     }
 
     static captureEnpassant(direction) {
-        return function (type, game, moves, level, from, to) {
+        return function (type, game, moves, isAttacking, from, to) {
+            if (!Pawn.canEnpassant(game, from, direction))
+                return
+
             const move = new ChessMove(type, from, to)
 
             move.fromSecondary = from
             move.toSecondary = direction(game.board[from], from)
 
-            if (ChessMove.isLegal(game, move, level))
+            if (ChessMove.isLegal(game, move, isAttacking))
                 moves.add(move)
         }
     }
 
-    static getEnpassant(game, moves, level, from, movement, direction) {
-        ChessMove.find({
-            type: ChessMove.ENPASSANT,
-            game,
-            moves,
-            level,
-            from,
-            movement,
-            steps: 1,
-            stepFn: Pawn.captureEnpassant(direction),
-            endFn: ChessMove.noop
-        })
+    static getPushes(...state) {
+        const findPushes = Pawn.moveFinder(ChessMove.PAWN_PUSH, ...state)
+
+        findPushes(null, ChessPiece.moveForward, 2, Pawn.pushMoves)
     }
 
-    // Capture checks
-    static getCaptures(game, moves, level, from, movement) {
-        ChessMove.find({
-            type: ChessMove.PAWN_CAPTURE,
-            game,
-            moves,
-            level,
-            from,
-            movement,
-            steps: 1,
-            stepFn: ChessMove.noop,
-        })
+    static getCaptures(...state) {
+        const findCaptures = Pawn.moveFinder(ChessMove.PAWN_CAPTURE, ...state)
+
+        findCaptures(ChessPiece.forwardLeft, 1)
+        findCaptures(ChessPiece.forwardRight, 1)
     }
 
-    static getMoves(game, moves, level, from) {
-        // Double push
-        if (Pawn.canDoublePush(game, from))
-            Pawn.getDoublePush(game, moves, level, from)
+    static getEnpassants(...state) {
+        const findEnpassants = Pawn.moveFinder(ChessMove.PAWN_CAPTURE, ...state)
 
-        // Enpassant left and right
-        if (Pawn.canEnpassant(game, from, ChessPiece.left))
-            Pawn.getEnpassant(game, moves, level, from, ChessPiece.forwardLeft, ChessPiece.left)
+        findEnpassants(ChessPiece.forwardLeft, 1, Pawn.captureEnpassant(ChessPiece.left))
+        findEnpassants(ChessPiece.forwardRight, 1, Pawn.captureEnpassant(ChessPiece.right))
+    }
 
-        if (Pawn.canEnpassant(game, from, ChessPiece.right))
-            Pawn.getEnpassant(game, moves, level, from, ChessPiece.forwardRight, ChessPiece.right)
-
-        // Single push
-        Pawn.getSinglePush(game, moves, level, from)
-
-        // Captures
-        Pawn.getCaptures(game, moves, level, from, ChessPiece.forwardLeft)
-        Pawn.getCaptures(game, moves, level, from, ChessPiece.forwardRight)
+    // game, moves, isAttacking, from
+    static getMoves(...state) {
+        Pawn.getPushes(...state)
+        Pawn.getCaptures(...state)
+        Pawn.getEnpassants(...state)
     }
 }
