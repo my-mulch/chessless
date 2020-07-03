@@ -23,6 +23,7 @@ export default class ChessGame {
     }
 
     constructor(
+        turn = new ChessTurn(ChessPiece.WHITE),
         board = new ChessBoard([
             ...ChessTeam.init(ChessPiece.WHITE),
             0, 0, 0, 0, 0, 0, 0, 0,
@@ -31,7 +32,6 @@ export default class ChessGame {
             0, 0, 0, 0, 0, 0, 0, 0,
             ...ChessTeam.init(ChessPiece.BLACK)
         ]),
-        turn = new ChessTurn(ChessPiece.WHITE),
         history = new ChessHistory(),
     ) {
         this.turn = turn
@@ -47,9 +47,14 @@ export default class ChessGame {
         return this.board[square] === undefined
     }
 
+    isSameTeamSquare(square) {
+        return ChessPiece.unpack(this.board[square]).team === this.turn.team
+    }
+
     isOtherTeamSquare(square) {
         return ChessPiece.unpack(this.board[square]).team !== this.turn.team
     }
+
 
     considerMove(to) {
         this.turn.addMove(new ChessMove(this.turn.from, to))
@@ -62,8 +67,8 @@ export default class ChessGame {
 
             if (!this.isEmptySquare(from) &&
                 !this.isOutOfBoundsSquare(from) &&
-                !this.isOtherTeamSquare(from))
-                ChessGame.PIECES[type].getMoves(this)
+                this.isSameTeamSquare(from))
+                ChessGame.PIECES[ChessPiece.unpack(this.turn.piece).type].getMoves(this)
         }
 
         return this.turn

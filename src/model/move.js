@@ -9,19 +9,17 @@ export default class ChessMove {
         let step = 0
         let to = next(game.turn.piece, game.turn.from)
 
-        while (step++ < steps) {
-            if (game.isOutOfBoundsSquare(to))
-                return
+        while (step++ < steps &&
+            !game.isOutOfBoundsSquare(to) &&
+            (game.isEmptySquare(to) || game.isOtherTeamSquare(to))) {
 
-            if (game.isEmptySquare(to) || game.isOtherTeamSquare(to))
-                game.considerMove(to)
-
+            game.considerMove(to)
             to = next(game.turn.piece, game.turn.from)
         }
     }
 
     make(game) {
-        game.board[to] = game.board[from]
-        game.board[from] = 0
+        game.board[this.to] = game.board[this.from]
+        game.board[this.from] = 0
     }
 }

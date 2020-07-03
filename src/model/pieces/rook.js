@@ -5,7 +5,7 @@ export default class Rook {
     static getMoves(game) {
         ChessMove.find(game, ChessPiece.moveLeft)
         ChessMove.find(game, ChessPiece.moveRight)
-        ChessMove.find(game, ChessPiece.moreForward)
+        ChessMove.find(game, ChessPiece.moveForward)
         ChessMove.find(game, ChessPiece.moveBackward)
     }
 }

@@ -6,12 +6,12 @@ export default class Pawn {
         let to = ChessPiece.moveForward(game.turn.piece, game.turn.from)
 
         if (game.isEmptySquare(to))
-            game.considerMove(game.turn.from, to)
+            game.considerMove(to)
 
         to = ChessPiece.moveForward(game.turn.piece, to)
 
         if (game.isEmptySquare(to) && !game.history.moved.has(game.turn.piece))
-            game.considerMove(game.turn.from, to)
+            game.considerMove(to)
     }
 
     // Enpassant
@@ -31,7 +31,7 @@ export default class Pawn {
 
     static getEnpassant(game, checkSquare, moveSquare) {
         if (Pawn.canEnpassant(game, checkSquare))
-            game.considerMove(game.turn.from, moveSquare(game.turn.piece, game.turn.from))
+            game.considerMove(moveSquare(game.turn.piece, game.turn.from))
     }
 
     // Capture
@@ -39,7 +39,7 @@ export default class Pawn {
         const to = moveSquare(game.turn.piece, game.turn.from)
 
         if (game.isOtherTeamSquare(to))
-            game.considerMove(game.turn.from, to)
+            game.considerMove(to)
     }
 
     static getMoves(game) {
