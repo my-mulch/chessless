@@ -14,7 +14,7 @@ export default class ChessMove {
             (game.isEmptySquare(to) || game.isOtherTeamSquare(to))) {
 
             game.considerMove(to)
-            to = next(game.turn.piece, game.turn.from)
+            to = next(game.turn.piece, to)
         }
     }
 
