@@ -2,98 +2,14 @@ import ChessMove from '../move'
 import ChessPiece from '../piece'
 
 export default class King {
-    static getQueenSideCastle(type, game, moves, level, from) {
-        if (level)
-            return
-
-        const kingPosition = from
-        const king = game.board[kingPosition]
-        const kingPositionNew = ChessPiece.queenSide(king, kingPosition, 2)
-
-        const rookPosition = ChessPiece.queenSide(king, kingPosition, 4)
-        const rook = game.board[rookPosition]
-        const rookPositionNew = ChessPiece.queenSide(king, kingPosition, 1)
-
-        const kingIsInCheck = ChessMove.isCheck(game, kingPosition, level)
-
-        const legalCastle = [
-            new ChessMove(type, kingPosition, ChessPiece.queenSide(king, kingPosition, 1)),
-            new ChessMove(type, kingPosition, ChessPiece.queenSide(king, kingPosition, 2)),
-        ].every(function (move) {
-            return ChessMove.isLegal(game, move, level) && game.board[move.to] === 0
-        })
-
-        const rookHasntMoved = !game.history.moved.has(rook)
-        const kingHasntMoved = !game.history.moved.has(king)
-
-        if (!kingIsInCheck && legalCastle && rookHasntMoved && kingHasntMoved) {
-            moves.add(new ChessMove(type,
-                kingPosition, kingPositionNew,
-                rookPosition, rookPositionNew))
-        }
-    }
-
-    static getKingSideCastle(type, game, moves, level, from) {
-        if (level)
-            return
-
-        const kingPosition = from
-        const king = game.board[kingPosition]
-        const kingPositionNew = ChessPiece.kingSide(king, kingPosition, 2)
-
-        const rookPosition = ChessPiece.kingSide(king, kingPosition, 3)
-        const rook = game.board[rookPosition]
-        const rookPositionNew = ChessPiece.kingSide(king, kingPosition, 1)
-
-        const kingIsInCheck = ChessMove.isCheck(game, kingPosition, level)
-
-        const legalCastle = [
-            new ChessMove(type, kingPosition, ChessPiece.kingSide(king, kingPosition, 1)),
-            new ChessMove(type, kingPosition, ChessPiece.kingSide(king, kingPosition, 2)),
-        ].every(function (move) {
-            return ChessMove.isLegal(game, move, level) && game.board[move.to] === 0
-        })
-
-        const rookHasntMoved = !game.history.moved.has(rook)
-        const kingHasntMoved = !game.history.moved.has(king)
-
-        if (!kingIsInCheck && legalCastle && rookHasntMoved && kingHasntMoved) {
-            moves.add(new ChessMove(type,
-                kingPosition, kingPositionNew,
-                rookPosition, rookPositionNew))
-        }
-    }
-
-    static getMoves(game, moves, level, from) {
-        ChessMove.find({
-            type: ChessMove.CASTLE_KING_SIDE,
-            game,
-            moves,
-            level,
-            from,
-            movement: ChessMove.noop,
-            stepFn: ChessMove.noop,
-            endFn: King.getKingSideCastle
-        })
-
-        ChessMove.find({
-            type: ChessMove.CASTLE_QUEEN_SIDE,
-            game,
-            moves,
-            level,
-            from,
-            movement: ChessMove.noop,
-            stepFn: ChessMove.noop,
-            endFn: King.getQueenSideCastle
-        })
-
-        ChessMove.find({ type: ChessMove.KING, game, moves, level, from, movement: ChessPiece.left, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, moves, level, from, movement: ChessPiece.right, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, moves, level, from, movement: ChessPiece.forward, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, moves, level, from, movement: ChessPiece.backward, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, moves, level, from, movement: ChessPiece.forwardLeft, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, moves, level, from, movement: ChessPiece.forwardRight, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, moves, level, from, movement: ChessPiece.backwardLeft, steps: 1 })
-        ChessMove.find({ type: ChessMove.KING, game, moves, level, from, movement: ChessPiece.backwardRight, steps: 1 })
+    static getMoves(game) {
+        ChessMove.find(game, ChessPiece.moveLeft, 1)
+        ChessMove.find(game, ChessPiece.moveRight, 1)
+        ChessMove.find(game, ChessPiece.moveForward, 1)
+        ChessMove.find(game, ChessPiece.moveBackward, 1)
+        ChessMove.find(game, ChessPiece.moveForwardLeft, 1)
+        ChessMove.find(game, ChessPiece.moveForwardRight, 1)
+        ChessMove.find(game, ChessPiece.moveBackwardLeft, 1)
+        ChessMove.find(game, ChessPiece.moveBackwardRight, 1)
     }
 }

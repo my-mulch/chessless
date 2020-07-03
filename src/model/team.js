@@ -17,17 +17,13 @@ export default class ChessTeam {
     static initPawns(team) {
         return new Array(ChessTeam.NUM_PAWNS)
             .fill(ChessPiece.PAWN)
-            .map(function (type) {
-                return ChessPiece.create({ team, type, id: ChessTeam.PIECE_ID++ })
-            })
+            .map(function (type) { return ChessPiece.create({ team, type, id: ChessTeam.PIECE_ID++ }) })
     }
 
     static initPieces(team) {
         const { ROOK, KNIGHT, BISHOP, QUEEN, KING } = ChessPiece
 
         return [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK]
-            .map(function (type) {
-                return ChessPiece.create({ team, type, id: ChessTeam.PIECE_ID++ })
-            })
+            .map(function (type) { return ChessPiece.create({ team, type, id: ChessTeam.PIECE_ID++ }) })
     }
 }

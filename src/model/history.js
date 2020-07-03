@@ -2,8 +2,8 @@
 export default class ChessHistory {
     constructor() {
         this.moves = []
-        this.moved = new Set()
         this.boards = []
+        this.moved = new Set()
     }
 
     add(board, move) {

@@ -1,8 +1,9 @@
+import ChessMove from './move'
+import ChessTurn from './turn'
 import ChessTeam from './team'
 import ChessBoard from './board'
 import ChessPiece from './piece'
 import ChessHistory from './history'
-import ChessMoveList from './movelist'
 
 import Pawn from './pieces/pawn'
 import Rook from './pieces/rook'
@@ -22,7 +23,6 @@ export default class ChessGame {
     }
 
     constructor(
-        team = ChessPiece.WHITE,
         board = new ChessBoard([
             ...ChessTeam.init(ChessPiece.WHITE),
             0, 0, 0, 0, 0, 0, 0, 0,
@@ -31,52 +31,48 @@ export default class ChessGame {
             0, 0, 0, 0, 0, 0, 0, 0,
             ...ChessTeam.init(ChessPiece.BLACK)
         ]),
-        history = new ChessHistory()
+        turn = new ChessTurn(ChessPiece.WHITE),
+        history = new ChessHistory(),
     ) {
-        this.team = team
+        this.turn = turn
         this.board = board
         this.history = history
     }
 
-    switchTeams() {
-        this.team = Number(!this.team)
+    isEmptySquare(square) {
+        return this.board[square] === 0
     }
 
-    getKing() {
-        for (let i = 0; i < this.board.length; i++)
-            if (ChessPiece.getTeam(this.board[i]) === this.team &&
-                ChessPiece.getType(this.board[i]) === ChessPiece.KING)
-                return i
+    isOutOfBoundsSquare(square) {
+        return this.board[square] === undefined
     }
 
-    getOtherTeamMoves(level) {
-        this.switchTeams()
-        const moves = this.getMoves(level)
-        this.switchTeams()
-
-        return moves
+    isOtherTeamSquare(square) {
+        return ChessPiece.unpack(this.board[square]).team !== this.turn.team
     }
 
-    getMoves(level = 0) {
-        const moves = new ChessMoveList()
+    considerMove(to) {
+        this.turn.addMove(new ChessMove(this.turn.from, to))
+    }
 
+    getMoves() {
         for (let from = 0; from < this.board.length; from++) {
-            const piece = this.board[from]
-            const type = ChessPiece.getType(piece)
+            this.turn.from = from
+            this.turn.piece = this.board[from]
 
-            if (!piece || ChessPiece.getTeam(piece) !== this.team)
-                continue
-
-            ChessGame.PIECES[type].getMoves(this, moves, level, from)
+            if (!this.isEmptySquare(from) &&
+                !this.isOutOfBoundsSquare(from) &&
+                !this.isOtherTeamSquare(from))
+                ChessGame.PIECES[type].getMoves(this)
         }
 
-        return moves
+        return this.turn
     }
 
     makeMove(from, to) {
         const game = this.clone()
-        const moves = game.getMoves()
-        const move = moves.get(from, to)
+        const turn = game.getMoves()
+        const move = turn.getMove(from, to)
 
         if (!move) return game
 
@@ -87,14 +83,14 @@ export default class ChessGame {
         move.make(game)
 
         // Switch teams
-        game.switchTeams()
+        game.turn = new ChessTurn(ChessTeam.switch(this.turn.team))
 
         return game
     }
 
     clone() {
         return new ChessGame(
-            this.team,
+            this.turn,
             this.board.slice(),
             this.history
         )

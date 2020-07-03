@@ -28,10 +28,6 @@ export default numeric({ // data type is represented by an integer
             [this.KING]: 'king'
         }
 
-        static isPawn(game, from) {
-            return ChessPiece.getType(game.board[from]) === ChessPiece.PAWN
-        }
-
         static toString(piece) {
             const team = ChessPiece.getTeam(piece)
             const type = ChessPiece.getType(piece)
@@ -45,7 +41,7 @@ export default numeric({ // data type is represented by an integer
                 : ChessPiece.FORWARD
         }
 
-        static forward(piece, from, distance = 1) {
+        static moveForward(piece, from, distance = 1) {
             if (isNaN(from)) return undefined
 
             const [rank, file] = rankAndFileOf(from)
@@ -56,7 +52,7 @@ export default numeric({ // data type is represented by an integer
             return indexOf(newRank, newFile)
         }
 
-        static right(piece, from, distance = 1) {
+        static moveRight(piece, from, distance = 1) {
             if (isNaN(from)) return undefined
 
             const [rank, file] = rankAndFileOf(from)
@@ -83,24 +79,11 @@ export default numeric({ // data type is represented by an integer
                 : ChessPiece.left(piece, from, distance)
         }
 
-        // Pawn moves
-        static doublePush(piece, from) { return ChessPiece.forward(piece, from, 2) }
-
         // Piece moves
-        static left(piece, from, distance = 1) { return ChessPiece.right(piece, from, distance * ChessPiece.BACKWARD) }
-        static backward(piece, from, distance = 1) { return ChessPiece.forward(piece, from, distance * ChessPiece.BACKWARD) }
-        static forwardRight(piece, from, distance = 1) { return ChessPiece.forward(piece, ChessPiece.right(piece, from, distance), distance) }
-        static forwardLeft(piece, from, distance = 1) { return ChessPiece.forward(piece, ChessPiece.left(piece, from, distance), distance) }
-        static backwardLeft(piece, from, distance = 1) { return ChessPiece.backward(piece, ChessPiece.left(piece, from, distance), distance) }
-        static backwardRight(piece, from, distance = 1) { return ChessPiece.backward(piece, ChessPiece.right(piece, from, distance), distance) }
-
-        // Knight moves
-        static hopForwardLeft(piece, from) { return ChessPiece.left(piece, ChessPiece.forward(piece, from, 2)) }
-        static hopForwardRight(piece, from) { return ChessPiece.right(piece, ChessPiece.forward(piece, from, 2)) }
-        static hopRightForward(piece, from) { return ChessPiece.forward(piece, ChessPiece.right(piece, from, 2)) }
-        static hopRightBackward(piece, from) { return ChessPiece.backward(piece, ChessPiece.right(piece, from, 2)) }
-        static hopBackwardLeft(piece, from) { return ChessPiece.left(piece, ChessPiece.backward(piece, from, 2)) }
-        static hopBackwardRight(piece, from) { return ChessPiece.right(piece, ChessPiece.backward(piece, from, 2)) }
-        static hopLeftForward(piece, from) { return ChessPiece.forward(piece, ChessPiece.left(piece, from, 2)) }
-        static hopLeftBackward(piece, from) { return ChessPiece.backward(piece, ChessPiece.left(piece, from, 2)) }
+        static moveLeft(piece, from, distance = 1) { return ChessPiece.moveRight(piece, from, distance * ChessPiece.BACKWARD) }
+        static moveBackward(piece, from, distance = 1) { return ChessPiece.moveForward(piece, from, distance * ChessPiece.BACKWARD) }
+        static moveForwardRight(piece, from, distance = 1) { return ChessPiece.moveForward(piece, ChessPiece.moveRight(piece, from, distance), distance) }
+        static moveForwardLeft(piece, from, distance = 1) { return ChessPiece.moveForward(piece, ChessPiece.moveLeft(piece, from, distance), distance) }
+        static moveBackwardLeft(piece, from, distance = 1) { return ChessPiece.moveBackward(piece, ChessPiece.moveLeft(piece, from, distance), distance) }
+        static moveBackwardRight(piece, from, distance = 1) { return ChessPiece.moveBackward(piece, ChessPiece.moveRight(piece, from, distance), distance) }
     })

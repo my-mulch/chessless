@@ -11,23 +11,14 @@ export default class Knight {
     static hopLeftForward(piece, from) { return ChessPiece.moveForward(piece, ChessPiece.moveLeft(piece, from, 2)) }
     static hopLeftBackward(piece, from) { return ChessPiece.moveBackward(piece, ChessPiece.moveLeft(piece, from, 2)) }
 
-    static getMoves(game, moves, isAttacking, from) {
-        const find = ChessMove.find.bind(
-            null, // context
-            ChessMove.KNIGHT, // move type
-            game, // game
-            moves, // moveslist
-            isAttacking, // movestyle
-            from // from position
-        )
-
-        find(Knight.hopForwardLeft, 1)
-        find(Knight.hopForwardRight, 1)
-        find(Knight.hopRightForward, 1)
-        find(Knight.hopRightBackward, 1)
-        find(Knight.hopBackwardLeft, 1)
-        find(Knight.hopBackwardRight, 1)
-        find(Knight.hopLeftForward, 1)
-        find(Knight.hopLeftBackward, 1)
+    static getMoves(game) {
+        ChessMove.find(game, Knight.hopForwardLeft, 1)
+        ChessMove.find(game, Knight.hopForwardRight, 1)
+        ChessMove.find(game, Knight.hopRightForward, 1)
+        ChessMove.find(game, Knight.hopRightBackward, 1)
+        ChessMove.find(game, Knight.hopBackwardLeft, 1)
+        ChessMove.find(game, Knight.hopBackwardRight, 1)
+        ChessMove.find(game, Knight.hopLeftForward, 1)
+        ChessMove.find(game, Knight.hopLeftBackward, 1)
     }
 }
