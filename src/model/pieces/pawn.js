@@ -30,8 +30,14 @@ export default class Pawn {
     }
 
     static getEnpassant(game, checkSquare, moveSquare) {
-        if (Pawn.canEnpassant(game, checkSquare))
-            game.considerMove(moveSquare(game.turn.piece, game.turn.from))
+        if (Pawn.canEnpassant(game, checkSquare)) {
+            const captureSquare = moveSquare(game.turn.piece, game.turn.from)
+            const capturedPieceSquare = checkSquare(game.turn.piece, game.turn.from)
+
+            game.considerMove(captureSquare, function (game) {
+                game.board[capturedPieceSquare] = 0
+            })
+        }
     }
 
     // Capture

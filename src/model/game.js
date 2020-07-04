@@ -56,8 +56,8 @@ export default class ChessGame {
     }
 
 
-    considerMove(to) {
-        this.turn.addMove(new ChessMove(this.turn.from, to))
+    considerMove(to, special) {
+        this.turn.addMove(new ChessMove(this.turn.from, to, special))
     }
 
     getMoves() {
@@ -67,8 +67,9 @@ export default class ChessGame {
 
             if (!this.isEmptySquare(from) &&
                 !this.isOutOfBoundsSquare(from) &&
-                this.isSameTeamSquare(from))
+                this.isSameTeamSquare(from)) {
                 ChessGame.PIECES[ChessPiece.unpack(this.turn.piece).type].getMoves(this)
+            }
         }
 
         return this.turn
