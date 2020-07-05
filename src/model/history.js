@@ -11,7 +11,7 @@ export default class ChessHistory {
         this.boards.push(board)
 
         // The piece has moved
-        this.moved.add(board[move.from])
+        this.moved.add(board[move.from].id)
     }
 
     lastMove() {

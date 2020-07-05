@@ -5,33 +5,17 @@ import ChessBoard from './board'
 import ChessPiece from './piece'
 import ChessHistory from './history'
 
-import Pawn from './pieces/pawn'
-import Rook from './pieces/rook'
-import King from './pieces/king'
-import Queen from './pieces/queen'
-import Bishop from './pieces/bishop'
-import Knight from './pieces/knight'
-
 export default class ChessGame {
-    static PIECES = {
-        [ChessPiece.PAWN]: Pawn,
-        [ChessPiece.ROOK]: Rook,
-        [ChessPiece.KNIGHT]: Knight,
-        [ChessPiece.BISHOP]: Bishop,
-        [ChessPiece.QUEEN]: Queen,
-        [ChessPiece.KING]: King
-    }
-
     constructor(
         turn = new ChessTurn(ChessPiece.WHITE),
-        board = new ChessBoard([
+        board = new ChessBoard(
             ...ChessTeam.init(ChessPiece.WHITE),
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null,
             ...ChessTeam.init(ChessPiece.BLACK)
-        ]),
+        ),
         history = new ChessHistory(),
     ) {
         this.turn = turn
@@ -40,7 +24,7 @@ export default class ChessGame {
     }
 
     isEmptySquare(square) {
-        return this.board[square] === 0
+        return this.board[square] === null
     }
 
     isOutOfBoundsSquare(square) {
@@ -48,13 +32,12 @@ export default class ChessGame {
     }
 
     isSameTeamSquare(square) {
-        return ChessPiece.unpack(this.board[square]).team === this.turn.team
+        return this.board[square].team === this.turn.team
     }
 
     isOtherTeamSquare(square) {
-        return ChessPiece.unpack(this.board[square]).team !== this.turn.team
+        return this.board[square].team !== this.turn.team
     }
-
 
     considerMove(to, special) {
         this.turn.addMove(new ChessMove(this.turn.from, to, special))
@@ -63,13 +46,9 @@ export default class ChessGame {
     getMoves() {
         for (let from = 0; from < this.board.length; from++) {
             this.turn.from = from
-            this.turn.piece = this.board[from]
 
-            if (!this.isEmptySquare(from) &&
-                !this.isOutOfBoundsSquare(from) &&
-                this.isSameTeamSquare(from)) {
-                ChessGame.PIECES[ChessPiece.unpack(this.turn.piece).type].getMoves(this)
-            }
+            if (this.board[from] && this.isSameTeamSquare(from))
+                this.board[from].getMoves(this)
         }
 
         return this.turn

@@ -1,14 +1,13 @@
-import ChessPiece from './piece'
 import { indexOf } from './utils'
 
-export default class ChessBoard extends Uint8Array {
+export default class ChessBoard extends Array {
     static SQUARE_COLORS = ['dark', 'light']
 
     describeSquare(rank, file) {
         const color = ChessBoard.SQUARE_COLORS[(rank + file) % 2]
-        const piece = ChessPiece.toString(this.getSquare(rank, file))
+        const piece = this.getSquare(rank, file)
 
-        return `${color} ${piece}`
+        return `${color} ${(piece && piece.toString()) || ''}`
     }
 
     getSquare(rank, file) {

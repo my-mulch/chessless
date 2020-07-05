@@ -1,3 +1,10 @@
+import Pawn from './pieces/pawn'
+import Rook from './pieces/rook'
+import King from './pieces/king'
+import Queen from './pieces/queen'
+import Bishop from './pieces/bishop'
+import Knight from './pieces/knight'
+
 import ChessPiece from './piece'
 
 export default class ChessTeam {
@@ -5,7 +12,7 @@ export default class ChessTeam {
     static NUM_PAWNS = 8
 
     static switch(team) {
-        return Number(!team)
+        return team === ChessPiece.BLACK ? ChessPiece.WHITE : ChessPiece.BLACK
     }
 
     static init(team) {
@@ -15,15 +22,28 @@ export default class ChessTeam {
     }
 
     static initPawns(team) {
-        return new Array(ChessTeam.NUM_PAWNS)
-            .fill(ChessPiece.PAWN)
-            .map(function (type) { return ChessPiece.create({ team, type, id: ChessTeam.PIECE_ID++ }) })
+        return [
+            new Pawn(team), 
+            new Pawn(team),
+            new Pawn(team), 
+            new Pawn(team),
+            new Pawn(team), 
+            new Pawn(team),
+            new Pawn(team), 
+            new Pawn(team),
+        ]
     }
 
     static initPieces(team) {
-        const { ROOK, KNIGHT, BISHOP, QUEEN, KING } = ChessPiece
-
-        return [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK]
-            .map(function (type) { return ChessPiece.create({ team, type, id: ChessTeam.PIECE_ID++ }) })
+        return [
+            new Rook(team),
+            new Knight(team),
+            new Bishop(team), 
+            new Queen(team),
+            new King(team), 
+            new Bishop(team),
+            new Knight(team), 
+            new Rook(team)
+        ]
     }
 }

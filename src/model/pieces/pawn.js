@@ -1,60 +1,57 @@
 import ChessPiece from '../piece'
 
-export default class Pawn {
+export default class Pawn extends ChessPiece {
     // Push
-    static getPushes(game) {
-        let to = ChessPiece.moveForward(game.turn.piece, game.turn.from)
+    getPushes(game) {
+        const push = this.moveForward(game.turn.from)
 
-        if (game.isEmptySquare(to))
-            game.considerMove(to)
+        if (game.isEmptySquare(push))
+            game.considerMove(push)
 
-        to = ChessPiece.moveForward(game.turn.piece, to)
+        const doublePush = this.moveForward(push)
 
-        if (game.isEmptySquare(to) && !game.history.moved.has(game.turn.piece))
-            game.considerMove(to)
+        if (game.isEmptySquare(doublePush) && !game.history.moved.has(this.id))
+            game.considerMove(doublePush)
     }
 
     // Enpassant
-    static canEnpassant(game, direction) {
+    canEnpassant(game, checkSquare) {
         if (!game.history.moves.length)
             return false
 
-        const to = direction(game.turn.piece, game.turn.from)
-        const otherPiece = game.board[to]
+        const check = checkSquare(game.turn.from)
+        const otherPiece = game.board[check]
         const lastMove = game.history.lastMove()
 
-        return game.isOtherTeamSquare(to) &&
-            ChessPiece.getType(otherPiece) === ChessPiece.PAWN &&
+        return game.isOtherTeamSquare(check) &&
+            otherPiece.constructor === Pawn &&
             Math.abs(lastMove.from - lastMove.to) === 16 && // Double push
             game.board[lastMove.to] === otherPiece
     }
 
-    static getEnpassant(game, checkSquare, moveSquare) {
-        if (Pawn.canEnpassant(game, checkSquare)) {
-            const captureSquare = moveSquare(game.turn.piece, game.turn.from)
-            const capturedPieceSquare = checkSquare(game.turn.piece, game.turn.from)
-
-            game.considerMove(captureSquare, function (game) {
-                game.board[capturedPieceSquare] = 0
-            })
-        }
+    getEnpassant(game, checkSquare, captureSquare) {
+        const check = checkSquare(game.turn.from)
+        const capture = captureSquare(game.turn.from)
+        
+        if (this.canEnpassant(game, checkSquare))
+            game.considerMove(capture, game => game.board[check] = null)
     }
 
     // Capture
-    static getCapture(game, moveSquare) {
-        const to = moveSquare(game.turn.piece, game.turn.from)
+    getCapture(game, captureSquare) {
+        const capture = captureSquare(game.turn.from)
 
-        if (game.isOtherTeamSquare(to))
-            game.considerMove(to)
+        if (game.isOtherTeamSquare(capture))
+            game.considerMove(capture)
     }
 
-    static getMoves(game) {
-        Pawn.getEnpassant(game, ChessPiece.moveLeft, ChessPiece.moveForwardLeft)
-        Pawn.getEnpassant(game, ChessPiece.moveRight, ChessPiece.moveForwardRight)
+    getMoves(game) {
+        this.getEnpassant(game, this.moveLeft.bind(this), this.moveForwardLeft.bind(this))
+        this.getEnpassant(game, this.moveRight.bind(this), this.moveForwardRight.bind(this))
 
-        Pawn.getCapture(game, ChessPiece.moveForwardLeft)
-        Pawn.getCapture(game, ChessPiece.moveForwardRight)
+        this.getCapture(game, this.moveForwardLeft.bind(this))
+        this.getCapture(game, this.moveForwardRight.bind(this))
 
-        Pawn.getPushes(game)
+        this.getPushes(game)
     }
 }

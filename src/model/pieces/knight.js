@@ -1,24 +1,24 @@
 import ChessMove from '../move'
 import ChessPiece from '../piece'
 
-export default class Knight {
-    static hopForwardLeft(piece, from) { return ChessPiece.moveLeft(piece, ChessPiece.moveForward(piece, from, 2)) }
-    static hopForwardRight(piece, from) { return ChessPiece.moveRight(piece, ChessPiece.moveForward(piece, from, 2)) }
-    static hopRightForward(piece, from) { return ChessPiece.moveForward(piece, ChessPiece.moveRight(piece, from, 2)) }
-    static hopRightBackward(piece, from) { return ChessPiece.moveBackward(piece, ChessPiece.moveRight(piece, from, 2)) }
-    static hopBackwardLeft(piece, from) { return ChessPiece.moveLeft(piece, ChessPiece.moveBackward(piece, from, 2)) }
-    static hopBackwardRight(piece, from) { return ChessPiece.moveRight(piece, ChessPiece.moveBackward(piece, from, 2)) }
-    static hopLeftForward(piece, from) { return ChessPiece.moveForward(piece, ChessPiece.moveLeft(piece, from, 2)) }
-    static hopLeftBackward(piece, from) { return ChessPiece.moveBackward(piece, ChessPiece.moveLeft(piece, from, 2)) }
+export default class Knight extends ChessPiece {
+    hopForwardLeft(from) { return this.moveLeft(this.moveForward(from, 2)) }
+    hopForwardRight(from) { return this.moveRight(this.moveForward(from, 2)) }
+    hopRightForward(from) { return this.moveForward(this.moveRight(from, 2)) }
+    hopRightBackward(from) { return this.moveBackward(this.moveRight(from, 2)) }
+    hopBackwardLeft(from) { return this.moveLeft(this.moveBackward(from, 2)) }
+    hopBackwardRight(from) { return this.moveRight(this.moveBackward(from, 2)) }
+    hopLeftForward(from) { return this.moveForward(this.moveLeft(from, 2)) }
+    hopLeftBackward(from) { return this.moveBackward(this.moveLeft(from, 2)) }
 
-    static getMoves(game) {
-        ChessMove.find(game, Knight.hopForwardLeft, 1)
-        ChessMove.find(game, Knight.hopForwardRight, 1)
-        ChessMove.find(game, Knight.hopRightForward, 1)
-        ChessMove.find(game, Knight.hopRightBackward, 1)
-        ChessMove.find(game, Knight.hopBackwardLeft, 1)
-        ChessMove.find(game, Knight.hopBackwardRight, 1)
-        ChessMove.find(game, Knight.hopLeftForward, 1)
-        ChessMove.find(game, Knight.hopLeftBackward, 1)
+    getMoves(game) {
+        ChessMove.find(game, this.hopForwardLeft.bind(this), 1)
+        ChessMove.find(game, this.hopForwardRight.bind(this), 1)
+        ChessMove.find(game, this.hopRightForward.bind(this), 1)
+        ChessMove.find(game, this.hopRightBackward.bind(this), 1)
+        ChessMove.find(game, this.hopBackwardLeft.bind(this), 1)
+        ChessMove.find(game, this.hopBackwardRight.bind(this), 1)
+        ChessMove.find(game, this.hopLeftForward.bind(this), 1)
+        ChessMove.find(game, this.hopLeftBackward.bind(this), 1)
     }
 }

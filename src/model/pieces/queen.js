@@ -1,15 +1,15 @@
 import ChessMove from '../move'
 import ChessPiece from '../piece'
 
-export default class Queen {
-    static getMoves(game) {
-        ChessMove.find(game, ChessPiece.moveLeft)
-        ChessMove.find(game, ChessPiece.moveRight)
-        ChessMove.find(game, ChessPiece.moveForward)
-        ChessMove.find(game, ChessPiece.moveBackward)
-        ChessMove.find(game, ChessPiece.moveForwardLeft)
-        ChessMove.find(game, ChessPiece.moveForwardRight)
-        ChessMove.find(game, ChessPiece.moveBackwardLeft)
-        ChessMove.find(game, ChessPiece.moveBackwardRight)
+export default class Queen extends ChessPiece {
+    getMoves(game) {
+        ChessMove.find(game, this.moveLeft.bind(this))
+        ChessMove.find(game, this.moveRight.bind(this))
+        ChessMove.find(game, this.moveForward.bind(this))
+        ChessMove.find(game, this.moveBackward.bind(this))
+        ChessMove.find(game, this.moveForwardLeft.bind(this))
+        ChessMove.find(game, this.moveForwardRight.bind(this))
+        ChessMove.find(game, this.moveBackwardLeft.bind(this))
+        ChessMove.find(game, this.moveBackwardRight.bind(this))
     }
 }
