@@ -43,9 +43,15 @@ export default class ChessGame {
         this.turn.addMove(new ChessMove(this.turn.from, to, special))
     }
 
-    getMoves() {
+    hasTurn() {
+        return Boolean(Object.keys(this.turn.moves).length)
+    }
+
+    getTurn() {
         for (let from = 0; from < this.board.length; from++) {
             this.turn.from = from
+            
+            if (from === 51) debugger
 
             if (this.board[from] && this.isSameTeamSquare(from))
                 this.board[from].getMoves(this)
@@ -55,11 +61,17 @@ export default class ChessGame {
     }
 
     makeMove(from, to) {
+        debugger
         const game = this.clone()
-        const turn = game.getMoves()
-        const move = turn.getMove(from, to)
+        const turn = this.hasTurn() ? game.turn : game.getTurn()
+        const moves = turn.getMove(from, to)
 
-        if (!move) return game
+        if (!moves) return game
+
+        let move
+
+        // Select the move (possible promotion)
+        move = move || moves[0]
 
         // Save the board and move
         this.history.add(this.board, move)

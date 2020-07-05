@@ -12,9 +12,9 @@ export default class ChessPiece {
     static BLACK = 'Black'
     static WHITE = 'White'
 
-    constructor(team) {
-        this.id = ChessPiece.ID++
+    constructor(team, id) {
         this.team = team
+        this.id = (id && id.constructor === Number) ? id : ChessPiece.ID++
     }
 
     toString() { return `${this.team}-${this.constructor.name}` }
@@ -29,6 +29,13 @@ export default class ChessPiece {
         return indexOf(...position)
     }
 
+    isLastRank(square) {
+        const [rank] = rankAndFileOf(square)
+
+        return (this.team === ChessPiece.WHITE && rank === 7) ||
+            (this.team === ChessPiece.BLACK && rank === 0)
+    }
+
     // Piece moves
     orient() { return this.team === ChessPiece.BLACK ? ChessPiece.BACKWARD : ChessPiece.FORWARD }
     moveLeft(from, distance = 1) { return this.moveRight(from, distance * ChessPiece.BACKWARD) }
@@ -41,4 +48,5 @@ export default class ChessPiece {
     moveBackwardRight(from, distance = 1) { return this.moveBackward(this.moveRight(from, distance), distance) }
     moveKingSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance * ChessPiece.FORWARD) }
     moveQueenSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance * ChessPiece.BACKWARD) }
+
 }

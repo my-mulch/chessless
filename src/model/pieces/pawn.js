@@ -1,3 +1,8 @@
+import Rook from './rook'
+import Queen from './queen'
+import Bishop from './bishop'
+import Knight from './knight'
+
 import ChessPiece from '../piece'
 
 export default class Pawn extends ChessPiece {
@@ -5,8 +10,12 @@ export default class Pawn extends ChessPiece {
     getPushes(game) {
         const push = this.moveForward(game.turn.from)
 
-        if (game.isEmptySquare(push))
+        if (game.isEmptySquare(push)) {
+            if (this.isLastRank(push))
+                return this.getPromotions(game, push)
+
             game.considerMove(push)
+        }
 
         const doublePush = this.moveForward(push)
 
@@ -41,8 +50,20 @@ export default class Pawn extends ChessPiece {
     getCapture(game, captureSquare) {
         const capture = captureSquare(game.turn.from)
 
-        if (game.isOtherTeamSquare(capture))
+        if (game.isOtherTeamSquare(capture)) {
+            if (this.isLastRank(capture))
+                return this.getPromotions(game, capture)
+
             game.considerMove(capture)
+        }
+    }
+
+    // Promotions
+    getPromotions(game, to) {
+        game.considerMove(to, game => game.board[to] = new Rook(this.team, this.id))
+        game.considerMove(to, game => game.board[to] = new Queen(this.team, this.id))
+        game.considerMove(to, game => game.board[to] = new Knight(this.team, this.id))
+        game.considerMove(to, game => game.board[to] = new Bishop(this.team, this.id))
     }
 
     getMoves(game) {

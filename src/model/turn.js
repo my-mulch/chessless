@@ -9,7 +9,8 @@ export default class ChessTurn {
 
     addMove(move) {
         this.moves[move.to] = this.moves[move.to] || {}
-        this.moves[move.to][move.from] = move
+        this.moves[move.to][move.from] = this.moves[move.to][move.from] || []
+        this.moves[move.to][move.from].push(move)
     }
 
     getMove(from, to) {
