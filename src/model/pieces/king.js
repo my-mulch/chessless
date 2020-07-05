@@ -2,17 +2,39 @@ import ChessMove from '../move'
 import ChessPiece from '../piece'
 
 export default class King extends ChessPiece {
-    castleKingSide(game) {
-        if (this.game.history.has(this.id)) return
+    getCastle(game, side, rookStart) {
+        // Get the other team's attacking moves
+        const newGame = game.getOtherTeamMoves()
 
-        // Abstract
-        const rook = game.board[this.moveKingSide(game.turn.from, 3)]
+        // If the king is in check or has moved, ya can't castle
+        if (Boolean(newGame.turn.moves[game.turn.from]) || game.history.moved.has(this.id))
+            return
 
+        // Get the rook
+        const rook = game.board[rookStart]
+        const rookDestination = side(game.turn.from, 1)
+
+        // If the rook has moved, ya can't castle
         if (game.history.moved.has(rook.id)) return
-        
+
+        // If the king moves through any attacked squares, ya can't castle
+        if (newGame.turn.moves[side(game.turn.from, 1)] ||
+            newGame.turn.moves[side(game.turn.from, 2)])
+            return
+
+        // Finally, castle
+        game.considerMove(side(game.turn.from, 2), game => {
+            game.board[rookDestination] = rook
+            game.board[rookStart] = null
+        })
     }
 
     getMoves(game) {
+        if (!game.turn.seekingCheck) {
+            this.getCastle(game, this.moveKingSide.bind(this), this.moveKingSide(game.turn.from, 3))
+            this.getCastle(game, this.moveQueenSide.bind(this), this.moveQueenSide(game.turn.from, 4))
+        }
+
         ChessMove.find(game, this.moveLeft.bind(this), 1)
         ChessMove.find(game, this.moveRight.bind(this), 1)
         ChessMove.find(game, this.moveForward.bind(this), 1)
