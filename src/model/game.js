@@ -5,6 +5,8 @@ import ChessBoard from './board'
 import ChessPiece from './piece'
 import ChessHistory from './history'
 
+import King from './pieces/king'
+
 import { promotionPrompt } from './utils'
 
 export default class ChessGame {
@@ -25,53 +27,68 @@ export default class ChessGame {
         this.history = history
     }
 
-    isEmptySquare(square) {
-        return this.board[square] === null
+    // Misc
+    otherTeam() { return ChessTeam.switch(this.turn.team) }
+    clone() { return new ChessGame(this.turn.clone(), this.board.slice(), this.history) }
+
+    // Square Checks
+    isEmptySquare(square) { return this.board[square] === null }
+    isOutOfBoundsSquare(square) { return this.board[square] === undefined }
+    isSameTeamSquare(square) { return this.board[square] && this.board[square].team === this.turn.team }
+    isOtherTeamSquare(square) { return this.board[square] && this.board[square].team !== this.turn.team }
+
+    // Turn & Moves
+    getKing(team = this.turn.team) {
+        for (let i = 0; i < this.board.length; i++)
+            if (this.board[i] &&
+                this.board[i].team === team &&
+                this.board[i].constructor === King)
+                return i
     }
 
-    isOutOfBoundsSquare(square) {
-        return this.board[square] === undefined
-    }
+    kingIsInCheck() {
+        const newGame = this.clone()
+        const seekingCheck = true
 
-    isSameTeamSquare(square) {
-        return this.board[square] && this.board[square].team === this.turn.team
-    }
+        newGame.turn = new ChessTurn(this.otherTeam(), seekingCheck)
+        newGame.getMoves()
 
-    isOtherTeamSquare(square) {
-        return this.board[square] && this.board[square].team !== this.turn.team
+        return Boolean(newGame.turn.moves[this.getKing()])
     }
 
     considerMove(to, special) {
-        this.turn.addMove(new ChessMove(this.turn.from, to, special))
+        const move = new ChessMove(this.turn.from, to, special)
+
+        if (!move.resultsInCheck(this))
+            this.turn.addMove(move)
     }
 
-    hasTurn() {
-        return Boolean(Object.keys(this.turn.moves).length)
-    }
+    hasMoves() { return Boolean(Object.keys(this.turn.moves).length) }
 
-    getTurn() {
+    getMoves() {
         for (let from = 0; from < this.board.length; from++) {
             this.turn.from = from
 
             if (this.board[from] && this.isSameTeamSquare(from))
                 this.board[from].getMoves(this)
         }
-
-        return this.turn
     }
 
     makeMove(from, to) {
-        debugger
         const game = this.clone()
-        const turn = this.hasTurn() ? game.turn : game.getTurn()
-        const moves = turn.getMove(from, to)
 
-        if (!moves) return game
+        if (!game.hasMoves())
+            game.getMoves()
+
+        const selectedMove = game.turn.getMove(from, to)
+
+        if (!selectedMove)
+            return game
 
         // Select the move (possible promotion)
-        const move = moves.length > 1
-            ? moves[promotionPrompt()]
-            : moves[0]
+        const move = selectedMove.length > 1
+            ? selectedMove[promotionPrompt()]
+            : selectedMove[0]
 
         // Save the board and move
         this.history.add(this.board, move)
@@ -80,16 +97,8 @@ export default class ChessGame {
         move.make(game)
 
         // Switch teams
-        game.turn = new ChessTurn(ChessTeam.switch(this.turn.team))
+        game.turn = new ChessTurn(this.otherTeam())
 
         return game
-    }
-
-    clone() {
-        return new ChessGame(
-            this.turn,
-            this.board.slice(),
-            this.history
-        )
     }
 }

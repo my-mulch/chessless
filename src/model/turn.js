@@ -1,10 +1,11 @@
 
 export default class ChessTurn {
-    constructor(team) {
+    constructor(team, seekingCheck = false) {
         this.team = team
         this.moves = {}
         this.from = null
         this.piece = null
+        this.seekingCheck = seekingCheck
     }
 
     addMove(move) {
@@ -16,5 +17,9 @@ export default class ChessTurn {
     getMove(from, to) {
         try { return this.moves[to][from] }
         catch  { return null }
+    }
+
+    clone() {
+        return new ChessTurn(this.team, this.seekingCheck)
     }
 }
