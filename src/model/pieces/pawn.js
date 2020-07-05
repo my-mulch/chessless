@@ -67,12 +67,13 @@ export default class Pawn extends ChessPiece {
     }
 
     getMoves(game) {
-        this.getEnpassant(game, this.moveLeft.bind(this), this.moveForwardLeft.bind(this))
-        this.getEnpassant(game, this.moveRight.bind(this), this.moveForwardRight.bind(this))
+        if (!game.turn.seekingCheck) {
+            this.getPushes(game)
+            this.getEnpassant(game, this.moveLeft.bind(this), this.moveForwardLeft.bind(this))
+            this.getEnpassant(game, this.moveRight.bind(this), this.moveForwardRight.bind(this))
+        }
 
         this.getCapture(game, this.moveForwardLeft.bind(this))
         this.getCapture(game, this.moveForwardRight.bind(this))
-
-        this.getPushes(game)
     }
 }

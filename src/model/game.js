@@ -46,12 +46,17 @@ export default class ChessGame {
                 return i
     }
 
-    kingIsInCheck() {
+    getOtherTeamMoves() {
         const newGame = this.clone()
         const seekingCheck = true
 
         newGame.turn = new ChessTurn(this.otherTeam(), seekingCheck)
-        newGame.getMoves()
+
+        return newGame.getMoves()
+    }
+
+    kingIsInCheck() {
+        const newGame = this.getOtherTeamMoves()
 
         return Boolean(newGame.turn.moves[this.getKing()])
     }
@@ -66,24 +71,23 @@ export default class ChessGame {
     hasMoves() { return Boolean(Object.keys(this.turn.moves).length) }
 
     getMoves() {
+        if (this.hasMoves()) return this
+
         for (let from = 0; from < this.board.length; from++) {
             this.turn.from = from
 
             if (this.board[from] && this.isSameTeamSquare(from))
                 this.board[from].getMoves(this)
         }
+
+        return this
     }
 
     makeMove(from, to) {
-        const game = this.clone()
-
-        if (!game.hasMoves())
-            game.getMoves()
-
+        const game = this.clone().getMoves()
         const selectedMove = game.turn.getMove(from, to)
 
-        if (!selectedMove)
-            return game
+        if (!selectedMove) return game
 
         // Select the move (possible promotion)
         const move = selectedMove.length > 1
