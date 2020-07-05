@@ -32,11 +32,11 @@ export default class ChessGame {
     }
 
     isSameTeamSquare(square) {
-        return this.board[square].team === this.turn.team
+        return this.board[square] && this.board[square].team === this.turn.team
     }
 
     isOtherTeamSquare(square) {
-        return this.board[square].team !== this.turn.team
+        return this.board[square] && this.board[square].team !== this.turn.team
     }
 
     considerMove(to, special) {

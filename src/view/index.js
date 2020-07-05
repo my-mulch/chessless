@@ -42,8 +42,7 @@ export default class ChessView extends React.Component {
     renderHeader() {
         return <tr>
             <th></th>
-            {this.state.files.map(file =>
-                <th key={file}>{file}</th>)}
+            {this.state.files.map(file => <th key={file}>{file}</th>)}
         </tr>
     }
 

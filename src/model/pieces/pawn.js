@@ -32,7 +32,7 @@ export default class Pawn extends ChessPiece {
     getEnpassant(game, checkSquare, captureSquare) {
         const check = checkSquare(game.turn.from)
         const capture = captureSquare(game.turn.from)
-        
+
         if (this.canEnpassant(game, checkSquare))
             game.considerMove(capture, game => game.board[check] = null)
     }

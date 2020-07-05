@@ -18,7 +18,7 @@ export default class ChessMove {
 
     make(game) {
         game.board[this.to] = game.board[this.from]
-        game.board[this.from] = 0
+        game.board[this.from] = null
 
         this.special && this.special(game)
     }
