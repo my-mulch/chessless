@@ -85,8 +85,14 @@ export default class ChessGame {
 
     makeMove(from, to) {
         const game = this.clone().getMoves()
+
+        // Checkmate
+        if (!game.hasMoves()) return false
+
+        // Lookup corresponding move
         const selectedMove = game.turn.getMove(from, to)
 
+        // If there is no corresponding move, do nothing
         if (!selectedMove) return game
 
         // Select the move (possible promotion)

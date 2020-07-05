@@ -22,6 +22,13 @@ export default class King extends ChessPiece {
             newGame.turn.moves[side(game.turn.from, 2)])
             return
 
+        // If there are pieces in the way, ya can't castle
+        let rookPosition = rookStart
+        const rookStop = side(rookDestination, -1)
+        while ((rookPosition = side(rookPosition, -1)) !== rookStop)
+            if (!game.isEmptySquare(rookPosition))
+                return
+
         // Finally, castle
         game.considerMove(side(game.turn.from, 2), game => {
             game.board[rookDestination] = rook

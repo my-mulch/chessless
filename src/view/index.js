@@ -24,13 +24,23 @@ export default class ChessView extends React.Component {
         this.handleMouseDown = this.handleMouseDown.bind(this)
     }
 
+    playRandomMove() {
+        const game = this.state.game.getMoves()
+
+        console.log(game.turn.moves)
+    }
+
     handleMouseUp(event, index) {
         event.preventDefault()
 
-        this.setState(state => ({
-            game: state.game.makeMove(state.selected, index),
-            selected: null
-        }))
+        let game = this.state.game.makeMove(this.state.selected, index)
+
+        if (!game) {
+            alert('CHECKMATE')
+            game = new ChessGame()
+        }
+
+        this.setState({ game, selected: null })
     }
 
     handleMouseDown(event, index) {
