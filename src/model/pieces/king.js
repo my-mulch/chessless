@@ -15,7 +15,7 @@ export default class King extends ChessPiece {
         const rookDestination = side(game.turn.from, 1)
 
         // If the rook has moved, ya can't castle
-        if (game.history.moved.has(rook.id)) return
+        if (!rook || game.history.moved.has(rook.id)) return
 
         // If the king moves through any attacked squares, ya can't castle
         if (newGame.turn.moves[side(game.turn.from, 1)] ||

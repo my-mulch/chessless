@@ -83,7 +83,7 @@ export default class ChessGame {
         return this
     }
 
-    makeMove(from, to) {
+    makeMove(from, to, promote) {
         const game = this.clone().getMoves()
 
         // Checkmate
@@ -96,9 +96,7 @@ export default class ChessGame {
         if (!selectedMove) return game
 
         // Select the move (possible promotion)
-        const move = selectedMove.length > 1
-            ? selectedMove[promotionPrompt()]
-            : selectedMove[0]
+        const move = promote
 
         // Save the board and move
         this.history.add(this.board, move)
