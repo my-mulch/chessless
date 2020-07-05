@@ -5,6 +5,8 @@ import ChessBoard from './board'
 import ChessPiece from './piece'
 import ChessHistory from './history'
 
+import { promotionPrompt } from './utils'
+
 export default class ChessGame {
     constructor(
         turn = new ChessTurn(ChessPiece.WHITE),
@@ -50,8 +52,6 @@ export default class ChessGame {
     getTurn() {
         for (let from = 0; from < this.board.length; from++) {
             this.turn.from = from
-            
-            if (from === 51) debugger
 
             if (this.board[from] && this.isSameTeamSquare(from))
                 this.board[from].getMoves(this)
@@ -68,10 +68,10 @@ export default class ChessGame {
 
         if (!moves) return game
 
-        let move
-
         // Select the move (possible promotion)
-        move = move || moves[0]
+        const move = moves.length > 1
+            ? moves[promotionPrompt()]
+            : moves[0]
 
         // Save the board and move
         this.history.add(this.board, move)

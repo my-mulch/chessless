@@ -1,5 +1,10 @@
 const NUM_RANKS = 8, NUM_FILES = 8
 
+const ROOK_OPTION = 'Rook - 0'
+const QUEEN_OPTION = 'Queen - 1'
+const KNIGHT_OPTION = 'Knight - 2'
+const BISHOP_OPTION = 'Bishop - 3'
+
 export const rankAndFileOf = function (index) {
     return [
         Math.floor(index / NUM_RANKS),
@@ -12,4 +17,13 @@ export const indexOf = function (rank, file) {
         return undefined
 
     return rank * NUM_RANKS + file
+}
+
+export const promotionPrompt = function () {
+    return Number(prompt([
+        ROOK_OPTION,
+        QUEEN_OPTION,
+        KNIGHT_OPTION,
+        BISHOP_OPTION,
+    ].join('\n')))
 }
