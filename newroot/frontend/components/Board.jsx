@@ -9,8 +9,8 @@ export default function Board() {
   const boardStyle = {
     display: 'flex',
     flexDirection: 'column',
-    height: '40vw',
-    width: '40vw',
+    height: '100vh',
+    width: '100vh',
   }
 
   const rowStyle = {
@@ -33,7 +33,7 @@ export default function Board() {
     {ranks.map((rank, ri) =>
       <div key={rank} style={rowStyle}>
         {files.map((file, fi) =>
-          <div key={file} style={getSquareStyle(ri, fi, 'N')}>{file} - {rank}</div>
+          <div key={file} style={getSquareStyle(ri, fi, 'P')} />
         )}
       </div>
     )}
