@@ -1,4 +1,4 @@
-import { rankAndFileOf, indexOf } from './utils'
+import { rankAndFileOf, indexOf } from '../utils.js'
 
 export default class ChessPiece extends String {
   // Define directionality of movement
@@ -10,7 +10,7 @@ export default class ChessPiece extends String {
   static FILE = 1
 
   isBlack() {
-    return this !== this.toUpperCase()
+    return this.toString() !== this.toUpperCase()
   }
 
   move(from, direction, distance = 1) {
@@ -21,12 +21,6 @@ export default class ChessPiece extends String {
     position[direction] += this.orient() * distance
 
     return indexOf(...position)
-  }
-
-  isLastRank(square) {
-    const [rank] = rankAndFileOf(square)
-
-    return (!this.isBlack() && rank === 7) || (this.isBlack() && rank === 0)
   }
 
   // Piece moves

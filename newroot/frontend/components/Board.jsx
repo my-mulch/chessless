@@ -1,21 +1,21 @@
 import React, { useState } from 'react'
 import { imageFromPiece } from './utils'
+import { indexOf } from '../../chess/utils'
 
-
-export default function Board() {
+export default function Board({ game }) {
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
   const [files] = useState(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
 
   const boardStyle = {
-    display: 'flex',
-    flexDirection: 'column',
     height: '100vh',
     width: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
   }
 
   const rowStyle = {
-    display: 'flex',
     flex: 1,
+    display: 'flex',
     flexDirection: 'row'
   }
 
@@ -33,7 +33,7 @@ export default function Board() {
     {ranks.map((rank, ri) =>
       <div key={rank} style={rowStyle}>
         {files.map((file, fi) =>
-          <div key={file} style={getSquareStyle(ri, fi, 'P')} />
+          <div key={file} style={getSquareStyle(ri, fi, game.board[indexOf(ri, fi)])} />
         )}
       </div>
     )}
