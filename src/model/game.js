@@ -12,14 +12,7 @@ import { promotionPrompt } from './utils'
 export default class ChessGame {
     constructor(
         turn = new ChessTurn(ChessPiece.WHITE),
-        board = new ChessBoard(
-            ...ChessTeam.init(ChessPiece.WHITE),
-            null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null,
-            ...ChessTeam.init(ChessPiece.BLACK)
-        ),
+        board = ChessBoard.random(),
         history = new ChessHistory(),
     ) {
         this.turn = turn
@@ -96,7 +89,9 @@ export default class ChessGame {
         if (!selectedMove) return game
 
         // Select the move (possible promotion)
-        const move = promote
+        const move = selectedMove.length > 1
+            ? selectedMove[promotionPrompt()]
+            : selectedMove[0]
 
         // Save the board and move
         this.history.add(this.board, move)

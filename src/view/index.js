@@ -24,38 +24,6 @@ export default class ChessView extends React.Component {
         this.handleMouseDown = this.handleMouseDown.bind(this)
     }
 
-    playRandomGame() {
-        setInterval(() => this.playRandomMove(), 1)
-    }
-
-    playRandomMove() {
-        const newGame = this.state.game.getMoves()
-
-        const toPossibilities = Object.keys(newGame.turn.moves)
-        const toRandomChoice = Math.floor(Math.random() * toPossibilities.length)
-        const to = toPossibilities[toRandomChoice]
-
-        if (!Object.keys(newGame.turn.moves).length) {
-            alert('CHECKMATE')
-            return false
-        }
-
-        const fromPossibilities = Object.keys(newGame.turn.moves[to])
-        const fromRandomChoice = Math.floor(Math.random() * fromPossibilities.length)
-        const from = fromPossibilities[fromRandomChoice]
-
-        const promotePossibilities = newGame.turn.moves[to][from]
-        const promoteRandomChoice = Math.floor(Math.random() * promotePossibilities.length)
-        const promote = promotePossibilities[promoteRandomChoice]
-
-        let game = newGame.makeMove(from, to, promote)
-
-
-        this.setState({ game })
-
-        return true
-    }
-
     handleMouseUp(event, index) {
         event.preventDefault()
 
