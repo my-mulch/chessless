@@ -1,6 +1,6 @@
-import { rankAndFileOf, indexOf } from '../utils.js'
+import { rankAndFileOf, indexOf, isOutOfBounds } from '../utils.js'
 
-export default class ChessPiece extends String {
+export default class ChessPiece {
   // Define directionality of movement
   static FORWARD = 1
   static BACKWARD = -1
@@ -9,34 +9,52 @@ export default class ChessPiece extends String {
   static RANK = 0
   static FILE = 1
 
-  isBlack() {
-    return this.toString() !== this.toUpperCase()
+  static getTeam(piece) {
+    return ChessPiece.isBlack(piece) ? 'b' : 'w'
   }
 
-  move(from, direction, distance = 1) {
+  static isBlack(piece) {
+    return piece !== piece.toUpperCase()
+  }
+
+  static find(piece, from, board, next, steps = Infinity) {
+    let step = 0
+    let to = next(piece, from)
+
+    while (step++ < steps && !game.isOutOfBoundsSquare(to) && !game.isSameTeamSquare(to)) {
+      game.considerMove(to)
+
+      if (game.isOtherTeamSquare(to))
+        return
+
+      to = next(to)
+    }
+  }
+
+  static move(piece, from, direction, distance = 1) {
     if (isNaN(from)) return undefined
 
     const position = rankAndFileOf(from)
 
-    position[direction] += this.orient() * distance
+    position[direction] += ChessPiece.orient(piece) * distance
 
     return indexOf(...position)
   }
 
   // Piece moves
-  orient() { return this.isBlack() ? ChessPiece.BACKWARD : ChessPiece.FORWARD }
+  static orient(piece) { return ChessPiece.isBlack(piece) ? ChessPiece.BACKWARD : ChessPiece.FORWARD }
 
-  moveLeft(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance * -1) }
-  moveRight(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance) }
-  moveForward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance) }
-  moveBackward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance * -1) }
+  static moveLeft(piece, from, distance = 1) { return ChessPiece.move(piece, from, ChessPiece.FILE, distance * -1) }
+  static moveRight(piece, from, distance = 1) { return ChessPiece.move(piece, from, ChessPiece.FILE, distance) }
+  static moveForward(piece, from, distance = 1) { return ChessPiece.move(piece, from, ChessPiece.RANK, distance) }
+  static moveBackward(piece, from, distance = 1) { return ChessPiece.move(piece, from, ChessPiece.RANK, distance * -1) }
 
-  moveForwardLeft(from, distance = 1) { return this.moveForward(this.moveLeft(from, distance), distance) }
-  moveForwardRight(from, distance = 1) { return this.moveForward(this.moveRight(from, distance), distance) }
-  moveBackwardLeft(from, distance = 1) { return this.moveBackward(this.moveLeft(from, distance), distance) }
-  moveBackwardRight(from, distance = 1) { return this.moveBackward(this.moveRight(from, distance), distance) }
+  static moveForwardLeft(piece, from, distance = 1) { return ChessPiece.moveForward(piece, ChessPiece.moveLeft(piece, from, distance), distance) }
+  static moveForwardRight(piece, from, distance = 1) { return ChessPiece.moveForward(piece, ChessPiece.moveRight(piece, from, distance), distance) }
+  static moveBackwardLeft(piece, from, distance = 1) { return ChessPiece.moveBackward(piece, ChessPiece.moveLeft(piece, from, distance), distance) }
+  static moveBackwardRight(piece, from, distance = 1) { return ChessPiece.moveBackward(piece, ChessPiece.moveRight(piece, from, distance), distance) }
 
 
-  moveKingSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance) }
-  moveQueenSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance * -1) }
+  static moveKingSide(piece, from, distance = 1) { return ChessPiece.move(piece, from, ChessPiece.FILE, ChessPiece.orient(piece) * distance) }
+  static moveQueenSide(piece, from, distance = 1) { return ChessPiece.move(piece, from, ChessPiece.FILE, ChessPiece.orient(piece) * distance * -1) }
 }

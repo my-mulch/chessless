@@ -9,7 +9,7 @@ export const parseFEN = function (FEN) {
   const [position, turn, castles, enPassant] = FEN.split(' ')
 
   // Create the board
-  const board = new Array(NUM_SQUARES)
+  const board = new Array(NUM_SQUARES).fill(null)
 
   // Fill up the board with pieces
   let i = 0
@@ -38,3 +38,13 @@ export const indexOf = function (rank, file) {
 
   return rank * NUM_RANKS + file
 }
+
+export const isWhite = function (piece) { return piece === piece.toUpperCase() }
+export const isBlack = function (piece) { return piece !== piece.toUpperCase() }
+export const getTeam = function (piece) { return isBlack(piece) ? 'b' : 'w' }
+
+export const isEmpty = function (board, square) { return board[square] === null }
+export const isOutOfBounds = function (board, square) { return board[square] === undefined }
+
+export const isSameTeam = function (board, square, piece) { return board[square] && getTeam(board[square]) === getTeam(piece) }
+export const isOtherTeam = function (board, square, piece) { return board[square] && getTeam(board[square]) !== getTeam(piece) }
