@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { imageFromPiece } from './utils'
+
 
 export default function Board() {
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
@@ -17,18 +19,21 @@ export default function Board() {
     flexDirection: 'row'
   }
 
-  const getSquareStyle = function (rank, file) {
+  const getSquareStyle = function (rank, file, piece) {
     return {
       flex: 1,
-      backgroundColor: (rank + file) % 2 ? 'brown' : 'beige'
+      backgroundSize: 'contain',
+      backgroundRepeat: 'no-repeat',
+      backgroundImage: imageFromPiece[piece],
+      backgroundColor: (rank + file) % 2 ? 'brown' : 'beige',
     }
   }
 
   return <div style={boardStyle}>
     {ranks.map((rank, ri) =>
-      <div style={rowStyle}>
+      <div key={rank} style={rowStyle}>
         {files.map((file, fi) =>
-          <div style={getSquareStyle(ri, fi)}>{file} - {rank}</div>
+          <div key={file} style={getSquareStyle(ri, fi, 'N')}>{file} - {rank}</div>
         )}
       </div>
     )}
