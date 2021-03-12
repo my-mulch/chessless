@@ -1,3 +1,5 @@
+import PieceMap from "./pieces"
+
 export const NUM_RANKS = 8
 export const NUM_FILES = 8
 export const NUM_SQUARES = 8 * 8
@@ -39,6 +41,13 @@ export const indexOf = function (rank, file) {
 export const WHITE = 'w'
 export const BLACK = 'b'
 
+export const ROOK = 'r'
+export const KING = 'k'
+export const PAWN = 'p'
+export const QUEEN = 'q'
+export const KNIGHT = 'k'
+export const BISHOP = 'b'
+
 export const isWhite = function (piece) { return piece === piece.toUpperCase() }
 export const isBlack = function (piece) { return piece !== piece.toUpperCase() }
 export const getTeam = function (piece) { return isBlack(piece) ? BLACK : WHITE }
@@ -50,3 +59,34 @@ export const isOutOfBounds = function (board, square) { return board[square] ===
 
 export const isSameTeam = function (board, square, piece) { return board[square] && getTeam(board[square]) === getTeam(piece) }
 export const isOtherTeam = function (board, square, piece) { return board[square] && getTeam(board[square]) !== getTeam(piece) }
+
+export const getMoves = function (board, team) {
+  const moves = {}
+
+  board.forEach((piece, square) => {
+    if (!piece || getTeam(piece) !== team) return
+
+    moves[square] = PieceMap[piece.toLowerCase()].getMoves(piece, square, team)
+  })
+}
+
+export const kingIsInCheck = function (board, team, moves) {
+  let kingPosition
+
+  for (let i = 0; i < board.length; i++) {
+    if (!board[i]) continue
+
+    if (board[i].toLowerCase() === KING && getTeam(board[i]) === team) {
+      kingPosition = i
+      break
+    }
+  }
+
+  const otherTeamPieces = Object.values(moves)
+
+  for (const move of otherTeamPieces) {
+    if (move[kingPosition]) return true
+  }
+
+  return false
+}

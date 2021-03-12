@@ -5,4 +5,4 @@ import Queen from './queen.js'
 import Bishop from './bishop.js'
 import Knight from './knight.js'
 
-export { Rook, King, Pawn, Queen, Bishop, Knight }
+export default { r: Rook, n: Knight, b: Bishop, q: Queen, k: King, p: Pawn }

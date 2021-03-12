@@ -1,12 +1,13 @@
-import ChessPiece from '../piece'
+import ChessPiece from '../game/piece.js'
+import { getOtherTeam, getMoves, kingIsInCheck, getTeam } from '../utils'
 
 export default class King extends ChessPiece {
     getCastle(piece, square, board, side, rookStart) {
         // Get the other team's attacking moves
-        const newGame = game.getOtherTeamMoves()
+        const otherTeamMoves = getMoves(board, getOtherTeam(piece))
 
         // If the king is in check or has moved, ya can't castle
-        if (Boolean(newGame.turn.moves[game.turn.from]) || game.history.moved.has(this.id))
+        if (kingIsInCheck(board, getTeam(piece), otherTeamMoves) || game.history.moved.has(this.id))
             return
 
         // Get the rook
