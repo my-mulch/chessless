@@ -1,5 +1,4 @@
-import ChessMove from '../move'
-import ChessPiece from '../piece'
+import ChessPiece from '../piece.js'
 
 export default class Bishop extends ChessPiece {
     getMoves(piece, square, board) {
@@ -7,7 +6,7 @@ export default class Bishop extends ChessPiece {
             ...this.find(piece, square, board, this.moveForwardLeft),
             ...this.find(piece, square, board, this.moveForwardRight),
             ...this.find(piece, square, board, this.moveBackwardLeft),
-            ...this.find(piece, square, board, this.moveBackwardRight),
+            ...this.find(piece, square, board, this.moveBackwardRight)
         }
     }
 }

@@ -26,24 +26,26 @@ export const parseFEN = function (FEN) {
 }
 
 export const rankAndFileOf = function (index) {
-  return [
-    Math.floor(index / NUM_RANKS),
-    index % NUM_FILES
-  ]
+  return [Math.floor(index / NUM_RANKS), index % NUM_FILES]
 }
 
 export const indexOf = function (rank, file) {
-  if (rank < 0 || rank >= NUM_RANKS || file < 0 || file >= NUM_FILES)
-    return undefined
+  if (rank < 0 || rank >= NUM_RANKS || file < 0 || file >= NUM_FILES) return undefined
 
   return rank * NUM_RANKS + file
 }
 
+// Utils for the board and pieces
+export const WHITE = 'w'
+export const BLACK = 'b'
+
 export const isWhite = function (piece) { return piece === piece.toUpperCase() }
 export const isBlack = function (piece) { return piece !== piece.toUpperCase() }
-export const getTeam = function (piece) { return isBlack(piece) ? 'b' : 'w' }
+export const getTeam = function (piece) { return isBlack(piece) ? BLACK : WHITE }
+export const getOtherTeam = function (piece) { return isBlack(piece) ? WHITE : BLACK }
 
 export const isEmpty = function (board, square) { return board[square] === null }
+export const isInBounds = function (board, square) { return board[square] !== undefined }
 export const isOutOfBounds = function (board, square) { return board[square] === undefined }
 
 export const isSameTeam = function (board, square, piece) { return board[square] && getTeam(board[square]) === getTeam(piece) }

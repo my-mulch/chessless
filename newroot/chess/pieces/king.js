@@ -1,8 +1,7 @@
-import ChessMove from '../move'
 import ChessPiece from '../piece'
 
 export default class King extends ChessPiece {
-    getCastle(game, side, rookStart) {
+    getCastle(piece, square, board, side, rookStart) {
         // Get the other team's attacking moves
         const newGame = game.getOtherTeamMoves()
 
@@ -36,19 +35,20 @@ export default class King extends ChessPiece {
         })
     }
 
-    getMoves(game) {
-        if (!game.turn.seekingCheck) {
-            this.getCastle(game, this.moveKingSide.bind(this), this.moveKingSide(game.turn.from, 3))
-            this.getCastle(game, this.moveQueenSide.bind(this), this.moveQueenSide(game.turn.from, 4))
+    getMoves(piece, square, board) {
+        // if (!game.turn.seekingCheck) {
+        //     this.getCastle(game, this.moveKingSide.bind(this), this.moveKingSide(game.turn.from, 3))
+        //     this.getCastle(game, this.moveQueenSide.bind(this), this.moveQueenSide(game.turn.from, 4))
+        // }
+        return {
+            ...this.find(game, this.moveLeft, 1),
+            ...this.find(game, this.moveRight, 1),
+            ...this.find(game, this.moveForward, 1),
+            ...this.find(game, this.moveBackward, 1),
+            ...this.find(game, this.moveForwardLeft, 1),
+            ...this.find(game, this.moveForwardRight, 1),
+            ...this.find(game, this.moveBackwardLeft, 1),
+            ...this.find(game, this.moveBackwardRight, 1),
         }
-
-        ChessMove.find(game, this.moveLeft.bind(this), 1)
-        ChessMove.find(game, this.moveRight.bind(this), 1)
-        ChessMove.find(game, this.moveForward.bind(this), 1)
-        ChessMove.find(game, this.moveBackward.bind(this), 1)
-        ChessMove.find(game, this.moveForwardLeft.bind(this), 1)
-        ChessMove.find(game, this.moveForwardRight.bind(this), 1)
-        ChessMove.find(game, this.moveBackwardLeft.bind(this), 1)
-        ChessMove.find(game, this.moveBackwardRight.bind(this), 1)
     }
 }
