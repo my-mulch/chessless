@@ -40,7 +40,7 @@ export const isInBounds = function (board, square) { return board[square] !== un
 export const isOutOfBounds = function (board, square) { return board[square] === undefined }
 
 export const getMoves = function (board, team, history) {
-  const allMoves = {}
+  const allMoves = []
   const allChecks = false
   const allAttacks = new Set()
 
@@ -50,7 +50,7 @@ export const getMoves = function (board, team, history) {
     const { moves, checks, attacks } = piece.getMoves(square, board, history)
 
     // Assign moves
-    allMoves[square] = moves
+    allMoves.push(...moves)
     
     // Merge attacks
     attacks.forEach(allAttacks.add, allAttacks)

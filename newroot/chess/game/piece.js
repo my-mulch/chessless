@@ -38,7 +38,7 @@ export default class ChessPiece extends String {
 
   // Get all moves for any piece. Next determines how the piece moves. See subclasses
   getMoves(from, board, next, steps = Infinity) {
-    const moves = {}
+    const moves = []
     const checks = false
     const attacks = new Set()
 
@@ -46,8 +46,8 @@ export default class ChessPiece extends String {
 
     while (step++ < steps && isInBounds(board, to) && !this.isSameTeam(board, to)) {
       // Add the move
-      moves[to] = { from, to }
-      
+      moves.push({ to, from })
+
       // Add the attacked square
       attacks.add(to)
 
