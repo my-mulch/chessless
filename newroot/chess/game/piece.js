@@ -39,24 +39,29 @@ export default class ChessPiece extends String {
   // Get all moves for any piece. Next determines how the piece moves. See subclasses
   getMoves(from, board, next, steps = Infinity) {
     const moves = {}
-    const checks = {}
+    const checks = false
+    const attacks = new Set()
 
     let step = 0, to = next(from)
 
     while (step++ < steps && isInBounds(board, to) && !this.isSameTeam(board, to)) {
+      // Add the move
       moves[to] = { from, to }
+      
+      // Add the attacked square
+      attacks.add(to)
 
       if (this.isOtherTeam(board, to)) {
-        if (board[to].getType() === ChessPiece.KING)
-          checks[to] = { from, to }
+        // If we check the king, note as such
+        if (board[to].getType() === ChessPiece.KING) checks = true
 
-        return { moves, checks }
+        return { moves, checks, attacks }
       }
 
       to = next(to)
     }
 
-    return { moves, checks }
+    return { moves, checks, attacks }
   }
 
   // Returns the final index of a given move in a particular direction
