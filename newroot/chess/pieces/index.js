@@ -5,11 +5,13 @@ import Queen from './queen.js'
 import Bishop from './bishop.js'
 import Knight from './knight.js'
 
+import ChessPiece from '../game/piece.js'
+
 export default {
-  r: Rook, R: Rook,
-  n: Knight, N: Knight,
-  b: Bishop, B: Bishop,
-  q: Queen, Q: Queen,
-  k: King, K: King,
-  p: Pawn, P: Pawn
+  [ChessPiece.PAWN]: Pawn,
+  [ChessPiece.KING]: King,
+  [ChessPiece.ROOK]: Rook,
+  [ChessPiece.QUEEN]: Queen,
+  [ChessPiece.KNIGHT]: Knight,
+  [ChessPiece.BISHOP]: Bishop,
 }

@@ -1,16 +1,24 @@
 import { v4 as uuid } from 'uuid'
-import { rankAndFileOf, indexOf, isInBounds, isBlack, isSameTeam, isOtherTeam } from '../utils.js'
+import { rankAndFileOf, indexOf, isInBounds } from '../utils.js'
 
 export default class ChessPiece extends String {
   // Define directionality of movement
   static FORWARD = 1
   static BACKWARD = -1
 
-  // Team constants
+  // Piece Constants
+  static ROOK = 'r'
+  static PAWN = 'p'
+  static KING = 'k'
+  static QUEEN = 'q'
+  static KNIGHT = 'n'
+  static BISHOP = 'b'
+
+  // Team Constants
   static WHITE = 'w'
   static BLACK = 'b'
 
-  // 2-D piece indices are given as [RANK, FILE]
+  // 2D piece indices are given as [RANK, FILE]
   static RANK = 0
   static FILE = 1
 
@@ -21,29 +29,34 @@ export default class ChessPiece extends String {
   isWhite() { return this.toString() === this.toUpperCase() }
   isBlack() { return this.toString() !== this.toUpperCase() }
 
+  getType() { return this.toLowerCase() }
   getTeam() { return this.isBlack() ? BLACK : WHITE }
   getOtherTeam() { return this.isBlack() ? WHITE : BLACK }
 
   isSameTeam(board, square) { return board[square] && board[square].getTeam() === this.getTeam() }
   isOtherTeam(board, square) { return board[square] && board[square].getTeam() !== this.getTeam() }
-  
+
   // Get all moves for any piece. Next determines how the piece moves. See subclasses
   getMoves(from, board, next, steps = Infinity) {
     const moves = {}
+    const checks = {}
 
-    let step = 0
-    let to = next(from)
+    let step = 0, to = next(from)
 
-    while (step++ < steps && isInBounds(board, to) && !isSameTeam(board, to, this.toString())) {
+    while (step++ < steps && isInBounds(board, to) && !this.isSameTeam(board, to)) {
       moves[to] = { from, to }
 
-      if (isOtherTeam(board, to, this.toString()))
-        return moves
+      if (this.isOtherTeam(board, to)) {
+        if (board[to].getType() === ChessPiece.KING)
+          checks[to] = { from, to }
+
+        return { moves, checks }
+      }
 
       to = next(to)
     }
 
-    return moves
+    return { moves, checks }
   }
 
   // Returns the final index of a given move in a particular direction
@@ -58,7 +71,7 @@ export default class ChessPiece extends String {
   }
 
   // Orients the piece on the board. Forward depends on which team you are on.
-  orient() { return isBlack(this.toString()) ? ChessPiece.BACKWARD : ChessPiece.FORWARD }
+  orient() { return this.isWhite() ? ChessPiece.FORWARD : ChessPiece.BACKWARD }
 
   // Move types
   moveLeft(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance * -1) }

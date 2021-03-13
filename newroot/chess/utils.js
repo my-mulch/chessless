@@ -9,7 +9,7 @@ export const parseFEN = function (FEN) {
   const [position, turn, castles, enPassant] = FEN.split(' ')
 
   // Create the board
-  const board = new Array(NUM_SQUARES).fill(null)
+  const board = new Array(NUM_SQUARES)
 
   // Fill up the board with pieces
   let i = 0
@@ -38,3 +38,19 @@ export const indexOf = function (rank, file) {
 export const isEmpty = function (board, square) { return board[square] === null }
 export const isInBounds = function (board, square) { return board[square] !== undefined }
 export const isOutOfBounds = function (board, square) { return board[square] === undefined }
+
+export const getMoves = function (board, team) {
+  const allMoves = {}
+  const allChecks = {}
+
+  board.forEach((piece, square) => {
+    if (!piece || piece.getTeam() !== team) return
+    
+    const { moves, checks } = piece.getMoves(square, board)
+
+    allMoves[square] = moves
+    allChecks[square] = checks
+  })
+
+  return { moves: allMoves, checks: allChecks }
+}
