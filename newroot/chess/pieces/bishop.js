@@ -1,12 +1,14 @@
 import ChessPiece from '../piece.js'
 
 export default class Bishop extends ChessPiece {
-    getMoves(square, board, history) {
+    constructor(team) { super(ChessPiece.BISHOP, team) }
+
+    getMoves(game, square) {
         return [
-            ...super.getMoves(square, board, history, super.moveForwardLeft.bind(this)),
-            ...super.getMoves(square, board, history, super.moveForwardRight.bind(this)),
-            ...super.getMoves(square, board, history, super.moveBackwardLeft.bind(this)),
-            ...super.getMoves(square, board, history, super.moveBackwardRight.bind(this))
+            ...super.getMoves(game, square, super.moveForwardLeft.bind(this)),
+            ...super.getMoves(game, square, super.moveForwardRight.bind(this)),
+            ...super.getMoves(game, square, super.moveBackwardLeft.bind(this)),
+            ...super.getMoves(game, square, super.moveBackwardRight.bind(this))
         ]
     }
 }

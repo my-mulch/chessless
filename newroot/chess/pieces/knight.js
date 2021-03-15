@@ -1,7 +1,8 @@
-import ChessMove from '../move'
-import ChessPiece from '../piece'
+import ChessPiece from '../piece.js'
 
 export default class Knight extends ChessPiece {
+    constructor(team) { super(ChessPiece.KNIGHT, team) }
+    
     hopForwardLeft(from) { return this.moveLeft(this.moveForward(from, 2)) }
     hopForwardRight(from) { return this.moveRight(this.moveForward(from, 2)) }
     hopRightForward(from) { return this.moveForward(this.moveRight(from, 2)) }
@@ -11,14 +12,16 @@ export default class Knight extends ChessPiece {
     hopLeftForward(from) { return this.moveForward(this.moveLeft(from, 2)) }
     hopLeftBackward(from) { return this.moveBackward(this.moveLeft(from, 2)) }
 
-    getMoves(game) {
-        ChessMove.find(game, this.hopForwardLeft.bind(this), 1)
-        ChessMove.find(game, this.hopForwardRight.bind(this), 1)
-        ChessMove.find(game, this.hopRightForward.bind(this), 1)
-        ChessMove.find(game, this.hopRightBackward.bind(this), 1)
-        ChessMove.find(game, this.hopBackwardLeft.bind(this), 1)
-        ChessMove.find(game, this.hopBackwardRight.bind(this), 1)
-        ChessMove.find(game, this.hopLeftForward.bind(this), 1)
-        ChessMove.find(game, this.hopLeftBackward.bind(this), 1)
+    getMoves(square, board, history) {
+        return [
+            ...super.getMoves(square, board, history, this.hopForwardLeft.bind(this), 1),
+            ...super.getMoves(square, board, history, this.hopForwardRight.bind(this), 1),
+            ...super.getMoves(square, board, history, this.hopRightForward.bind(this), 1),
+            ...super.getMoves(square, board, history, this.hopRightBackward.bind(this), 1),
+            ...super.getMoves(square, board, history, this.hopBackwardLeft.bind(this), 1),
+            ...super.getMoves(square, board, history, this.hopBackwardRight.bind(this), 1),
+            ...super.getMoves(square, board, history, this.hopLeftForward.bind(this), 1),
+            ...super.getMoves(square, board, history, this.hopLeftBackward.bind(this), 1)
+        ]
     }
 }

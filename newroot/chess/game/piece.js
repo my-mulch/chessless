@@ -23,7 +23,15 @@ export default class ChessPiece extends String {
   static FILE = 1
 
   // Creates a piece with a unique ID
-  constructor() { this.id = uuid() }
+  constructor(type, team) {
+    // By FEN convention, white pieces are uppercase
+    const assignTeam = team === WHITE
+      ? String.prototype.toUpperCase
+      : String.prototype.toLowerCase
+      
+    super(type.call(assignTeam));
+    this.id = uuid()
+  }
 
   // Helper methods
   isWhite() { return this.toString() === this.toUpperCase() }
@@ -32,6 +40,12 @@ export default class ChessPiece extends String {
   getType() { return this.toLowerCase() }
   getTeam() { return this.isBlack() ? BLACK : WHITE }
   getOtherTeam() { return this.isBlack() ? WHITE : BLACK }
+
+  isLastRank(square) {
+    const [rank] = rankAndFileOf(square)
+
+    return (this.isWhite() && rank === 7) || (this.isBlack() && rank === 0)
+  }
 
   isSameTeam(board, square) { return board[square] && board[square].getTeam() === this.getTeam() }
   isOtherTeam(board, square) { return board[square] && board[square].getTeam() !== this.getTeam() }

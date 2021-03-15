@@ -2,28 +2,30 @@ import ChessPiece from '../game/piece.js'
 import { getMoves, isEmpty } from '../utils'
 
 export default class King extends ChessPiece {
-    getCastles(square, board, history, side, rookStart) {
+    constructor(team) { super(ChessPiece.KING, team) }
+    
+    getCastles(square, game, side, rookStart) {
         // Get the other team's attacking moves
-        const { checks, attacks } = getMoves(board, this.getOtherTeam())
+        const { checks, attacks } = getMoves(game, this.getOtherTeam())
 
         // If the king is in check or has moved, ya can't castle
-        if (Object.keys(checks).length || history.has(this.id)) return
+        if (Object.keys(checks).length || history.has(this.id)) return []
 
         // Get the rook
         const rook = board[rookStart]
         const rookDestination = side(square, 1)
 
         // If the rook has moved, ya can't castle
-        if (!rook || history.has(rook.id)) return
+        if (!rook || history.has(rook.id)) return []
 
         // If the king moves through any attacked squares, ya can't castle
-        if (attacks.has(side(square, 1)) || attacks.has(side(square, 2))) return
+        if (attacks.has(side(square, 1)) || attacks.has(side(square, 2))) return []
 
         // If there are pieces in the way, ya can't castle
         let rookPosition = rookStart
         const rookStop = side(rookDestination, -1)
         while ((rookPosition = side(rookPosition, -1)) !== rookStop)
-            if (!isEmpty(board, rookPosition)) return
+            if (!isEmpty(board, rookPosition)) return []
 
         // Finally, castle
         return [{

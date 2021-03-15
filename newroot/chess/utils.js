@@ -39,15 +39,15 @@ export const isEmpty = function (board, square) { return board[square] === null 
 export const isInBounds = function (board, square) { return board[square] !== undefined }
 export const isOutOfBounds = function (board, square) { return board[square] === undefined }
 
-export const getMoves = function (board, team, history) {
+export const getMoves = function (game, team) {
   const allMoves = []
   const allChecks = false
   const allAttacks = new Set()
 
-  board.forEach((piece, square) => {
+  game.board.forEach((piece, square) => {
     if (!piece || piece.getTeam() !== team) return
     
-    const { moves, checks, attacks } = piece.getMoves(square, board, history)
+    const { moves, checks, attacks } = piece.getMoves(game, square)
 
     // Assign moves
     allMoves.push(...moves)

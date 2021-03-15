@@ -1,35 +1,43 @@
-import Rook from './rook'
-import Queen from './queen'
-import Bishop from './bishop'
-import Knight from './knight'
+import Rook from './rook.js'
+import Queen from './queen.js'
+import Knight from './knight.js'
+import Bishop from './bishop.js'
 
-import ChessPiece from '../piece'
+import ChessPiece from '../piece.js'
+import { isEmpty } from '../utils.js'
 
 export default class Pawn extends ChessPiece {
+    constructor(team) { super(ChessPiece.PAWN, team) }
+
     // Push
-    getPushes(game) {
-        const push = this.moveForward(game.turn.from)
+    getPushes(square, board, history) {
+        const moves = []
 
-        if (game.isEmptySquare(push)) {
-            if (this.isLastRank(push))
-                return this.getPromotions(game, push)
+        const pushSquare = super.moveForward(square)
+        const pushMove = { from: square, to: pushSquare, team: super.getTeam() }
 
-            game.considerMove(push)
+        if (isEmpty(board, pushSquare) && !putsKingInCheck(board, pushMove)) {
+            if (super.isLastRank(pushSquare))
+                return this.getPromotions(square, pushSquare)
+
+            moves.push(pushMove)
         }
 
-        const doublePush = this.moveForward(push)
+        const doublePushSquare = super.moveForward(pushSquare)
+        const doublePushMove = { from: square, to: doublePushSquare, team: super.getTeam() }
 
-        if (game.isEmptySquare(doublePush) && !game.history.moved.has(this.id))
-            game.considerMove(doublePush)
+        if (!history.has(super.id) &&
+            isEmpty(board, doublePushSquare) &&
+            !putsKingInCheck(board, doublePushMove))
+            moves.push(doublePushMove)
     }
 
     // Enpassant
-    canEnpassant(game, checkSquare) {
-        if (!game.history.moves.length)
-            return false
+    canEnpassant(square, board, history, checkSquare) {
+        if (!history.size) return false
 
-        const check = checkSquare(game.turn.from)
-        const otherPiece = game.board[check]
+        const check = checkSquare(square)
+        const otherPiece = board[check]
         const lastMove = game.history.lastMove()
 
         return game.isOtherTeamSquare(check) &&
@@ -59,11 +67,13 @@ export default class Pawn extends ChessPiece {
     }
 
     // Promotions
-    getPromotions(game, to) {
-        game.considerMove(to, game => game.board[to] = new Rook(this.team, this.id))
-        game.considerMove(to, game => game.board[to] = new Queen(this.team, this.id))
-        game.considerMove(to, game => game.board[to] = new Knight(this.team, this.id))
-        game.considerMove(to, game => game.board[to] = new Bishop(this.team, this.id))
+    getPromotions(square, to) {
+        return [
+            { from: square, to, special(board) { board[to] = new Rook(super.getTeam()) } },
+            { from: square, to, special(board) { board[to] = new Queen(super.getTeam()) } },
+            { from: square, to, special(board) { board[to] = new Knight(super.getTeam()) } },
+            { from: square, to, special(board) { board[to] = new Bishop(super.getTeam()) } }
+        ]
     }
 
     getMoves(game) {
