@@ -100,6 +100,12 @@ export default class ChessGame {
     return this.makeMove(move).getMoves(move.piece.getOtherTeam(), true).checks
   }
 
+  isEmpty(square) { return this.board[square] === null }
+  isInBounds(square) { return this.board[square] !== undefined }
+  isOutOfBounds(square) { return this.board[square] === undefined }
+  isSameTeam(square, piece) { return this.board[square] && this.board[square].getTeam() === piece.getTeam() }
+  isOtherTeam(square, piece) { return this.board[square] && this.board[square].getTeam() !== piece.getTeam() }
+
   clone() {
     return new ChessGame(this)
   }

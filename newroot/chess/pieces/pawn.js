@@ -13,20 +13,19 @@ export default class Pawn extends ChessPiece {
     getPushes(game, square, pushSquare, doublePushSquare) {
         const moves = []
 
-        const pushMove = { from: square, to: pushSquare }
-        if (isEmpty(board, pushSquare) && !putsOwnKingInCheck(board, pushMove, super.getOtherTeam())) {
+        const pushMove = { from: square, to: pushSquare, piece: game.board[square] }
+        if (game.isEmpty(pushSquare) && !game.movePutsKingInCheck(pushMove)) {
             if (super.isLastRank(pushSquare))
                 return this.getPromotions(square, pushSquare)
 
             moves.push(pushMove)
         }
 
-        const doublePushMove = { from: square, to: doublePushSquare }
-        if (!game.previouslyMovedPieces.has(super.id) &&
-            isEmpty(game.board, doublePushSquare) &&
-            !putsOwnKingInCheck(game.board, doublePushMove, super.getOtherTeam())) {
+        const doublePushMove = { from: square, to: doublePushSquare, piece: game.board[square] }
+        if (!game.hasMoved(this) && game.isEmpty(doublePushSquare) && !game.movePutsKingInCheck(doublePushMove))
             moves.push(doublePushMove)
-        }
+
+        return moves
     }
 
     // Enpassant
@@ -75,17 +74,25 @@ export default class Pawn extends ChessPiece {
     getMoves(game, square, seekingCheck) {
         const moves = []
 
-        if (seekingCheck) {
-            moves.push(...this.getPushes(game, square, super.moveForward(square, 1), super.moveForward(square, 2)))
+        /**
+         * Seeking check means we are checking our opponents attacking moves to determine
+         * whether or not a move we are making is legal. If this is the case, we do not need
+         * to check pushes or enpassants bc these do not contains immediate checks. I.e. We have to complete
+         * them before a check can occur
+         */
 
-            // Getting enpassants we need to look at the square to the side, and the square behind
-            moves.push(...this.getEnpassant(game, square, super.moveLeft(square, 1), super.moveForwardLeft(square, 1)))
-            moves.push(...this.getEnpassant(game, square, super.moveRight(square, 1), super.moveForwardRight(square, 1)))
+        if (!seekingCheck) {
+            moves.push(
+                ...this.getPushes(game, square, super.moveForward(square, 1), super.moveForward(square, 2)),
+                // Getting enpassants we need to look at the square to the side, and the square behind
+                ...this.getEnpassant(game, square, super.moveLeft(square, 1), super.moveForwardLeft(square, 1)),
+                ...this.getEnpassant(game, square, super.moveRight(square, 1), super.moveForwardRight(square, 1)),
+            )
         }
 
-        moves.push(...this.getCapture(game, square, super.moveForwardLeft(square, 1)))
-        moves.push(...this.getCapture(game, square, super.moveForwardRight(square, 1)))
-
-        return moves
+        return moves.concat([
+            ...this.getCapture(game, square, super.moveForwardLeft(square, 1)),
+            ...this.getCapture(game, square, super.moveForwardRight(square, 1))
+        ])
     }
 }

@@ -35,6 +35,3 @@ export const indexOf = function (rank, file) {
   return rank * NUM_RANKS + file
 }
 
-export const isEmpty = function (board, square) { return board[square] === null }
-export const isInBounds = function (board, square) { return board[square] !== undefined }
-export const isOutOfBounds = function (board, square) { return board[square] === undefined }

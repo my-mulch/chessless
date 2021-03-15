@@ -52,9 +52,6 @@ export default class ChessPiece extends String {
     return (this.isWhite() && rank === 7) || (this.isBlack() && rank === 0)
   }
 
-  isSameTeam(board, square) { return board[square] && board[square].getTeam() === this.getTeam() }
-  isOtherTeam(board, square) { return board[square] && board[square].getTeam() !== this.getTeam() }
-
   // Get all moves for any piece. Next determines how the piece moves. See subclasses
   getMoves(game, from, next, steps = Infinity) {
     const moves = []
@@ -63,7 +60,7 @@ export default class ChessPiece extends String {
 
     let step = 0, to = next(from)
 
-    while (step++ < steps && isInBounds(game.board, to) && !this.isSameTeam(game.board, to)) {
+    while (step++ < steps && game.isInBounds(to) && !game.isSameTeam(to, this)) {
       // Add the move, as long as it is legal
       const move = { to, from, piece: game.board[from] }
       if (!game.movePutsKingInCheck(move))
@@ -72,7 +69,7 @@ export default class ChessPiece extends String {
       // Add the attacked square
       attacks.add(to)
 
-      if (this.isOtherTeam(board, to)) {
+      if (game.isOtherTeam(to, this)) {
         // If we check the king, note that
         if (game.board[to].getType() === ChessPiece.KING) checks = true
 
