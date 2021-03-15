@@ -40,7 +40,7 @@ export default class ChessPiece extends String {
   getType() { return this.toLowerCase() }
   getTeam() { return this.isBlack() ? BLACK : WHITE }
   getOtherTeam() { return this.isBlack() ? WHITE : BLACK }
-  
+
   // Used when initting the board
   static getTeam(piece) {
     return piece.toLowerCase() === piece.toString() ? ChessPiece.BLACK : ChessPiece.WHITE
@@ -64,8 +64,10 @@ export default class ChessPiece extends String {
     let step = 0, to = next(from)
 
     while (step++ < steps && isInBounds(game.board, to) && !this.isSameTeam(game.board, to)) {
-      // Add the move
-      moves.push({ to, from })
+      // Add the move, as long as it is legal
+      const move = { to, from, piece: game.board[from] }
+      if (!game.movePutsKingInCheck(move))
+        moves.push(move)
 
       // Add the attacked square
       attacks.add(to)
