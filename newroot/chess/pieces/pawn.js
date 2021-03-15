@@ -10,60 +10,56 @@ export default class Pawn extends ChessPiece {
     constructor(team) { super(ChessPiece.PAWN, team) }
 
     // Push
-    getPushes(square, board, history) {
+    getPushes(game, square, pushSquare, doublePushSquare) {
         const moves = []
 
-        const pushSquare = super.moveForward(square)
-        const pushMove = { from: square, to: pushSquare, team: super.getTeam() }
-
-        if (isEmpty(board, pushSquare) && !putsKingInCheck(board, pushMove)) {
+        const pushMove = { from: square, to: pushSquare }
+        if (isEmpty(board, pushSquare) && !putsOwnKingInCheck(board, pushMove, super.getOtherTeam())) {
             if (super.isLastRank(pushSquare))
                 return this.getPromotions(square, pushSquare)
 
             moves.push(pushMove)
         }
 
-        const doublePushSquare = super.moveForward(pushSquare)
-        const doublePushMove = { from: square, to: doublePushSquare, team: super.getTeam() }
-
-        if (!history.has(super.id) &&
-            isEmpty(board, doublePushSquare) &&
-            !putsKingInCheck(board, doublePushMove))
+        const doublePushMove = { from: square, to: doublePushSquare }
+        if (!game.previouslyMovedPieces.has(super.id) &&
+            isEmpty(game.board, doublePushSquare) &&
+            !putsOwnKingInCheck(game.board, doublePushMove, super.getOtherTeam())) {
             moves.push(doublePushMove)
+        }
     }
 
     // Enpassant
-    canEnpassant(square, board, history, checkSquare) {
+    canEnpassant(game, checkSquare) {
         if (!history.size) return false
 
-        const check = checkSquare(square)
-        const otherPiece = board[check]
-        const lastMove = game.history.lastMove()
+        const otherPiece = board[checkSquare]
+        const lastMove = game.getLastMove()
 
-        return game.isOtherTeamSquare(check) &&
-            otherPiece.constructor === Pawn &&
+        return super.isOtherTeam(game.board, checkSquare) &&
+            otherPiece.getType() === Pawn &&
             Math.abs(lastMove.from - lastMove.to) === 16 && // Double push
-            game.board[lastMove.to] === otherPiece
+            game.board[lastMove.to].id === otherPiece.id
     }
 
-    getEnpassant(game, checkSquare, captureSquare) {
-        const check = checkSquare(game.turn.from)
-        const capture = captureSquare(game.turn.from)
+    getEnpassant(game, square, checkSquare, captureSquare) {
+        const enpassant = { from: square, to: captureSquare, special(board) { board[checkSquare] = null } }
 
-        if (this.canEnpassant(game, checkSquare))
-            game.considerMove(capture, game => game.board[check] = null)
+        if (this.canEnpassant(game, checkSquare) && !putsOwnKingInCheck(game.board, enpassant, super.getOtherTeam()))
+            return [enpassant]
     }
 
     // Capture
-    getCapture(game, captureSquare) {
-        const capture = captureSquare(game.turn.from)
+    getCapture(game, square, captureSquare) {
+        const captureMove = { from: square, to: captureSquare }
 
-        if (game.isOtherTeamSquare(capture)) {
-            if (this.isLastRank(capture))
-                return this.getPromotions(game, capture)
+        if (super.isOtherTeam(game.board, captureSquare) || putsOwnKingInCheck(game.board, captureMove, super.getOtherTeam()))
+            return []
 
-            game.considerMove(capture)
-        }
+        if (this.isLastRank(captureSquare))
+            return this.getPromotions(square, captureSquare)
+
+        return [captureMove]
     }
 
     // Promotions
@@ -76,14 +72,20 @@ export default class Pawn extends ChessPiece {
         ]
     }
 
-    getMoves(game) {
-        if (!game.turn.seekingCheck) {
-            this.getPushes(game)
-            this.getEnpassant(game, this.moveLeft.bind(this), this.moveForwardLeft.bind(this))
-            this.getEnpassant(game, this.moveRight.bind(this), this.moveForwardRight.bind(this))
+    getMoves(game, square, seekingCheck) {
+        const moves = []
+
+        if (seekingCheck) {
+            moves.push(...this.getPushes(game, square, super.moveForward(square, 1), super.moveForward(square, 2)))
+
+            // Getting enpassants we need to look at the square to the side, and the square behind
+            moves.push(...this.getEnpassant(game, square, super.moveLeft(square, 1), super.moveForwardLeft(square, 1)))
+            moves.push(...this.getEnpassant(game, square, super.moveRight(square, 1), super.moveForwardRight(square, 1)))
         }
 
-        this.getCapture(game, this.moveForwardLeft.bind(this))
-        this.getCapture(game, this.moveForwardRight.bind(this))
+        moves.push(...this.getCapture(game, square, super.moveForwardLeft(square, 1)))
+        moves.push(...this.getCapture(game, square, super.moveForwardRight(square, 1)))
+
+        return moves
     }
 }

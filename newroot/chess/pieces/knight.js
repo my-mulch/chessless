@@ -2,7 +2,7 @@ import ChessPiece from '../piece.js'
 
 export default class Knight extends ChessPiece {
     constructor(team) { super(ChessPiece.KNIGHT, team) }
-    
+
     hopForwardLeft(from) { return this.moveLeft(this.moveForward(from, 2)) }
     hopForwardRight(from) { return this.moveRight(this.moveForward(from, 2)) }
     hopRightForward(from) { return this.moveForward(this.moveRight(from, 2)) }
@@ -12,16 +12,16 @@ export default class Knight extends ChessPiece {
     hopLeftForward(from) { return this.moveForward(this.moveLeft(from, 2)) }
     hopLeftBackward(from) { return this.moveBackward(this.moveLeft(from, 2)) }
 
-    getMoves(square, board, history) {
+    getMoves(game, square) {
         return [
-            ...super.getMoves(square, board, history, this.hopForwardLeft.bind(this), 1),
-            ...super.getMoves(square, board, history, this.hopForwardRight.bind(this), 1),
-            ...super.getMoves(square, board, history, this.hopRightForward.bind(this), 1),
-            ...super.getMoves(square, board, history, this.hopRightBackward.bind(this), 1),
-            ...super.getMoves(square, board, history, this.hopBackwardLeft.bind(this), 1),
-            ...super.getMoves(square, board, history, this.hopBackwardRight.bind(this), 1),
-            ...super.getMoves(square, board, history, this.hopLeftForward.bind(this), 1),
-            ...super.getMoves(square, board, history, this.hopLeftBackward.bind(this), 1)
+            ...super.getMoves(game, square, this.hopForwardLeft.bind(this), 1),
+            ...super.getMoves(game, square, this.hopForwardRight.bind(this), 1),
+            ...super.getMoves(game, square, this.hopRightForward.bind(this), 1),
+            ...super.getMoves(game, square, this.hopRightBackward.bind(this), 1),
+            ...super.getMoves(game, square, this.hopBackwardLeft.bind(this), 1),
+            ...super.getMoves(game, square, this.hopBackwardRight.bind(this), 1),
+            ...super.getMoves(game, square, this.hopLeftForward.bind(this), 1),
+            ...super.getMoves(game, square, this.hopLeftBackward.bind(this), 1)
         ]
     }
 }
