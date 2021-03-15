@@ -45,6 +45,8 @@ export default class ChessGame {
   }
 
   getMoves(team = this.turn, seekingCheck = false) {
+    debugger
+
     const allMoves = []
     const allChecks = false
     const allAttacks = new Set()
@@ -52,16 +54,16 @@ export default class ChessGame {
     this.board.forEach((piece, square) => {
       if (!piece || piece.getTeam() !== team) return
 
-      const { moves, checks, attacks } = piece.getMoves(this, square, seekingCheck)
+      piece.getMoves(this, square, seekingCheck).forEach(({ moves, checks, attacks }) => {
+        // Assign moves
+        allMoves.push(...moves)
 
-      // Assign moves
-      allMoves.push(...moves)
+        // Merge attacks
+        attacks.forEach(allAttacks.add, allAttacks)
 
-      // Merge attacks
-      attacks.forEach(allAttacks.add, allAttacks)
-
-      // Do we check the king?
-      allChecks = allChecks || checks
+        // Do we check the king?
+        allChecks = allChecks || checks
+      })
     })
 
     return { moves: allMoves, checks: allChecks, attacks: allAttacks }

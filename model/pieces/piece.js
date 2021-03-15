@@ -94,7 +94,7 @@ export default class ChessPiece extends String {
   }
 
   // Orients the piece on the board. Forward depends on which team you are on.
-  orient() { return this.isWhite() ? ChessPiece.FORWARD : ChessPiece.BACKWARD }
+  orient() { return this.isWhite() ? ChessPiece.BACKWARD : ChessPiece.FORWARD }
 
   // Move types
   moveLeft(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance * -1) }

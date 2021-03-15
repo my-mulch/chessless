@@ -5,10 +5,10 @@ export default class Rook extends ChessPiece {
 
     getMoves(game, square) {
         return [
-            ...super.getMoves(game, square, super.moveLeft.bind(this)).moves,
-            ...super.getMoves(game, square, super.moveRight.bind(this)).moves,
-            ...super.getMoves(game, square, super.moveForward.bind(this)).moves,
-            ...super.getMoves(game, square, super.moveBackward.bind(this)).moves,
+            super.getMoves(game, square, super.moveLeft.bind(this)),
+            super.getMoves(game, square, super.moveRight.bind(this)),
+            super.getMoves(game, square, super.moveForward.bind(this)),
+            super.getMoves(game, square, super.moveBackward.bind(this)),
         ]
     }
 }

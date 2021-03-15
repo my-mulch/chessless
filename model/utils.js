@@ -9,7 +9,7 @@ export const parseFEN = function (FEN) {
   const [position, turn, castles, enPassant] = FEN.split(' ')
 
   // Create the board
-  const board = new Array(NUM_SQUARES)
+  const board = new Array(NUM_SQUARES).fill(null)
 
   // Fill up the board with pieces
   let i = 0
