@@ -2,7 +2,7 @@ import ChessPiece from '../game/piece.js'
 import { getMoves, isEmpty } from '../utils'
 
 export default class King extends ChessPiece {
-    constructor(team) { super(ChessPiece.KING, team) }
+    constructor(team, id) { super(ChessPiece.KING, team, id) }
 
     getCastle(game, square, moveCastleSide, rookStart) {
         // Get the king
@@ -53,7 +53,7 @@ export default class King extends ChessPiece {
          * whether or not a move we are making is legal. If this is the case, we do not need
          * to check castling moves
          */
-        
+
         if (!seekingCheck) {
             moves.push(
                 // To castle, we need: (game, square, castleSide, rookPosition)

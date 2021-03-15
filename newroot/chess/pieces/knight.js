@@ -1,7 +1,7 @@
 import ChessPiece from '../piece.js'
 
 export default class Knight extends ChessPiece {
-    constructor(team) { super(ChessPiece.KNIGHT, team) }
+    constructor(team, id) { super(ChessPiece.KNIGHT, team, id) }
 
     hopForwardLeft(from) { return this.moveLeft(this.moveForward(from, 2)) }
     hopForwardRight(from) { return this.moveRight(this.moveForward(from, 2)) }

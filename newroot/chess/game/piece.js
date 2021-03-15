@@ -23,14 +23,14 @@ export default class ChessPiece extends String {
   static FILE = 1
 
   // Creates a piece with a unique ID
-  constructor(type, team) {
+  constructor(type, team, id) {
     // By FEN convention, white pieces are uppercase
     const assignTeam = team === WHITE
       ? String.prototype.toUpperCase
       : String.prototype.toLowerCase
 
     super(type.call(assignTeam));
-    this.id = uuid()
+    this.id = id || uuid()
   }
 
   // Helper methods

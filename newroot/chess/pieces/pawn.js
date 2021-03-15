@@ -4,10 +4,9 @@ import Knight from './knight.js'
 import Bishop from './bishop.js'
 
 import ChessPiece from '../piece.js'
-import { isEmpty } from '../utils.js'
 
 export default class Pawn extends ChessPiece {
-    constructor(team) { super(ChessPiece.PAWN, team) }
+    constructor(team, id) { super(ChessPiece.PAWN, team, id) }
 
     // Push
     getPushes(game, square, pushSquare, doublePushSquare) {
@@ -16,7 +15,7 @@ export default class Pawn extends ChessPiece {
         const pushMove = { from: square, to: pushSquare, piece: game.board[square] }
         if (game.isEmpty(pushSquare) && !game.movePutsKingInCheck(pushMove)) {
             if (super.isLastRank(pushSquare))
-                return this.getPromotions(square, pushSquare)
+                return this.getPromotions(game, square, pushSquare)
 
             moves.push(pushMove)
         }
@@ -35,39 +34,46 @@ export default class Pawn extends ChessPiece {
         const otherPiece = board[checkSquare]
         const lastMove = game.getLastMove()
 
-        return super.isOtherTeam(game.board, checkSquare) &&
-            otherPiece.getType() === Pawn &&
+        return game.isOtherTeam(checkSquare, this) &&
+            otherPiece.getType() === ChessPiece.PAWN &&
             Math.abs(lastMove.from - lastMove.to) === 16 && // Double push
-            game.board[lastMove.to].id === otherPiece.id
+            lastMove.piece.id === otherPiece.id
     }
 
     getEnpassant(game, square, checkSquare, captureSquare) {
-        const enpassant = { from: square, to: captureSquare, special(board) { board[checkSquare] = null } }
+        const enpassant = {
+            from: square,
+            to: captureSquare,
+            piece: game.board[square],
+            special(board) { board[checkSquare] = null }
+        }
 
-        if (this.canEnpassant(game, checkSquare) && !putsOwnKingInCheck(game.board, enpassant, super.getOtherTeam()))
+        if (this.canEnpassant(game, checkSquare) && !game.movePutsKingInCheck(enpassant))
             return [enpassant]
     }
 
     // Capture
     getCapture(game, square, captureSquare) {
-        const captureMove = { from: square, to: captureSquare }
+        const captureMove = { from: square, to: captureSquare, piece: game.board[square] }
 
-        if (super.isOtherTeam(game.board, captureSquare) || putsOwnKingInCheck(game.board, captureMove, super.getOtherTeam()))
+        if (game.isSameTeam(captureSquare, this) || game.movePutsKingInCheck(captureMove))
             return []
 
         if (this.isLastRank(captureSquare))
-            return this.getPromotions(square, captureSquare)
+            return this.getPromotions(game, square, captureSquare)
 
         return [captureMove]
     }
 
     // Promotions
-    getPromotions(square, to) {
+    getPromotions(game, square, to) {
+        const piece = game.board[square]
+
         return [
-            { from: square, to, special(board) { board[to] = new Rook(super.getTeam()) } },
-            { from: square, to, special(board) { board[to] = new Queen(super.getTeam()) } },
-            { from: square, to, special(board) { board[to] = new Knight(super.getTeam()) } },
-            { from: square, to, special(board) { board[to] = new Bishop(super.getTeam()) } }
+            { from: square, to, piece, special(board) { board[to] = new Rook(super.getTeam(), piece.id) } },
+            { from: square, to, piece, special(board) { board[to] = new Queen(super.getTeam(), piece.id) } },
+            { from: square, to, piece, special(board) { board[to] = new Knight(super.getTeam(), piece.id) } },
+            { from: square, to, piece, special(board) { board[to] = new Bishop(super.getTeam(), piece.id) } },
         ]
     }
 

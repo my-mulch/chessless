@@ -3,16 +3,6 @@ import ChessPiece from './piece.js'
 import { parseFEN, STARTING_FEN } from "../utils.js"
 
 export default class ChessGame {
-  static createPieces(piece) {
-    if (!piece) return null
-
-    // What type of piece is it? Grab the associated class from the PieceMap.
-    const Piece = PieceMap[piece]
-
-    // Create the new piece for the appropriate team
-    return new Piece(ChessPiece.getTeam(piece))
-  }
-
   constructor({ FEN = STARTING_FEN, game }) {
     if (game) this.copyConstructor(game)
     else this.fenConstructor(FEN)
@@ -29,15 +19,22 @@ export default class ChessGame {
     this.previousBoards = []
 
     // Convert the board of strings to board of piece objects
-    this.board = board.map(ChessGame.createPieces)
+    this.board = board.map((piece) => {
+      if (!piece) return null
+
+      // What type of piece is it? Grab the associated class from the PieceMap.
+      const Piece = PieceMap[piece]
+
+      // Create the new piece for the appropriate team
+      return new Piece(ChessPiece.getTeam(piece))
+    })
   }
 
   copyConstructor(game) {
     this.turn = game.turn
-    this.board = game.board.map(ChessGame.createPieces)
+    this.board = game.board.slice()
     this.previousMoves = game.previousMoves
     this.previousBoards = game.previousBoards
-    this.previouslyMovedPieces = game.previouslyMovedPieces
   }
 
   hasMoved(piece) {
@@ -45,7 +42,7 @@ export default class ChessGame {
   }
 
   getLastMove() {
-    return this.previousMoves[this.previousMoves.length]
+    return this.previousMoves[this.previousMoves.length - 1]
   }
 
   getMoves(team, seekingCheck = false) {
@@ -106,7 +103,5 @@ export default class ChessGame {
   isSameTeam(square, piece) { return this.board[square] && this.board[square].getTeam() === piece.getTeam() }
   isOtherTeam(square, piece) { return this.board[square] && this.board[square].getTeam() !== piece.getTeam() }
 
-  clone() {
-    return new ChessGame(this)
-  }
+  clone() { return new ChessGame(this) }
 }

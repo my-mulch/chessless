@@ -1,7 +1,7 @@
 import ChessPiece from '../piece.js'
 
 export default class Bishop extends ChessPiece {
-    constructor(team) { super(ChessPiece.BISHOP, team) }
+    constructor(team, id) { super(ChessPiece.BISHOP, team, id) }
 
     getMoves(game, square) {
         return [
