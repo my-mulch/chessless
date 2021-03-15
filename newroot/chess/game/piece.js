@@ -56,14 +56,14 @@ export default class ChessPiece extends String {
   isOtherTeam(board, square) { return board[square] && board[square].getTeam() !== this.getTeam() }
 
   // Get all moves for any piece. Next determines how the piece moves. See subclasses
-  getMoves(from, board, next, steps = Infinity) {
+  getMoves(game, from, next, steps = Infinity) {
     const moves = []
     const checks = false
     const attacks = new Set()
 
     let step = 0, to = next(from)
 
-    while (step++ < steps && isInBounds(board, to) && !this.isSameTeam(board, to)) {
+    while (step++ < steps && isInBounds(game.board, to) && !this.isSameTeam(game.board, to)) {
       // Add the move
       moves.push({ to, from })
 
@@ -71,8 +71,8 @@ export default class ChessPiece extends String {
       attacks.add(to)
 
       if (this.isOtherTeam(board, to)) {
-        // If we check the king, note as such
-        if (board[to].getType() === ChessPiece.KING) checks = true
+        // If we check the king, note that
+        if (game.board[to].getType() === ChessPiece.KING) checks = true
 
         return { moves, checks, attacks }
       }
