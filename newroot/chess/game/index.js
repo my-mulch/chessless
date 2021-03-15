@@ -48,7 +48,7 @@ export default class ChessGame {
     return this.previousMoves[this.previousMoves.length]
   }
 
-  getMoves(team, seekingCheck) {
+  getMoves(team, seekingCheck = false) {
     const allMoves = []
     const allChecks = false
     const allAttacks = new Set()

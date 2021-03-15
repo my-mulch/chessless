@@ -5,20 +5,23 @@ export default class King extends ChessPiece {
     constructor(team) { super(ChessPiece.KING, team) }
 
     getCastle(game, square, moveCastleSide, rookStart) {
+        // Get the king
+        const king = game.board[square]
+
         // If the king has moved, ya can't castle
-        if (game.previouslyMovedPieces.has(this.id)) return []
-        
+        if (game.hasMoved(king)) return []
+
         // Get the rook
         const rook = game.board[rookStart]
 
         // If the rook has moved, ya can't castle
-        if (!rook || game.previouslyMovedPieces.has(rook.id)) return []
+        if (!rook || game.hasMoved(rook)) return []
 
         // Get the other team's attacking moves
-        const { checks, attacks } = getMoves(game, this.getOtherTeam())
+        const { checks, attacks } = game.getMoves(this.getOtherTeam(), true)
 
         // If the king is in check, ya can't castle
-        if (Object.keys(checks).length) return []
+        if (checks) return []
 
         // If the king moves through any attacked squares, ya can't castle
         if (attacks.has(moveCastleSide(square, 1)) || attacks.has(moveCastleSide(square, 2))) return []
@@ -42,12 +45,24 @@ export default class King extends ChessPiece {
         }]
     }
 
-    getMoves(game, square) {
-        return [
-            // To castle, we need: (game, square, castleSide, rookPosition)
-            ...this.getCastle(game, square, super.moveKingSide.bind(this), super.moveKingSide(square, 3)),
-            ...this.getCastle(game, square, super.moveQueenSide.bind(this), super.moveQueenSide(square, 4)),
+    getMoves(game, square, seekingCheck) {
+        const moves = []
 
+        /**
+         * Seeking check means we are checking our opponents attacking moves to determine
+         * whether or not a move we are making is legal. If this is the case, we do not need
+         * to check castling moves
+         */
+        
+        if (!seekingCheck) {
+            moves.push(
+                // To castle, we need: (game, square, castleSide, rookPosition)
+                ...this.getCastle(game, square, super.moveKingSide.bind(this), super.moveKingSide(square, 3)),
+                ...this.getCastle(game, square, super.moveQueenSide.bind(this), super.moveQueenSide(square, 4))
+            )
+        }
+
+        return moves.concat([
             ...super.getMoves(game, square, super.moveLeft.bind(this), 1),
             ...super.getMoves(game, square, super.moveRight.bind(this), 1),
             ...super.getMoves(game, square, super.moveForward.bind(this), 1),
@@ -56,6 +71,6 @@ export default class King extends ChessPiece {
             ...super.getMoves(game, square, super.moveForwardRight.bind(this), 1),
             ...super.getMoves(game, square, super.moveBackwardLeft.bind(this), 1),
             ...super.getMoves(game, square, super.moveBackwardRight.bind(this), 1),
-        ]
+        ])
     }
 }

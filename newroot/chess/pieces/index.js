@@ -7,7 +7,7 @@ import Knight from './knight.js'
 
 import ChessPiece from '../game/piece.js'
 
-// Piece Map for both black and white pieces
+// Piece Map for both black (lowercase) and white (uppercase) pieces
 export default {
   [ChessPiece.PAWN]: Pawn, [ChessPiece.PAWN.toUpperCase()]: Pawn,
   [ChessPiece.KING]: King, [ChessPiece.KING.toUpperCase()]: King,
