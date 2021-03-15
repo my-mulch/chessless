@@ -1,5 +1,5 @@
-import ChessPiece from '../game/piece.js'
-import { getMoves, isEmpty } from '../utils'
+import ChessPiece from './piece'
+import { isEmpty } from '../utils'
 
 export default class King extends ChessPiece {
     constructor(team, id) { super(ChessPiece.KING, team, id) }

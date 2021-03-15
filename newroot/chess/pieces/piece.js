@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid'
-import { rankAndFileOf, indexOf, isInBounds } from '../utils.js'
+import { rankAndFileOf, indexOf } from '../utils.js'
 
 export default class ChessPiece extends String {
   // Define directionality of movement

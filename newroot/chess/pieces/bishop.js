@@ -1,4 +1,4 @@
-import ChessPiece from '../piece.js'
+import ChessPiece from './piece'
 
 export default class Bishop extends ChessPiece {
     constructor(team, id) { super(ChessPiece.BISHOP, team, id) }

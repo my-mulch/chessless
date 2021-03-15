@@ -1,6 +1,5 @@
-import PieceMap from '../pieces'
-import ChessPiece from './piece.js'
-import { parseFEN, STARTING_FEN } from "../utils.js"
+import { PieceMap, ChessPiece } from './pieces'
+import { parseFEN, STARTING_FEN } from "./utils.js"
 
 export default class ChessGame {
   constructor({ FEN = STARTING_FEN, game }) {
