@@ -38,35 +38,3 @@ export const indexOf = function (rank, file) {
 export const isEmpty = function (board, square) { return board[square] === null }
 export const isInBounds = function (board, square) { return board[square] !== undefined }
 export const isOutOfBounds = function (board, square) { return board[square] === undefined }
-
-export const makeMove = function (game, move) {
-  this.previousBoards.push(game.board.slice())
-}
-
-export const putsOwnKingInCheck = function (game, move, attackingTeam) {
-
-  getMoves(game, attackingTeam, true)
-}
-
-export const getMoves = function (game, team, seekingCheck) {
-  const allMoves = []
-  const allChecks = false
-  const allAttacks = new Set()
-
-  game.board.forEach((piece, square) => {
-    if (!piece || piece.getTeam() !== team) return
-
-    const { moves, checks, attacks } = piece.getMoves(game, square, seekingCheck)
-
-    // Assign moves
-    allMoves.push(...moves)
-
-    // Merge attacks
-    attacks.forEach(allAttacks.add, allAttacks)
-
-    // Do we check the king?
-    allChecks = allChecks || checks
-  })
-
-  return { moves: allMoves, checks: allChecks, attacks: allAttacks }
-}

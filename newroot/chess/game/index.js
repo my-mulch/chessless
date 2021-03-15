@@ -27,7 +27,6 @@ export default class ChessGame {
     // Record the history
     this.previousMoves = []
     this.previousBoards = []
-    this.previouslyMovedPieces = new Set()
 
     // Convert the board of strings to board of piece objects
     this.board = board.map(ChessGame.createPieces)
@@ -36,12 +35,72 @@ export default class ChessGame {
   copyConstructor(game) {
     this.turn = game.turn
     this.board = game.board.map(ChessGame.createPieces)
-    this.previousMoves = game.previousMoves.slice()
-    this.previousBoards = game.previousBoards.slice()
-    this.previouslyMovedPieces = new Set(game.previouslyMovedPieces)
+    this.previousMoves = game.previousMoves
+    this.previousBoards = game.previousBoards
+    this.previouslyMovedPieces = game.previouslyMovedPieces
+  }
+
+  hasMoved(piece) {
+    return this.previousMoves.some(move => move.piece.id === piece.id)
   }
 
   getLastMove() {
     return this.previousMoves[this.previousMoves.length]
+  }
+
+  getMoves(team, seekingCheck) {
+    const allMoves = []
+    const allChecks = false
+    const allAttacks = new Set()
+
+    this.board.forEach((piece, square) => {
+      if (!piece || piece.getTeam() !== team) return
+
+      const { moves, checks, attacks } = piece.getMoves(this, square, seekingCheck)
+
+      // Assign moves
+      allMoves.push(...moves)
+
+      // Merge attacks
+      attacks.forEach(allAttacks.add, allAttacks)
+
+      // Do we check the king?
+      allChecks = allChecks || checks
+    })
+
+    return { moves: allMoves, checks: allChecks, attacks: allAttacks }
+  }
+
+  makeMove(move) {
+    const newGame = this.clone()
+
+    // Save the state so we can undo the move
+    newGame.previousMoves.push(move)
+    newGame.previousBoards.push(this.board)
+
+    // Move the piece on the new game board: from -> to and execute any specialities (castling, enpassant, etc)
+    newGame.board[move.to] = newGame.board[move.from]
+    newGame.board[move.from] = null
+    move.special && move.special(newGame.board)
+
+    return newGame
+  }
+
+  undoMove() {
+    const newGame = game.clone()
+
+    newGame.previousMoves.pop()
+    newGame.previousBoards.pop()
+
+    return newGame
+  }
+
+  movePutsKingInCheck(move) {
+    // Make the move (returns new game), get the moves for that game with the attacking team, return if check is found
+    return this.makeMove(move).getMoves(move.piece.getOtherTeam(), true).checks
+  }
+
+  clone() {
+    return new ChessGame(this)
   }
 }
