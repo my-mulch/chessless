@@ -38,8 +38,8 @@ export default class ChessPiece extends String {
   isBlack() { return this.toString() !== this.toUpperCase() }
 
   getType() { return this.toLowerCase() }
-  getTeam() { return this.isBlack() ? BLACK : WHITE }
-  getOtherTeam() { return this.isBlack() ? WHITE : BLACK }
+  getTeam() { return this.isBlack() ? ChessPiece.BLACK : ChessPiece.WHITE }
+  getOtherTeam() { return this.isBlack() ? ChessPiece.WHITE : ChessPiece.BLACK }
 
   // Used when initting the board
   static getTeam(piece) {

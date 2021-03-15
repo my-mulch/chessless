@@ -14,14 +14,14 @@ export default class Knight extends ChessPiece {
 
     getMoves(game, square) {
         return [
-            ...super.getMoves(game, square, this.hopForwardLeft.bind(this), 1),
-            ...super.getMoves(game, square, this.hopForwardRight.bind(this), 1),
-            ...super.getMoves(game, square, this.hopRightForward.bind(this), 1),
-            ...super.getMoves(game, square, this.hopRightBackward.bind(this), 1),
-            ...super.getMoves(game, square, this.hopBackwardLeft.bind(this), 1),
-            ...super.getMoves(game, square, this.hopBackwardRight.bind(this), 1),
-            ...super.getMoves(game, square, this.hopLeftForward.bind(this), 1),
-            ...super.getMoves(game, square, this.hopLeftBackward.bind(this), 1)
+            ...super.getMoves(game, square, this.hopForwardLeft.bind(this), 1).moves,
+            ...super.getMoves(game, square, this.hopForwardRight.bind(this), 1).moves,
+            ...super.getMoves(game, square, this.hopRightForward.bind(this), 1).moves,
+            ...super.getMoves(game, square, this.hopRightBackward.bind(this), 1).moves,
+            ...super.getMoves(game, square, this.hopBackwardLeft.bind(this), 1).moves,
+            ...super.getMoves(game, square, this.hopBackwardRight.bind(this), 1).moves,
+            ...super.getMoves(game, square, this.hopLeftForward.bind(this), 1).moves,
+            ...super.getMoves(game, square, this.hopLeftBackward.bind(this), 1).moves
         ]
     }
 }

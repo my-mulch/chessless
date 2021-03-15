@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { indexOf } from '../../chess/utils.js'
+import { indexOf } from '../../model/utils.js'
 import { imageFromPiece } from './utils.js'
 
 export default function Board({ game }) {

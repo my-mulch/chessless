@@ -50,6 +50,8 @@ export default class Pawn extends ChessPiece {
 
         if (this.canEnpassant(game, checkSquare) && !game.movePutsKingInCheck(enpassant))
             return [enpassant]
+
+        return []
     }
 
     // Capture
