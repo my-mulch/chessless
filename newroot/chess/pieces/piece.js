@@ -25,11 +25,11 @@ export default class ChessPiece extends String {
   // Creates a piece with a unique ID
   constructor(type, team, id) {
     // By FEN convention, white pieces are uppercase
-    const assignTeam = team === WHITE
+    const assignTeam = team === ChessPiece.WHITE
       ? String.prototype.toUpperCase
       : String.prototype.toLowerCase
 
-    super(type.call(assignTeam));
+    super(assignTeam.call(type));
     this.id = id || uuid()
   }
 
