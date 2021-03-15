@@ -1,5 +1,4 @@
 import ChessPiece from './piece'
-import { isEmpty } from '../utils'
 
 export default class King extends ChessPiece {
     constructor(team, id) { super(ChessPiece.KING, team, id) }
@@ -32,7 +31,7 @@ export default class King extends ChessPiece {
         const rookStop = moveCastleSide(rookDestination, -1)
 
         while ((rookPosition = moveCastleSide(rookPosition, -1)) !== rookStop)
-            if (!isEmpty(game.board, rookPosition)) return []
+            if (!game.isEmpty(rookPosition)) return []
 
         // Finally, castle
         return [{

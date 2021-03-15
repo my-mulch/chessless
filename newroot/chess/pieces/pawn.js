@@ -3,7 +3,7 @@ import Queen from './queen.js'
 import Knight from './knight.js'
 import Bishop from './bishop.js'
 
-import ChessPiece from '../piece.js'
+import ChessPiece from './piece.js'
 
 export default class Pawn extends ChessPiece {
     constructor(team, id) { super(ChessPiece.PAWN, team, id) }

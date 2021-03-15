@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { imageFromPiece } from './utils'
-import { indexOf } from '../../chess/utils'
+
+import { indexOf } from '../../chess/utils.js'
+import { imageFromPiece } from './utils.js'
 
 export default function Board({ game }) {
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
