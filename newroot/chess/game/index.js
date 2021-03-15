@@ -1,4 +1,5 @@
 import PieceMap from '../pieces'
+import ChessPiece from './piece.js'
 import { parseFEN, STARTING_FEN } from "../utils.js"
 
 export default class ChessGame {
@@ -18,11 +19,10 @@ export default class ChessGame {
       if (!piece) return null
 
       // What type of piece is it? Grab the associated class from the PieceMap.
-      // Lowercase because we are just interested in piece type
-      const Piece = PieceMap[piece.toLowerCase()]
+      const Piece = PieceMap[piece]
 
-      // Create the new piece but preserve casing so we know which team it's on!
-      return new Piece(piece)
+      // Create the new piece for the appropriate team
+      return new Piece(ChessPiece.getTeam(piece))
     })
   }
 }

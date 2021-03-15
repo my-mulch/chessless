@@ -28,7 +28,7 @@ export default class ChessPiece extends String {
     const assignTeam = team === WHITE
       ? String.prototype.toUpperCase
       : String.prototype.toLowerCase
-      
+
     super(type.call(assignTeam));
     this.id = uuid()
   }
@@ -40,6 +40,11 @@ export default class ChessPiece extends String {
   getType() { return this.toLowerCase() }
   getTeam() { return this.isBlack() ? BLACK : WHITE }
   getOtherTeam() { return this.isBlack() ? WHITE : BLACK }
+  
+  // Used when initting the board
+  static getTeam(piece) {
+    return piece.toLowerCase() === piece.toString() ? ChessPiece.BLACK : ChessPiece.WHITE
+  }
 
   isLastRank(square) {
     const [rank] = rankAndFileOf(square)
