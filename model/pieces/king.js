@@ -66,14 +66,14 @@ export default class King extends ChessPiece {
         }
 
         return result.concat(
-            super.getMoves(game, square, super.moveLeft.bind(this), 1),
-            super.getMoves(game, square, super.moveRight.bind(this), 1),
-            super.getMoves(game, square, super.moveForward.bind(this), 1),
-            super.getMoves(game, square, super.moveBackward.bind(this), 1),
-            super.getMoves(game, square, super.moveForwardLeft.bind(this), 1),
-            super.getMoves(game, square, super.moveForwardRight.bind(this), 1),
-            super.getMoves(game, square, super.moveBackwardLeft.bind(this), 1),
-            super.getMoves(game, square, super.moveBackwardRight.bind(this), 1),
+            super.getMoves(game, square, seekingCheck, super.moveLeft.bind(this), 1),
+            super.getMoves(game, square, seekingCheck, super.moveRight.bind(this), 1),
+            super.getMoves(game, square, seekingCheck, super.moveForward.bind(this), 1),
+            super.getMoves(game, square, seekingCheck, super.moveBackward.bind(this), 1),
+            super.getMoves(game, square, seekingCheck, super.moveForwardLeft.bind(this), 1),
+            super.getMoves(game, square, seekingCheck, super.moveForwardRight.bind(this), 1),
+            super.getMoves(game, square, seekingCheck, super.moveBackwardLeft.bind(this), 1),
+            super.getMoves(game, square, seekingCheck, super.moveBackwardRight.bind(this), 1),
         )
     }
 }

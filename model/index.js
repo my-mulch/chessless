@@ -45,10 +45,8 @@ export default class ChessGame {
   }
 
   getMoves(team = this.turn, seekingCheck = false) {
-    debugger
-
     const allMoves = []
-    const allChecks = false
+    let allChecks = false
     const allAttacks = new Set()
 
     this.board.forEach((piece, square) => {

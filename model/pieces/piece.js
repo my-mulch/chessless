@@ -49,11 +49,11 @@ export default class ChessPiece extends String {
   isLastRank(square) {
     const [rank] = rankAndFileOf(square)
 
-    return (this.isWhite() && rank === 7) || (this.isBlack() && rank === 0)
+    return (this.isWhite() && rank === 0) || (this.isBlack() && rank === 7)
   }
 
   // Get all moves for any piece. Next determines how the piece moves. See subclasses
-  getMoves(game, from, next, steps = Infinity) {
+  getMoves(game, from, seekingCheck, next, steps = Infinity) {
     const moves = []
     const checks = false
     const attacks = new Set()
@@ -63,7 +63,7 @@ export default class ChessPiece extends String {
     while (step++ < steps && game.isInBounds(to) && !game.isSameTeam(to, this)) {
       // Add the move, as long as it is legal
       const move = { to, from, piece: game.board[from] }
-      if (!game.movePutsKingInCheck(move))
+      if (!seekingCheck && !game.movePutsKingInCheck(move))
         moves.push(move)
 
       // Add the attacked square
@@ -97,12 +97,12 @@ export default class ChessPiece extends String {
   orient() { return this.isWhite() ? ChessPiece.BACKWARD : ChessPiece.FORWARD }
 
   // Move types
-  moveLeft(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance * -1) }
-  moveRight(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance) }
+  moveLeft(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance) }
+  moveRight(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance * -1) }
   moveForward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance) }
   moveBackward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance * -1) }
-  moveKingSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance) }
-  moveQueenSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance * -1) }
+  moveKingSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance * -1) }
+  moveQueenSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance) }
 
   moveForwardLeft(from, distance = 1) { return this.moveForward(this.moveLeft(from, distance), distance) }
   moveForwardRight(from, distance = 1) { return this.moveForward(this.moveRight(from, distance), distance) }

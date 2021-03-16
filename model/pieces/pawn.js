@@ -42,6 +42,9 @@ export default class Pawn extends ChessPiece {
 
     getEnpassant(game, square, checkSquare, captureSquare) {
         const result = { moves: [], attacks: new Set(), checks: false }
+        
+        if (game.outOfBounds(checkSquare) || game.outOfBounds(captureSquare))
+            return result
 
         const enpassant = {
             from: square,
@@ -57,11 +60,11 @@ export default class Pawn extends ChessPiece {
     }
 
     // Capture
-    getCapture(game, square, captureSquare) {
+    getCapture(game, square, seekingCheck, captureSquare) {
         const result = { moves: [], attacks: new Set(), checks: false }
         const captureMove = { from: square, to: captureSquare, piece: game.board[square] }
 
-        if (game.isSameTeam(captureSquare, this) || game.movePutsKingInCheck(captureMove))
+        if (!game.isOtherTeam(captureSquare, this) || (!seekingCheck && game.movePutsKingInCheck(captureMove)))
             return result
 
         if (this.isLastRank(captureSquare))
@@ -83,7 +86,7 @@ export default class Pawn extends ChessPiece {
             { from: square, to, piece, special(board) { board[to] = new Knight(super.getTeam(), piece.id) } },
             { from: square, to, piece, special(board) { board[to] = new Bishop(super.getTeam(), piece.id) } },
         )
-        
+
         return result
     }
 
@@ -107,8 +110,8 @@ export default class Pawn extends ChessPiece {
         }
 
         return result.concat([
-            this.getCapture(game, square, super.moveForwardLeft(square, 1)),
-            this.getCapture(game, square, super.moveForwardRight(square, 1))
+            this.getCapture(game, square, seekingCheck, super.moveForwardLeft(square, 1)),
+            this.getCapture(game, square, seekingCheck, super.moveForwardRight(square, 1))
         ])
     }
 }
