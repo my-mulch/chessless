@@ -53,7 +53,7 @@ export default class ChessPiece extends String {
   }
 
   // Get all moves for any piece. Next determines how the piece moves. See subclasses
-  getMoves(game, from, seekingCheck, next, steps = Infinity) {
+  getMoves(game, from, otherTeamSeekingCheck, next, steps = Infinity) {
     const moves = []
     let checks = false
     const attacks = new Set()
@@ -62,8 +62,9 @@ export default class ChessPiece extends String {
 
     while (step++ < steps && game.isInBounds(to) && !game.isSameTeam(to, this)) {
       // Add the move, as long as it is legal
-      const move = { to, from, piece: game.board[from] }
-      if (!seekingCheck && !game.movePutsKingInCheck(move))
+      const move = { to, from, piece: game.board[from], otherTeamSeekingCheck }
+      
+      if (!game.movePutsKingInCheck(move))
         moves.push(move)
 
       // Add the attacked square

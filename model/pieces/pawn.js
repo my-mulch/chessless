@@ -60,7 +60,7 @@ export default class Pawn extends ChessPiece {
     }
 
     // Capture
-    getCapture(game, square, seekingCheck, captureSquare) {
+    getCapture(game, square, otherTeamSeekingCheck, captureSquare) {
         const result = { moves: [], attacks: new Set(), checks: false }
 
         if (game.isOutOfBounds(captureSquare))
@@ -68,9 +68,9 @@ export default class Pawn extends ChessPiece {
 
         result.attacks.add(captureSquare)
 
-        const captureMove = { from: square, to: captureSquare, piece: game.board[square] }
+        const captureMove = { from: square, to: captureSquare, piece: game.board[square], otherTeamSeekingCheck }
 
-        if (!game.isOtherTeam(captureSquare, this) || (!seekingCheck && game.movePutsKingInCheck(captureMove)))
+        if (!game.isOtherTeam(captureSquare, this) || game.movePutsKingInCheck(captureMove))
             return result
 
         if (game.board[captureSquare].getType() === ChessPiece.KING)
@@ -107,7 +107,7 @@ export default class Pawn extends ChessPiece {
         return result
     }
 
-    getMoves(game, square, seekingCheck) {
+    getMoves(game, square, otherTeamSeekingCheck) {
         const result = []
 
         /**
@@ -117,7 +117,7 @@ export default class Pawn extends ChessPiece {
          * them before a check can occur
          */
 
-        if (!seekingCheck) {
+        if (!otherTeamSeekingCheck) {
             result.push(
                 this.getPushes(game, square, super.moveForward(square, 1), super.moveForward(square, 2)),
                 // Getting enpassants we need to look at the square to the side, and the square behind
@@ -127,8 +127,8 @@ export default class Pawn extends ChessPiece {
         }
 
         return result.concat([
-            this.getCapture(game, square, seekingCheck, super.moveForwardLeft(square, 1)),
-            this.getCapture(game, square, seekingCheck, super.moveForwardRight(square, 1))
+            this.getCapture(game, square, otherTeamSeekingCheck, super.moveForwardLeft(square, 1)),
+            this.getCapture(game, square, otherTeamSeekingCheck, super.moveForwardRight(square, 1))
         ])
     }
 }

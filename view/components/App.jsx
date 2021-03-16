@@ -6,7 +6,7 @@ import { imageFromPiece } from './utils.js'
 
 export default function App() {
   const [game, setGame] = useState(new ChessGame({}))
-  // const [moves, setMoves] = useState(game.getMoves().moves)
+  const [moves, setMoves] = useState([])
   const [selected, setSelected] = useState(null)
 
   window.game = game
@@ -40,17 +40,15 @@ export default function App() {
   }
 
 
-  // useEffect(async () => {
-  //   await new Promise(_ => setTimeout(_, 1000));
+  useEffect(async () => {
+    const { moves } = game.getMoves()
+    setMoves(moves)
 
-  //   const { moves } = game.getMoves()
+    await new Promise(_ => setTimeout(_, 50));
 
-  //   setMoves(moves)
+    setGame(game.makeMove(moves[Math.floor(Math.random() * moves.length)]))
+  }, [game])
 
-  //   setGame(game.makeMove(moves[Math.floor(Math.random() * moves.length)]))
-  // }, [game])
-
-  const { moves } = game.getMoves()
 
   return <div style={boardStyle}>
     {ranks.map((rank, ri) =>

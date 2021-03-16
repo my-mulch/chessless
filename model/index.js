@@ -44,7 +44,7 @@ export default class ChessGame {
     return this.previousMoves[this.previousMoves.length - 1]
   }
 
-  getMoves(team = this.turn, seekingCheck = false) {
+  getMoves(team = this.turn, otherTeamSeekingCheck = false) {
     const allMoves = []
     let allChecks = false
     const allAttacks = new Set()
@@ -52,7 +52,7 @@ export default class ChessGame {
     this.board.forEach((piece, square) => {
       if (!piece || piece.getTeam() !== team) return
 
-      piece.getMoves(this, square, seekingCheck).forEach(({ moves, checks, attacks }) => {
+      piece.getMoves(this, square, otherTeamSeekingCheck).forEach(({ moves, checks, attacks }) => {
         // Assign moves
         allMoves.push(...moves)
 
@@ -95,6 +95,10 @@ export default class ChessGame {
   }
 
   movePutsKingInCheck(move) {
+    // If we are searching for the other team's checks on our king to ensure our move is legal,
+    // we stop the recursion. Otherwise we'd recurse infinitely
+    if(move.otherTeamSeekingCheck) return false
+
     // Make the move (returns new game), get the moves for that game with the attacking team, return if check is found
     return this.makeMove(move).getMoves(move.piece.getOtherTeam(), true).checks
   }

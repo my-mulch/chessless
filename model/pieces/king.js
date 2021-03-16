@@ -49,7 +49,7 @@ export default class King extends ChessPiece {
         return result
     }
 
-    getMoves(game, square, seekingCheck) {
+    getMoves(game, square, otherTeamSeekingCheck) {
         const result = []
 
         /**
@@ -58,7 +58,7 @@ export default class King extends ChessPiece {
          * to check castling moves
          */
 
-        if (!seekingCheck) {
+        if (!otherTeamSeekingCheck) {
             result.push(
                 // To castle, we need: (game, square, castleSide, rookPosition)
                 this.getCastle(game, square, super.moveKingSide.bind(this), super.moveKingSide(square, 3)),
@@ -67,14 +67,14 @@ export default class King extends ChessPiece {
         }
 
         return result.concat(
-            super.getMoves(game, square, seekingCheck, super.moveLeft.bind(this), 1),
-            super.getMoves(game, square, seekingCheck, super.moveRight.bind(this), 1),
-            super.getMoves(game, square, seekingCheck, super.moveForward.bind(this), 1),
-            super.getMoves(game, square, seekingCheck, super.moveBackward.bind(this), 1),
-            super.getMoves(game, square, seekingCheck, super.moveForwardLeft.bind(this), 1),
-            super.getMoves(game, square, seekingCheck, super.moveForwardRight.bind(this), 1),
-            super.getMoves(game, square, seekingCheck, super.moveBackwardLeft.bind(this), 1),
-            super.getMoves(game, square, seekingCheck, super.moveBackwardRight.bind(this), 1),
+            super.getMoves(game, square, otherTeamSeekingCheck, super.moveLeft.bind(this), 1),
+            super.getMoves(game, square, otherTeamSeekingCheck, super.moveRight.bind(this), 1),
+            super.getMoves(game, square, otherTeamSeekingCheck, super.moveForward.bind(this), 1),
+            super.getMoves(game, square, otherTeamSeekingCheck, super.moveBackward.bind(this), 1),
+            super.getMoves(game, square, otherTeamSeekingCheck, super.moveForwardLeft.bind(this), 1),
+            super.getMoves(game, square, otherTeamSeekingCheck, super.moveForwardRight.bind(this), 1),
+            super.getMoves(game, square, otherTeamSeekingCheck, super.moveBackwardLeft.bind(this), 1),
+            super.getMoves(game, square, otherTeamSeekingCheck, super.moveBackwardRight.bind(this), 1),
         )
     }
 }
