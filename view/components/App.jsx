@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import ChessGame from '../../model'
 import { indexOf } from '../../model/utils.js'
@@ -6,6 +6,7 @@ import { imageFromPiece } from './utils.js'
 
 export default function App() {
   const [game, setGame] = useState(new ChessGame({}))
+  // const [moves, setMoves] = useState(game.getMoves().moves)
   const [selected, setSelected] = useState(null)
 
   window.game = game
@@ -26,9 +27,9 @@ export default function App() {
     flexDirection: 'row'
   }
 
-  const getSquareStyle = function (rank, file, piece, attacked) {
-    const backgroundColor = attacked ? 'green' : ((rank + file) % 2 ? 'brown' : 'beige')
-    
+  const getSquareStyle = function (rank, file, piece, moves) {
+    const backgroundColor = moves ? 'green' : ((rank + file) % 2 ? 'brown' : 'beige')
+
     return {
       flex: 1,
       backgroundSize: 'contain',
@@ -37,6 +38,17 @@ export default function App() {
       backgroundColor
     }
   }
+
+
+  // useEffect(async () => {
+  //   await new Promise(_ => setTimeout(_, 1000));
+
+  //   const { moves } = game.getMoves()
+
+  //   setMoves(moves)
+
+  //   setGame(game.makeMove(moves[Math.floor(Math.random() * moves.length)]))
+  // }, [game])
 
   const { moves } = game.getMoves()
 
@@ -56,10 +68,11 @@ export default function App() {
             onMouseUp={() => {
               setSelected(null)
               const to = indexOf(ri, fi)
-              const move = game.getMoves().moves.filter(move => move.from === selected && move.to === to).pop()
+              const { moves } = game.getMoves()
 
-              console.log(move)
-              if (move) setGame(game.makeMove(move))
+              const selectedMove = moves.filter(move => move.from === selected && move.to === to)
+
+              setGame(game.makeMove(selectedMove[Math.floor(Math.random() * selectedMove.length)]))
             }}
           />
         )}

@@ -69,8 +69,12 @@ export default class Pawn extends ChessPiece {
         result.attacks.add(captureSquare)
 
         const captureMove = { from: square, to: captureSquare, piece: game.board[square] }
+
         if (!game.isOtherTeam(captureSquare, this) || (!seekingCheck && game.movePutsKingInCheck(captureMove)))
             return result
+
+        if (game.board[captureSquare].getType() === ChessPiece.KING)
+            result.checks = true
 
         if (this.isLastRank(captureSquare))
             return this.getPromotions(game, square, captureSquare)
@@ -86,15 +90,15 @@ export default class Pawn extends ChessPiece {
         const piece = game.board[square]
 
         result.moves.push(
-            { from: square, to, piece, special(board) { board[to] = new Rook(super.getTeam(), piece.id) } },
-            { from: square, to, piece, special(board) { board[to] = new Queen(super.getTeam(), piece.id) } },
-            { from: square, to, piece, special(board) { board[to] = new Knight(super.getTeam(), piece.id) } },
-            { from: square, to, piece, special(board) { board[to] = new Bishop(super.getTeam(), piece.id) } },
+            { from: square, to, piece, special: (board) => board[to] = new Rook(super.getTeam(), piece.id) },
+            { from: square, to, piece, special: (board) => board[to] = new Queen(super.getTeam(), piece.id) },
+            { from: square, to, piece, special: (board) => board[to] = new Knight(super.getTeam(), piece.id) },
+            { from: square, to, piece, special: (board) => board[to] = new Bishop(super.getTeam(), piece.id) },
         )
 
         // Capture & promote
         if (Math.abs(square - to) === 7 || Math.abs(square - to) === 9) {
-            result.attacks(to)
+            result.attacks.add(to)
 
             if (game.board[to].getType() === ChessPiece.KING)
                 result.checks = true
