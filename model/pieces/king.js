@@ -39,6 +39,7 @@ export default class King extends ChessPiece {
         result.moves.push({
             from: square,
             to: moveCastleSide(square, 2),
+            piece: game.board[square],
             special(board) {
                 board[rookDestination] = rook
                 board[rookStart] = null

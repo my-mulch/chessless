@@ -55,7 +55,7 @@ export default class ChessPiece extends String {
   // Get all moves for any piece. Next determines how the piece moves. See subclasses
   getMoves(game, from, seekingCheck, next, steps = Infinity) {
     const moves = []
-    const checks = false
+    let checks = false
     const attacks = new Set()
 
     let step = 0, to = next(from)
@@ -101,8 +101,8 @@ export default class ChessPiece extends String {
   moveRight(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance * -1) }
   moveForward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance) }
   moveBackward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance * -1) }
-  moveKingSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance * -1) }
-  moveQueenSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance) }
+  moveKingSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance) }
+  moveQueenSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance * -1) }
 
   moveForwardLeft(from, distance = 1) { return this.moveForward(this.moveLeft(from, distance), distance) }
   moveForwardRight(from, distance = 1) { return this.moveForward(this.moveRight(from, distance), distance) }

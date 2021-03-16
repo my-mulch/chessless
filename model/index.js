@@ -32,8 +32,8 @@ export default class ChessGame {
   copyConstructor(game) {
     this.turn = game.turn
     this.board = game.board.slice()
-    this.previousMoves = game.previousMoves
-    this.previousBoards = game.previousBoards
+    this.previousMoves = game.previousMoves.slice()
+    this.previousBoards = game.previousBoards.slice()
   }
 
   hasMoved(piece) {
@@ -79,6 +79,9 @@ export default class ChessGame {
     newGame.board[move.from] = null
     move.special && move.special(newGame.board)
 
+    // Change turns
+    newGame.turn = this.turn === ChessPiece.BLACK ? ChessPiece.WHITE : ChessPiece.BLACK
+
     return newGame
   }
 
@@ -102,5 +105,5 @@ export default class ChessGame {
   isSameTeam(square, piece) { return this.board[square] && this.board[square].getTeam() === piece.getTeam() }
   isOtherTeam(square, piece) { return this.board[square] && this.board[square].getTeam() !== piece.getTeam() }
 
-  clone() { return new ChessGame(this) }
+  clone() { return new ChessGame({ game: this }) }
 }

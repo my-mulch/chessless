@@ -31,7 +31,7 @@ export default class Pawn extends ChessPiece {
     canEnpassant(game, checkSquare) {
         if (!game.previousMoves.length) return false
 
-        const otherPiece = board[checkSquare]
+        const otherPiece = game.board[checkSquare]
         const lastMove = game.getLastMove()
 
         return game.isOtherTeam(checkSquare, this) &&
