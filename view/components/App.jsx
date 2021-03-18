@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import ChessGame from '../../model'
 import { indexOf } from '../../model/utils.js'
@@ -6,10 +6,7 @@ import { imageFromPiece } from './utils.js'
 
 export default function App() {
   const [game, setGame] = useState(new ChessGame({}))
-  const [moves, setMoves] = useState([])
   const [selected, setSelected] = useState(null)
-
-  window.game = game
 
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
   const [files] = useState(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
@@ -27,28 +24,15 @@ export default function App() {
     flexDirection: 'row'
   }
 
-  const getSquareStyle = function (rank, file, piece, moves) {
-    const backgroundColor = moves ? 'green' : ((rank + file) % 2 ? 'brown' : 'beige')
-
+  const getSquareStyle = function (rank, file, piece) {
     return {
       flex: 1,
       backgroundSize: 'contain',
       backgroundRepeat: 'no-repeat',
       backgroundImage: imageFromPiece[piece],
-      backgroundColor
+      backgroundColor: (rank + file) % 2 ? 'brown' : 'beige'
     }
   }
-
-
-  useEffect(async () => {
-    const { moves } = game.getMoves()
-    setMoves(moves)
-
-    await new Promise(_ => setTimeout(_, 50));
-
-    setGame(game.makeMove(moves[Math.floor(Math.random() * moves.length)]))
-  }, [game])
-
 
   return <div style={boardStyle}>
     {ranks.map((rank, ri) =>
@@ -56,12 +40,7 @@ export default function App() {
         {files.map((file, fi) =>
           <div
             key={file}
-            style={getSquareStyle(
-              ri,
-              fi,
-              game.board[indexOf(ri, fi)],
-              moves.filter(move => move.to === indexOf(ri, fi)).pop()
-            )}
+            style={getSquareStyle(ri, fi, game.board[indexOf(ri, fi)])}
             onMouseDown={() => { setSelected(indexOf(ri, fi)) }}
             onMouseUp={() => {
               setSelected(null)
