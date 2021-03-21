@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import { getElementByXPath, sleep } from './utils';
 
 (async () => {
   // Launch the browser
@@ -24,8 +25,7 @@ import puppeteer from 'puppeteer';
   });
 
   // Sleep for a sec, give the browser some time
-  await new Promise(_ => setTimeout(_, 3000));
-
+  await sleep(1)
 
   // Let's play a little
   await page.goto('https://www.chess.com/play/online')
@@ -36,32 +36,25 @@ import puppeteer from 'puppeteer';
     timeSelector.click()
 
     // Wait for the browser
-    await new Promise(_ => setTimeout(_, 1000));
+    await sleep(1)
 
     // Select this time setting
-    const timeSelection = document.evaluate(
-      "//button[text()='10 min']",
-      document,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null
-    ).singleNodeValue
-
+    const timeSelection = getElementByXPath("//button[text()='10 min']")
     timeSelection.click()
 
-    // Wait up
-    await new Promise(_ => setTimeout(_, 1000));
+    // Hol up
+    await sleep(1)
 
-    // Get the play button
-    const play = document.evaluate(
-      "//button[contains(text(), 'Play')]",
-      document,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null
-    ).singleNodeValue
-
-    // Kick it off!
+    // Get the play button and kick it off!
+    const play = getElementByXPath("//button[contains(text(), 'Play')]")
     play.click()
+  })
+
+  await page.evaluate(() => {
+    const board = Array.from(document.getElementsByClassName('board')).pop()
+    const screen = Array.from(document.getElementsByClassName('user-logged-in')).pop()
+
+    const sample = Array.from(document.getElementsByClassName('square-0101')).pop()
+    const { width: nextFile, height: nextRank } = sample.getBoundingClientRect()
   })
 })();
