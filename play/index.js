@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { getElementByXPath, sleep } from './utils';
+import { getElementByXPath, sleep } from './utils.js';
 
 (async () => {
   // Launch the browser
@@ -25,25 +25,30 @@ import { getElementByXPath, sleep } from './utils';
   });
 
   // Sleep for a sec, give the browser some time
-  await sleep(1)
+  await new Promise(_ => setTimeout(_, 1000));
 
   // Let's play a little
   await page.goto('https://www.chess.com/play/online')
 
   await page.evaluate(async () => {
+    // Utility for button selection
+    function getElementByXPath(xpath) {
+      return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
+    }
+
     // Grab the time selector and click
     const timeSelector = document.getElementsByClassName('time-selector-button')[0]
     timeSelector.click()
 
     // Wait for the browser
-    await sleep(1)
+    await new Promise(_ => setTimeout(_, 1000));
 
     // Select this time setting
     const timeSelection = getElementByXPath("//button[text()='10 min']")
     timeSelection.click()
 
     // Hol up
-    await sleep(1)
+    await new Promise(_ => setTimeout(_, 1000));
 
     // Get the play button and kick it off!
     const play = getElementByXPath("//button[contains(text(), 'Play')]")
