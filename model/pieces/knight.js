@@ -1,4 +1,4 @@
-import ChessPiece from './piece'
+import ChessPiece from './piece.js'
 
 export default class Knight extends ChessPiece {
     constructor(team, id) { super(ChessPiece.KNIGHT, team, id) }

@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { getElementByXPath, sleep } from './utils.js';
+import ChessGame from '../model/index.js'
 
 (async () => {
   // Launch the browser
@@ -36,6 +36,13 @@ import { getElementByXPath, sleep } from './utils.js';
       return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
     }
 
+    // If we've just finished a game, start a new one
+    const newGame = getElementByXPath("//span[text()='New Game']")
+    if (newGame) newGame.click()
+
+    // Waitttt
+    await new Promise(_ => setTimeout(_, 1000));
+
     // Grab the time selector and click
     const timeSelector = document.getElementsByClassName('time-selector-button')[0]
     timeSelector.click()
@@ -44,7 +51,7 @@ import { getElementByXPath, sleep } from './utils.js';
     await new Promise(_ => setTimeout(_, 1000));
 
     // Select this time setting
-    const timeSelection = getElementByXPath("//button[text()='10 min']")
+    const timeSelection = getElementByXPath("//button[text()='1 min']")
     timeSelection.click()
 
     // Hol up
@@ -55,11 +62,27 @@ import { getElementByXPath, sleep } from './utils.js';
     play.click()
   })
 
-  await page.evaluate(() => {
+  // Play the game
+  await page.evaluate(async (game) => {
+    // Let things settle
+    await new Promise(_ => setTimeout(_, 2000));
+
+    // Get all the pregame state
     const board = Array.from(document.getElementsByClassName('board')).pop()
     const screen = Array.from(document.getElementsByClassName('user-logged-in')).pop()
+    const playingAsBlack = Boolean(document.getElementsByClassName('flipped').length)
 
-    const sample = Array.from(document.getElementsByClassName('square-0101')).pop()
+    // Get parameters for automation
+    const sample = Array.from(document.getElementsByClassName('wk')).pop()
     const { width: nextFile, height: nextRank } = sample.getBoundingClientRect()
-  })
+
+    // Observe the board for moves
+    const gameObserver = new MutationObserver(function () {
+      console.log('let the games begin\n\n\n\n\n\n\n\n')
+    })
+
+    gameObserver.observe(board, { childList: true })
+
+  }, new ChessGame({}))
+
 })();
