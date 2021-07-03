@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import ChessGame from '../../model'
 import { indexOf } from '../../model/utils.js'
@@ -9,6 +9,16 @@ export default function App() {
   const [selected, setSelected] = useState(null)
 
   window.game = game
+  // useEffect(async () => {
+  //   await new Promise(_ => setTimeout(_, 1000));
+  //   const moves = game.getMoves()
+
+  //   const newGame = game
+  //     .makeMove(moves[Math.floor(Math.random() * moves.length)])
+  //     .switchTurns()
+
+  //   setGame(newGame)
+  // }, [game])
 
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
   const [files] = useState(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
@@ -54,7 +64,7 @@ export default function App() {
               const newGame = game
                 .makeMove(selectedMove[Math.floor(Math.random() * selectedMove.length)])
                 .switchTurns()
-                
+
               setGame(newGame)
             }}
           />

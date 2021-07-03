@@ -1,7 +1,8 @@
 import ChessPiece from './piece.js'
 
 export default class Bishop extends ChessPiece {
-    static attacks = new Set([ChessPiece.ATTACKS_DIAGONALLY])
+    static attackDirections = new Set([ChessPiece.ATTACKS_DIAGONALLY])
+    static attackInRange = () => true
 
     constructor(team, id) { super(ChessPiece.BISHOP, team, id) }
 

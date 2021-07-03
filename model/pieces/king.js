@@ -2,7 +2,14 @@ import ChessPiece from './piece.js'
 import Knight from './knight.js'
 
 export default class King extends ChessPiece {
-    static attacks = new Set([ChessPiece.ATTACKS_DIAGONALLY, ChessPiece.ATTACKS_CARDINALLY])
+    static attackInRange = (distance) => (
+        distance === 1 ||
+        distance === 7 ||
+        distance === 8 ||
+        distance == 9
+    )
+    
+    static attackDirections = new Set([ChessPiece.ATTACKS_DIAGONALLY, ChessPiece.ATTACKS_CARDINALLY])
 
     constructor(team, id) { super(ChessPiece.KING, team, id) }
 

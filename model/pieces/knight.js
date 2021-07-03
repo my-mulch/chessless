@@ -1,7 +1,8 @@
 import ChessPiece from './piece.js'
 
 export default class Knight extends ChessPiece {
-    static attacks = new Set([ChessPiece.ATTACKS_KNIGHTLY])
+    static attackDirections = new Set([ChessPiece.ATTACKS_KNIGHTLY])
+    static attackInRange = () => true
 
     constructor(team, id) { super(ChessPiece.KNIGHT, team, id) }
 
