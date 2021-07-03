@@ -12,16 +12,16 @@ export default class Knight extends ChessPiece {
     hopRightBackward(from) { return this.moveBackward(this.moveRight(from, 2)) }
     hopBackwardRight(from) { return this.moveRight(this.moveBackward(from, 2)) }
 
-    getMoves(game, square, otherTeamSeekingCheck) {
+    getMoves(game, square) {
         return [
-            super.getMoves(game, square, otherTeamSeekingCheck, this.hopForwardLeft.bind(this), 1),
-            super.getMoves(game, square, otherTeamSeekingCheck, this.hopForwardRight.bind(this), 1),
-            super.getMoves(game, square, otherTeamSeekingCheck, this.hopRightForward.bind(this), 1),
-            super.getMoves(game, square, otherTeamSeekingCheck, this.hopRightBackward.bind(this), 1),
-            super.getMoves(game, square, otherTeamSeekingCheck, this.hopBackwardLeft.bind(this), 1),
-            super.getMoves(game, square, otherTeamSeekingCheck, this.hopBackwardRight.bind(this), 1),
-            super.getMoves(game, square, otherTeamSeekingCheck, this.hopLeftForward.bind(this), 1),
-            super.getMoves(game, square, otherTeamSeekingCheck, this.hopLeftBackward.bind(this), 1)
+            super.getMoves(game, square, this.hopForwardLeft.bind(this), 1),
+            super.getMoves(game, square, this.hopForwardRight.bind(this), 1),
+            super.getMoves(game, square, this.hopRightForward.bind(this), 1),
+            super.getMoves(game, square, this.hopRightBackward.bind(this), 1),
+            super.getMoves(game, square, this.hopBackwardLeft.bind(this), 1),
+            super.getMoves(game, square, this.hopBackwardRight.bind(this), 1),
+            super.getMoves(game, square, this.hopLeftForward.bind(this), 1),
+            super.getMoves(game, square, this.hopLeftBackward.bind(this), 1)
         ]
     }
 }

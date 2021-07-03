@@ -8,6 +8,8 @@ export default function App() {
   const [game, setGame] = useState(new ChessGame({}))
   const [selected, setSelected] = useState(null)
 
+  window.game = game
+  
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
   const [files] = useState(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
 

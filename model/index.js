@@ -17,11 +17,11 @@ export default class ChessGame {
     this.previousMoves = []
     this.previousBoards = []
 
-    // Convert the board of strings to board of piece objects
+    // Map the board of strings into a board of piece objects
     this.board = board.map((piece) => {
       if (!piece) return null
 
-      // What type of piece is it? Grab the associated class from the PieceMap.
+      // Grab the class from the PieceMap
       const Piece = PieceMap[piece]
 
       // Create the new piece for the appropriate team
@@ -44,27 +44,11 @@ export default class ChessGame {
     return this.previousMoves[this.previousMoves.length - 1]
   }
 
-  getMoves(team = this.turn, otherTeamSeekingCheck = false) {
-    const allMoves = []
-    let allChecks = false
-    const allAttacks = new Set()
-
-    this.board.forEach((piece, square) => {
-      if (!piece || piece.getTeam() !== team) return
-
-      piece.getMoves(this, square, otherTeamSeekingCheck).forEach(({ moves, checks, attacks }) => {
-        // Assign moves
-        allMoves.push(...moves)
-
-        // Merge attacks
-        attacks.forEach(allAttacks.add, allAttacks)
-
-        // Do we check the king?
-        allChecks = allChecks || checks
-      })
-    })
-
-    return { moves: allMoves, checks: allChecks, attacks: allAttacks }
+  getMoves(team = this.turn) {
+    return this.board
+      .map((piece, square) => piece && piece.getTeam() === team && piece.getMoves(this, square))
+      .flat()
+      .filter(Boolean)
   }
 
   makeMove(move) {
@@ -95,12 +79,22 @@ export default class ChessGame {
   }
 
   movePutsKingInCheck(move) {
-    // If we are searching for the other team's checks on our king to ensure our move is legal,
-    // we stop the recursion. Otherwise we'd recurse infinitely
-    if(move.otherTeamSeekingCheck) return false
+    const newGame = this.makeMove(move)
 
-    // Make the move (returns new game), get the moves for that game with the attacking team, return if check is found
-    return this.makeMove(move).getMoves(move.piece.getOtherTeam(), true).checks
+    let king = null
+    let kingSquare = null
+
+    newGame.board.forEach((piece, square) => {
+      if (
+        piece &&
+        piece.getType() === ChessPiece.KING &&
+        piece.getTeam() === this.turn
+      )
+        king = piece, kingSquare = square
+    }, this)
+
+
+    return king.isInCheck(newGame, kingSquare)
   }
 
   isEmpty(square) { return this.board[square] === null }

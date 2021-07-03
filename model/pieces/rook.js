@@ -3,12 +3,12 @@ import ChessPiece from './piece.js'
 export default class Rook extends ChessPiece {
     constructor(team, id) { super(ChessPiece.ROOK, team, id) }
 
-    getMoves(game, square, otherTeamSeekingCheck) {
+    getMoves(game, square) {
         return [
-            super.getMoves(game, square, otherTeamSeekingCheck, super.moveLeft.bind(this)),
-            super.getMoves(game, square, otherTeamSeekingCheck, super.moveRight.bind(this)),
-            super.getMoves(game, square, otherTeamSeekingCheck, super.moveForward.bind(this)),
-            super.getMoves(game, square, otherTeamSeekingCheck, super.moveBackward.bind(this)),
+            super.getMoves(game, square, super.moveLeft.bind(this)),
+            super.getMoves(game, square, super.moveRight.bind(this)),
+            super.getMoves(game, square, super.moveForward.bind(this)),
+            super.getMoves(game, square, super.moveBackward.bind(this)),
         ]
     }
 }

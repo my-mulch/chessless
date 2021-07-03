@@ -52,35 +52,26 @@ export default class ChessPiece extends String {
     return (this.isWhite() && rank === 0) || (this.isBlack() && rank === 7)
   }
 
-  // Get all moves for any piece. Next determines how the piece moves. See subclasses
-  getMoves(game, from, otherTeamSeekingCheck, next, steps = Infinity) {
-    const moves = []
-    let checks = false
-    const attacks = new Set()
+  // Get all moves for any piece. `next` determines how the piece moves. See subclasses
+  getMoves(game, from, next, steps = Infinity) {
+    // This method is also used by the King to seek checks
+    const kingSeekingChecks = this.getType() === ChessPiece.KING
 
+    const moves = []
     let step = 0, to = next(from)
 
     while (step++ < steps && game.isInBounds(to) && !game.isSameTeam(to, this)) {
       // Add the move, as long as it is legal
-      const move = { to, from, piece: game.board[from], otherTeamSeekingCheck }
-      
-      if (!game.movePutsKingInCheck(move))
-        moves.push(move)
+      const move = { to, from, piece: this }
 
-      // Add the attacked square
-      attacks.add(to)
-
-      if (game.isOtherTeam(to, this)) {
-        // If we check the king, note that
-        if (game.board[to].getType() === ChessPiece.KING) checks = true
-
-        return { moves, checks, attacks }
-      }
+      if (kingSeekingChecks && game.isOtherTeam(to, this)) return true
+      else if (!game.movePutsKingInCheck(move)) moves.push(move)
 
       to = next(to)
     }
 
-    return { moves, checks, attacks }
+    // Our return value differs if we are the king seeking checks or a piece seeking moves
+    return kingSeekingChecks ? false : moves
   }
 
   // Returns the final index of a given move in a particular direction
@@ -102,8 +93,8 @@ export default class ChessPiece extends String {
   moveRight(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance * -1) }
   moveForward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance) }
   moveBackward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance * -1) }
-  moveKingSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance) }
-  moveQueenSide(from, distance = 1) { return this.move(from, ChessPiece.FILE, this.orient() * distance * -1) }
+  moveKingSide(from, distance = 1) { return this.isWhite() ? this.moveRight(from, distance) : this.moveLeft(from, distance) }
+  moveQueenSide(from, distance = 1) { return this.isWhite() ? this.moveLeft(from, distance) : this.moveRight(from, distance) }
 
   moveForwardLeft(from, distance = 1) { return this.moveForward(this.moveLeft(from, distance), distance) }
   moveForwardRight(from, distance = 1) { return this.moveForward(this.moveRight(from, distance), distance) }

@@ -10,21 +10,28 @@ export default class Pawn extends ChessPiece {
 
     // Push
     getPushes(game, square, pushSquare, doublePushSquare) {
-        const result = { moves: [], attacks: new Set(), checks: false }
+        const moves = []
 
-        const pushMove = { from: square, to: pushSquare, piece: game.board[square] }
-        if (game.isEmpty(pushSquare) && !game.movePutsKingInCheck(pushMove)) {
-            if (super.isLastRank(pushSquare))
-                return this.getPromotions(game, square, pushSquare)
+        if (!game.isEmpty(pushSquare)) return []
 
-            result.moves.push(pushMove)
-        }
+        const pushMove = { from: square, to: pushSquare, piece: this }
 
-        const doublePushMove = { from: square, to: doublePushSquare, piece: game.board[square] }
-        if (!game.hasMoved(this) && game.isEmpty(doublePushSquare) && !game.movePutsKingInCheck(doublePushMove))
-            result.moves.push(doublePushMove)
+        if (game.movePutsKingInCheck(pushMove))
+            return []
 
-        return result
+        if (super.isLastRank(pushSquare))
+            return this.getPromotions(square, pushSquare)
+
+        moves.push(pushMove)
+
+        const doublePushMove = { from: square, to: doublePushSquare, piece: this }
+
+        if (!game.hasMoved(this) &&
+            game.isEmpty(doublePushSquare) &&
+            !game.movePutsKingInCheck(doublePushMove))
+            moves.push(doublePushMove)
+
+        return moves
     }
 
     // Enpassant
@@ -41,94 +48,60 @@ export default class Pawn extends ChessPiece {
     }
 
     getEnpassant(game, square, checkSquare, captureSquare) {
-        const result = { moves: [], attacks: new Set(), checks: false }
-
-        if (game.isOutOfBounds(checkSquare) || game.isOutOfBounds(captureSquare))
-            return result
+        if (game.isOutOfBounds(checkSquare) || !this.canEnpassant(game, checkSquare))
+            return []
 
         const enpassant = {
             from: square,
             to: captureSquare,
-            piece: game.board[square],
+            piece: this,
             special(board) { board[checkSquare] = null }
         }
 
-        if (this.canEnpassant(game, checkSquare) && !game.movePutsKingInCheck(enpassant))
-            result.moves.push(enpassant)
+        if (game.movePutsKingInCheck(enpassant))
+            return []
 
-        return result
+        return [enpassant]
     }
 
     // Capture
-    getCapture(game, square, otherTeamSeekingCheck, captureSquare) {
-        const result = { moves: [], attacks: new Set(), checks: false }
+    getCapture(game, square, captureSquare) {
+        if (game.isOutOfBounds(captureSquare) || !game.isOtherTeam(captureSquare, this))
+            return []
 
-        if (game.isOutOfBounds(captureSquare))
-            return result
+        const captureMove = { from: square, to: captureSquare, piece: this }
 
-        result.attacks.add(captureSquare)
+        if (game.movePutsKingInCheck(captureMove))
+            return []
 
-        const captureMove = { from: square, to: captureSquare, piece: game.board[square], otherTeamSeekingCheck }
+        if (super.isLastRank(captureSquare))
+            return this.getPromotions(square, captureSquare)
 
-        if (!game.isOtherTeam(captureSquare, this) || game.movePutsKingInCheck(captureMove))
-            return result
-
-        if (game.board[captureSquare].getType() === ChessPiece.KING)
-            result.checks = true
-
-        if (this.isLastRank(captureSquare))
-            return this.getPromotions(game, square, captureSquare)
-
-        result.moves.push(captureMove)
-
-        return result
+        return [captureMove]
     }
 
     // Promotions
-    getPromotions(game, square, to) {
-        const result = { moves: [], attacks: new Set(), checks: false }
-        const piece = game.board[square]
-
-        result.moves.push(
-            { from: square, to, piece, special: (board) => board[to] = new Rook(super.getTeam(), piece.id) },
-            { from: square, to, piece, special: (board) => board[to] = new Queen(super.getTeam(), piece.id) },
-            { from: square, to, piece, special: (board) => board[to] = new Knight(super.getTeam(), piece.id) },
-            { from: square, to, piece, special: (board) => board[to] = new Bishop(super.getTeam(), piece.id) },
-        )
-
-        // Capture & promote
-        if (Math.abs(square - to) === 7 || Math.abs(square - to) === 9) {
-            result.attacks.add(to)
-
-            if (game.board[to].getType() === ChessPiece.KING)
-                result.checks = true
-        }
-
-        return result
+    getPromotions(from, to) {
+        return [
+            { from, to, piece: this, special: (board) => board[to] = new Rook(super.getTeam(), this.id) },
+            { from, to, piece: this, special: (board) => board[to] = new Queen(super.getTeam(), this.id) },
+            { from, to, piece: this, special: (board) => board[to] = new Knight(super.getTeam(), this.id) },
+            { from, to, piece: this, special: (board) => board[to] = new Bishop(super.getTeam(), this.id) },
+        ]
     }
 
-    getMoves(game, square, otherTeamSeekingCheck) {
-        const result = []
+    getMoves(game, square) {
+        return [
+            // Getting pushes we look one and two squares forward
+            this.getPushes(game, square, super.moveForward(square, 1), super.moveForward(square, 2)),
 
-        /**
-         * Seeking check means we are checking our opponents attacking moves to determine
-         * whether or not a move we are making is legal. If this is the case, we do not need
-         * to check pushes or enpassants bc these do not contains immediate checks. I.e. We have to complete
-         * them before a check can occur
-         */
-
-        if (!otherTeamSeekingCheck) {
-            result.push(
-                this.getPushes(game, square, super.moveForward(square, 1), super.moveForward(square, 2)),
-                // Getting enpassants we need to look at the square to the side, and the square behind
-                this.getEnpassant(game, square, super.moveLeft(square, 1), super.moveForwardLeft(square, 1)),
-                this.getEnpassant(game, square, super.moveRight(square, 1), super.moveForwardRight(square, 1)),
-            )
-        }
-
-        return result.concat([
-            this.getCapture(game, square, otherTeamSeekingCheck, super.moveForwardLeft(square, 1)),
-            this.getCapture(game, square, otherTeamSeekingCheck, super.moveForwardRight(square, 1))
-        ])
+            // Getting enpassants we need to look at the square to the side, and the square behind
+            this.getEnpassant(game, square, super.moveLeft(square, 1), super.moveForwardLeft(square, 1)),
+            this.getEnpassant(game, square, super.moveRight(square, 1), super.moveForwardRight(square, 1)),
+            
+            // Getting captures we look diagonally forward one square
+            this.getCapture(game, square, super.moveForwardLeft(square, 1)),
+            this.getCapture(game, square, super.moveForwardRight(square, 1)),
+        ]
     }
 }

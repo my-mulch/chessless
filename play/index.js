@@ -25,7 +25,7 @@ import ChessGame from '../model/index.js'
   });
 
   // Sleep for a sec, give the browser some time
-  await new Promise(_ => setTimeout(_, 1000));
+  await new Promise(_ => setTimeout(_, 2000));
 
   // Let's play a little
   await page.goto('https://www.chess.com/play/online')
@@ -36,26 +36,28 @@ import ChessGame from '../model/index.js'
       return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
     }
 
+    await new Promise(_ => setTimeout(_, 2000));
+
     // If we've just finished a game, start a new one
     const newGame = getElementByXPath("//span[text()='New Game']")
     if (newGame) newGame.click()
 
     // Waitttt
-    await new Promise(_ => setTimeout(_, 1000));
+    await new Promise(_ => setTimeout(_, 2000));
 
     // Grab the time selector and click
     const timeSelector = document.getElementsByClassName('time-selector-button')[0]
     timeSelector.click()
 
     // Wait for the browser
-    await new Promise(_ => setTimeout(_, 1000));
+    await new Promise(_ => setTimeout(_, 2000));
 
     // Select this time setting
-    const timeSelection = getElementByXPath("//button[text()='1 min']")
+    const timeSelection = getElementByXPath("//button[text()='30 min']")
     timeSelection.click()
 
     // Hol up
-    await new Promise(_ => setTimeout(_, 1000));
+    await new Promise(_ => setTimeout(_, 2000));
 
     // Get the play button and kick it off!
     const play = getElementByXPath("//button[contains(text(), 'Play')]")
@@ -70,18 +72,19 @@ import ChessGame from '../model/index.js'
     // Get all the pregame state
     const board = Array.from(document.getElementsByClassName('board')).pop()
     const screen = Array.from(document.getElementsByClassName('user-logged-in')).pop()
-    const playingAsBlack = Boolean(document.getElementsByClassName('flipped').length)
+    const moveList = Array.from(document.getElementsByTagName('vertical-move-list')).pop()
+    const playingAs = Boolean(document.getElementsByClassName('flipped').length) ? game.constructor.TEAMS.BLACK : game.constructor.TEAMS.WHITE
 
     // Get parameters for automation
     const sample = Array.from(document.getElementsByClassName('wk')).pop()
     const { width: nextFile, height: nextRank } = sample.getBoundingClientRect()
 
-    // Observe the board for moves
-    const gameObserver = new MutationObserver(function () {
-      console.log('let the games begin\n\n\n\n\n\n\n\n')
+    // Observe the move list for moves
+    const observer = new MutationObserver(function () {
+      console.log('moved\n\n\n\n\n\n')
     })
 
-    gameObserver.observe(board, { childList: true })
+    observer.observe(moveList, { attributes: true })
 
   }, new ChessGame({}))
 
