@@ -6,9 +6,13 @@ import Bishop from './bishop.js'
 import ChessPiece from './piece.js'
 
 export default class Pawn extends ChessPiece {
-    static attackInRange = (distance) => distance === 7 || distance === 9
     static attackDirections = new Set([ChessPiece.ATTACKS_DIAGONALLY])
-    
+
+    static attackInRange = (from, to) => {
+        const distance = Math.abs(from - to)
+        return distance === 7 || distance === 9
+    }
+
     constructor(team, id) { super(ChessPiece.PAWN, team, id) }
 
     // Push

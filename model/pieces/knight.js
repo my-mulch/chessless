@@ -1,9 +1,8 @@
 import ChessPiece from './piece.js'
 
 export default class Knight extends ChessPiece {
-    static attackDirections = new Set([ChessPiece.ATTACKS_KNIGHTLY])
     static attackInRange = () => true
-
+    static attackDirections = new Set([ChessPiece.ATTACKS_KNIGHTLY])
     constructor(team, id) { super(ChessPiece.KNIGHT, team, id) }
 
     hopLeftForward(from) { return this.moveForward(this.moveLeft(from, 2)) }

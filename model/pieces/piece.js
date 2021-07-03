@@ -38,10 +38,10 @@ export default class ChessPiece extends String {
     this.id = id || uuid()
   }
 
-  static doesAttack(piece, distance, direction) {
+  static doesAttack(piece, from, to, direction) {
     return (
       piece.constructor.attackDirections.has(direction) &&
-      piece.constructor.attackInRange(Math.abs(distance))
+      piece.constructor.attackInRange(from, to)
     )
   }
 
@@ -77,7 +77,7 @@ export default class ChessPiece extends String {
       if (game.isOtherTeam(to, this)) {
         // Are we looking for checks?
         if (kingCheckDirection) {
-          return ChessPiece.doesAttack(game.board[to], from - to, kingCheckDirection)
+          return ChessPiece.doesAttack(game.board[to], from, to, kingCheckDirection)
         }
         // Or just for legal moves?
         else if (!game.movePutsKingInCheck(move)) {

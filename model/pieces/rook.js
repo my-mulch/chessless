@@ -1,9 +1,8 @@
 import ChessPiece from './piece.js'
 
 export default class Rook extends ChessPiece {
-    static attackDirections = new Set([ChessPiece.ATTACKS_CARDINALLY])
     static attackInRange = () => true
-
+    static attackDirections = new Set([ChessPiece.ATTACKS_CARDINALLY])
     constructor(team, id) { super(ChessPiece.ROOK, team, id) }
 
     getMoves(game, square) {

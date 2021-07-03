@@ -9,16 +9,16 @@ export default function App() {
   const [selected, setSelected] = useState(null)
 
   window.game = game
-  // useEffect(async () => {
-  //   await new Promise(_ => setTimeout(_, 1000));
-  //   const moves = game.getMoves()
+  useEffect(async () => {
+    // await new Promise(_ => setTimeout(_, 1000));
+    const moves = game.getMoves()
 
-  //   const newGame = game
-  //     .makeMove(moves[Math.floor(Math.random() * moves.length)])
-  //     .switchTurns()
+    const newGame = game
+      .makeMove(moves[Math.floor(Math.random() * moves.length)])
+      .switchTurns()
 
-  //   setGame(newGame)
-  // }, [game])
+    setGame(newGame)
+  }, [game])
 
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
   const [files] = useState(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])

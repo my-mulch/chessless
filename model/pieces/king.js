@@ -2,14 +2,25 @@ import ChessPiece from './piece.js'
 import Knight from './knight.js'
 
 export default class King extends ChessPiece {
-    static attackInRange = (distance) => (
-        distance === 1 ||
-        distance === 7 ||
-        distance === 8 ||
-        distance == 9
-    )
-    
-    static attackDirections = new Set([ChessPiece.ATTACKS_DIAGONALLY, ChessPiece.ATTACKS_CARDINALLY])
+    static attackDirections = new Set([
+        ChessPiece.ATTACKS_DIAGONALLY,
+        ChessPiece.ATTACKS_CARDINALLY
+    ])
+
+    static attackInRange = (from, to) => {
+        // Don't wrap around the board!
+        if (!(to % 8) && to - from === 1) return false
+        if (!(from % 8) && from - to === 1) return false
+
+        const distance = Math.abs(from - to)
+
+        return (
+            distance === 1 ||
+            distance === 7 ||
+            distance === 8 ||
+            distance === 9
+        )
+    }
 
     constructor(team, id) { super(ChessPiece.KING, team, id) }
 
