@@ -6,18 +6,20 @@ import Bishop from './bishop.js'
 import ChessPiece from './piece.js'
 
 export default class Pawn extends ChessPiece {
+    static attacks = new Set([ChessPiece.ATTACKS_DIAGONALLY])
+    
     constructor(team, id) { super(ChessPiece.PAWN, team, id) }
 
     // Push
     getPushes(game, square, pushSquare, doublePushSquare) {
         const moves = []
 
-        if (!game.isEmpty(pushSquare)) return []
+        if (!game.isEmpty(pushSquare)) return null
 
         const pushMove = { from: square, to: pushSquare, piece: this }
 
         if (game.movePutsKingInCheck(pushMove))
-            return []
+            return null
 
         if (super.isLastRank(pushSquare))
             return this.getPromotions(square, pushSquare)
@@ -49,7 +51,7 @@ export default class Pawn extends ChessPiece {
 
     getEnpassant(game, square, checkSquare, captureSquare) {
         if (game.isOutOfBounds(checkSquare) || !this.canEnpassant(game, checkSquare))
-            return []
+            return null
 
         const enpassant = {
             from: square,
@@ -59,25 +61,25 @@ export default class Pawn extends ChessPiece {
         }
 
         if (game.movePutsKingInCheck(enpassant))
-            return []
+            return null
 
-        return [enpassant]
+        return enpassant
     }
 
     // Capture
     getCapture(game, square, captureSquare) {
         if (game.isOutOfBounds(captureSquare) || !game.isOtherTeam(captureSquare, this))
-            return []
+            return null
 
         const captureMove = { from: square, to: captureSquare, piece: this }
 
         if (game.movePutsKingInCheck(captureMove))
-            return []
+            return null
 
         if (super.isLastRank(captureSquare))
             return this.getPromotions(square, captureSquare)
 
-        return [captureMove]
+        return captureMove
     }
 
     // Promotions
@@ -98,7 +100,7 @@ export default class Pawn extends ChessPiece {
             // Getting enpassants we need to look at the square to the side, and the square behind
             this.getEnpassant(game, square, super.moveLeft(square, 1), super.moveForwardLeft(square, 1)),
             this.getEnpassant(game, square, super.moveRight(square, 1), super.moveForwardRight(square, 1)),
-            
+
             // Getting captures we look diagonally forward one square
             this.getCapture(game, square, super.moveForwardLeft(square, 1)),
             this.getCapture(game, square, super.moveForwardRight(square, 1)),

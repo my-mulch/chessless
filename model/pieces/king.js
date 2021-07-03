@@ -2,25 +2,27 @@ import ChessPiece from './piece.js'
 import Knight from './knight.js'
 
 export default class King extends ChessPiece {
+    static attacks = new Set([ChessPiece.ATTACKS_DIAGONALLY, ChessPiece.ATTACKS_CARDINALLY])
+
     constructor(team, id) { super(ChessPiece.KING, team, id) }
 
     getCastle(game, square, moveCastleSide, rookStart) {
         // If the king has moved, ya can't castle
-        if (game.hasMoved(this)) return []
+        if (game.hasMoved(this)) return null
 
         // If the king is in check, ya can't castle
-        if (this.isInCheck(game, square)) return []
+        if (this.isInCheck(game, square)) return null
 
         // Get the rook
         const rook = game.board[rookStart]
 
         // If the rook has moved, ya can't castle
-        if (!rook || game.hasMoved(rook)) return []
+        if (!rook || game.hasMoved(rook)) return null
 
         // If the king moves through any attacked squares, ya can't castle
         if (this.isInCheck(game, moveCastleSide(square, 1)) ||
             this.isInCheck(game, moveCastleSide(square, 2)))
-            return []
+            return null
 
         // If there are pieces in the way, ya can't castle
         let rookPosition = rookStart
@@ -28,7 +30,7 @@ export default class King extends ChessPiece {
         const rookStop = moveCastleSide(rookDestination, -1)
 
         while ((rookPosition = moveCastleSide(rookPosition, -1)) !== rookStop)
-            if (!game.isEmpty(rookPosition)) return []
+            if (!game.isEmpty(rookPosition)) return null
 
         // Finally, castle
         return [{
@@ -45,23 +47,23 @@ export default class King extends ChessPiece {
     isInCheck(game, square) {
         // Checks all possible directions from the King to find check
         return [
-            super.getMoves(game, square, super.moveLeft.bind(this)),
-            super.getMoves(game, square, super.moveRight.bind(this)),
-            super.getMoves(game, square, super.moveForward.bind(this)),
-            super.getMoves(game, square, super.moveBackward.bind(this)),
-            super.getMoves(game, square, super.moveForwardLeft.bind(this)),
-            super.getMoves(game, square, super.moveForwardRight.bind(this)),
-            super.getMoves(game, square, super.moveBackwardLeft.bind(this)),
-            super.getMoves(game, square, super.moveBackwardRight.bind(this)),
+            super.getMoves(game, square, super.moveLeft.bind(this), Infinity, ChessPiece.ATTACKS_CARDINALLY),
+            super.getMoves(game, square, super.moveRight.bind(this), Infinity, ChessPiece.ATTACKS_CARDINALLY),
+            super.getMoves(game, square, super.moveForward.bind(this), Infinity, ChessPiece.ATTACKS_CARDINALLY),
+            super.getMoves(game, square, super.moveBackward.bind(this), Infinity, ChessPiece.ATTACKS_CARDINALLY),
+            super.getMoves(game, square, super.moveForwardLeft.bind(this), Infinity, ChessPiece.ATTACKS_DIAGONALLY),
+            super.getMoves(game, square, super.moveForwardRight.bind(this), Infinity, ChessPiece.ATTACKS_DIAGONALLY),
+            super.getMoves(game, square, super.moveBackwardLeft.bind(this), Infinity, ChessPiece.ATTACKS_DIAGONALLY),
+            super.getMoves(game, square, super.moveBackwardRight.bind(this), Infinity, ChessPiece.ATTACKS_DIAGONALLY),
 
-            super.getMoves(game, square, Knight.prototype.hopForwardLeft.bind(this), 1),
-            super.getMoves(game, square, Knight.prototype.hopForwardRight.bind(this), 1),
-            super.getMoves(game, square, Knight.prototype.hopRightForward.bind(this), 1),
-            super.getMoves(game, square, Knight.prototype.hopRightBackward.bind(this), 1),
-            super.getMoves(game, square, Knight.prototype.hopBackwardLeft.bind(this), 1),
-            super.getMoves(game, square, Knight.prototype.hopBackwardRight.bind(this), 1),
-            super.getMoves(game, square, Knight.prototype.hopLeftForward.bind(this), 1),
-            super.getMoves(game, square, Knight.prototype.hopLeftBackward.bind(this), 1),
+            super.getMoves(game, square, Knight.prototype.hopForwardLeft.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
+            super.getMoves(game, square, Knight.prototype.hopForwardRight.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
+            super.getMoves(game, square, Knight.prototype.hopRightForward.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
+            super.getMoves(game, square, Knight.prototype.hopRightBackward.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
+            super.getMoves(game, square, Knight.prototype.hopBackwardLeft.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
+            super.getMoves(game, square, Knight.prototype.hopBackwardRight.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
+            super.getMoves(game, square, Knight.prototype.hopLeftForward.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
+            super.getMoves(game, square, Knight.prototype.hopLeftBackward.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
         ].some(Boolean)
     }
 

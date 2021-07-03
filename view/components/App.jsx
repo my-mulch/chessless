@@ -9,7 +9,7 @@ export default function App() {
   const [selected, setSelected] = useState(null)
 
   window.game = game
-  
+
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
   const [files] = useState(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
 
@@ -47,11 +47,15 @@ export default function App() {
             onMouseUp={() => {
               setSelected(null)
               const to = indexOf(ri, fi)
-              const { moves } = game.getMoves()
+              const moves = game.getMoves()
 
               const selectedMove = moves.filter(move => move.from === selected && move.to === to)
 
-              setGame(game.makeMove(selectedMove[Math.floor(Math.random() * selectedMove.length)]))
+              const newGame = game
+                .makeMove(selectedMove[Math.floor(Math.random() * selectedMove.length)])
+                .switchTurns()
+                
+              setGame(newGame)
             }}
           />
         )}

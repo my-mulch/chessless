@@ -14,6 +14,11 @@ export default class ChessPiece extends String {
   static KNIGHT = 'n'
   static BISHOP = 'b'
 
+  // Piece Attacks
+  static ATTACKS_KNIGHTLY = 'k'
+  static ATTACKS_DIAGONALLY = 'd'
+  static ATTACKS_CARDINALLY = 'c'
+
   // Team Constants
   static WHITE = 'w'
   static BLACK = 'b'
@@ -31,6 +36,10 @@ export default class ChessPiece extends String {
 
     super(assignTeam.call(type));
     this.id = id || uuid()
+  }
+
+  static doesAttack(piece, direction) {
+    return piece.constructor.attacks.has(direction)
   }
 
   // Helper methods
@@ -53,10 +62,8 @@ export default class ChessPiece extends String {
   }
 
   // Get all moves for any piece. `next` determines how the piece moves. See subclasses
-  getMoves(game, from, next, steps = Infinity) {
-    // This method is also used by the King to seek checks
-    const kingSeekingChecks = this.getType() === ChessPiece.KING
-
+  // This method is also used by the King to seek checks
+  getMoves(game, from, next, steps = Infinity, kingSeekingCheck = null) {
     const moves = []
     let step = 0, to = next(from)
 
@@ -64,14 +71,18 @@ export default class ChessPiece extends String {
       // Add the move, as long as it is legal
       const move = { to, from, piece: this }
 
-      if (kingSeekingChecks && game.isOtherTeam(to, this)) return true
-      else if (!game.movePutsKingInCheck(move)) moves.push(move)
+      if (kingSeekingCheck && game.isOtherTeam(to, this))
+        // Does this piece attack the king?
+        return ChessPiece.doesAttack(game.board[to], kingSeekingCheck)
+
+      if (!kingSeekingCheck && !game.movePutsKingInCheck(move))
+        moves.push(move)
 
       to = next(to)
     }
 
     // Our return value differs if we are the king seeking checks or a piece seeking moves
-    return kingSeekingChecks ? false : moves
+    return kingSeekingCheck ? false : moves
   }
 
   // Returns the final index of a given move in a particular direction

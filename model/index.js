@@ -49,6 +49,13 @@ export default class ChessGame {
       .map((piece, square) => piece && piece.getTeam() === team && piece.getMoves(this, square))
       .flat()
       .filter(Boolean)
+      .flat()
+  }
+
+  switchTurns() {
+    this.turn = this.turn === ChessPiece.WHITE ? ChessPiece.BLACK : ChessPiece.WHITE
+
+    return this
   }
 
   makeMove(move) {
@@ -62,9 +69,6 @@ export default class ChessGame {
     newGame.board[move.to] = newGame.board[move.from]
     newGame.board[move.from] = null
     move.special && move.special(newGame.board)
-
-    // Change turns
-    newGame.turn = this.turn === ChessPiece.BLACK ? ChessPiece.WHITE : ChessPiece.BLACK
 
     return newGame
   }
@@ -92,7 +96,6 @@ export default class ChessGame {
       )
         king = piece, kingSquare = square
     }, this)
-
 
     return king.isInCheck(newGame, kingSquare)
   }

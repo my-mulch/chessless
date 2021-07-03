@@ -1,6 +1,8 @@
 import ChessPiece from './piece.js'
 
 export default class Queen extends ChessPiece {
+    static attacks = new Set([ChessPiece.ATTACKS_DIAGONALLY, ChessPiece.ATTACKS_CARDINALLY])
+    
     constructor(team, id) { super(ChessPiece.QUEEN, team, id) }
 
     getMoves(game, square) {
