@@ -8,10 +8,12 @@ export default class ChessGame {
   }
 
   fenConstructor(FEN) {
-    const [board, turn] = parseFEN(FEN)
-
-    // Whose turn is it?
+    const [board, turn, castles, enpassant] = parseFEN(FEN)
+    
+    // Metadata
     this.turn = turn
+    this.castles = castles
+    this.enpassant = enpassant
 
     // Record the history
     this.previousMoves = []
@@ -58,6 +60,10 @@ export default class ChessGame {
     return this
   }
 
+  clearEnpassant() {
+    this.enpassant = null
+  }
+
   makeMove(move) {
     const newGame = this.clone()
 
@@ -65,10 +71,12 @@ export default class ChessGame {
     newGame.previousMoves.push(move)
     newGame.previousBoards.push(this.board)
 
-    // Move the piece on the new game board: from -> to and execute any specialities (castling, enpassant, etc)
+    // Move the piece on the new game board
     newGame.board[move.to] = newGame.board[move.from]
     newGame.board[move.from] = null
-    move.special && move.special(newGame.board)
+
+    // Execute any specialities (castling, enpassant, etc)
+    move.special ? move.special(newGame) : newGame.clearEnpassant()
 
     return newGame
   }

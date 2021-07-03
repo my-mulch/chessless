@@ -55,9 +55,10 @@ export default class King extends ChessPiece {
             from: square,
             to: moveCastleSide(square, 2),
             piece: this,
-            special(board) {
-                board[rookDestination] = rook
-                board[rookStart] = null
+            special: game => {
+                game.board[rookDestination] = rook
+                game.board[rookStart] = null
+                game.clearEnpassant()
             }
         }]
     }

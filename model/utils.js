@@ -4,6 +4,9 @@ export const NUM_SQUARES = 8 * 8
 
 export const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
+export const RANKS = [8, 7, 6, 5, 4, 3, 2, 1]
+export const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
 export const parseFEN = function (FEN) {
   // Split FEN into constituent parts
   const [position, turn, castles, enPassant] = FEN.split(' ')
@@ -22,7 +25,19 @@ export const parseFEN = function (FEN) {
   }
 
   // Return the board and turn
-  return [board, turn]
+  return [board, turn, castles, convertFromAlgebraic(enPassant)]
+}
+
+export const convertToAlgebraic = function (index) {
+  const [rank, file] = rankAndFileOf(index)
+
+  return FILES[file] + RANKS[rank]
+}
+
+export const convertFromAlgebraic = function (square) {
+  const [file, rank] = square
+
+  return indexOf(8 - +rank, file.toLowerCase().charCodeAt() - 97)
 }
 
 export const rankAndFileOf = function (index) {

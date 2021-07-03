@@ -5,20 +5,20 @@ import { indexOf } from '../../model/utils.js'
 import { imageFromPiece } from './utils.js'
 
 export default function App() {
-  const [game, setGame] = useState(new ChessGame({}))
+  const [game, setGame] = useState(new ChessGame({ FEN: 'rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3' }))
   const [selected, setSelected] = useState(null)
 
   window.game = game
-  useEffect(async () => {
-    // await new Promise(_ => setTimeout(_, 1000));
-    const moves = game.getMoves()
+  // useEffect(async () => {
+  // await new Promise(_ => setTimeout(_, 1000));
+  //   const moves = game.getMoves()
 
-    const newGame = game
-      .makeMove(moves[Math.floor(Math.random() * moves.length)])
-      .switchTurns()
+  //   const newGame = game
+  //     .makeMove(moves[Math.floor(Math.random() * moves.length)])
+  //     .switchTurns()
 
-    setGame(newGame)
-  }, [game])
+  //   setGame(newGame)
+  // }, [game])
 
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
   const [files] = useState(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])

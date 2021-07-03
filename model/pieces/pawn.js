@@ -31,7 +31,12 @@ export default class Pawn extends ChessPiece {
 
         moves.push(pushMove)
 
-        const doublePushMove = { from: square, to: doublePushSquare, piece: this }
+        const doublePushMove = {
+            from: square,
+            to: doublePushSquare,
+            piece: this,
+            special: game => game.enpassant = pushSquare
+        }
 
         if (!game.hasMoved(this) &&
             game.isEmpty(doublePushSquare) &&
@@ -42,27 +47,19 @@ export default class Pawn extends ChessPiece {
     }
 
     // Enpassant
-    canEnpassant(game, checkSquare) {
-        if (!game.previousMoves.length) return false
-
-        const otherPiece = game.board[checkSquare]
-        const lastMove = game.getLastMove()
-
-        return game.isOtherTeam(checkSquare, this) &&
-            otherPiece.getType() === ChessPiece.PAWN &&
-            Math.abs(lastMove.from - lastMove.to) === 16 && // Double push
-            lastMove.piece.id === otherPiece.id
-    }
-
     getEnpassant(game, square, checkSquare, captureSquare) {
-        if (game.isOutOfBounds(checkSquare) || !this.canEnpassant(game, checkSquare))
+        if (captureSquare !== game.enpassant)
             return null
+
 
         const enpassant = {
             from: square,
             to: captureSquare,
             piece: this,
-            special(board) { board[checkSquare] = null }
+            special: game => {
+                game.board[checkSquare] = null
+                game.clearEnpassant()
+            }
         }
 
         if (game.movePutsKingInCheck(enpassant))
@@ -87,13 +84,18 @@ export default class Pawn extends ChessPiece {
         return captureMove
     }
 
+    promote(game, to, Piece) {
+        game.board[to] = new Piece(super.getTeam(), this.id);
+        game.clearEnpassant()
+    }
+
     // Promotions
     getPromotions(from, to) {
         return [
-            { from, to, piece: this, special: (board) => board[to] = new Rook(super.getTeam(), this.id) },
-            { from, to, piece: this, special: (board) => board[to] = new Queen(super.getTeam(), this.id) },
-            { from, to, piece: this, special: (board) => board[to] = new Knight(super.getTeam(), this.id) },
-            { from, to, piece: this, special: (board) => board[to] = new Bishop(super.getTeam(), this.id) },
+            { from, to, piece: this, special: game => this.promote(game, to, Rook) },
+            { from, to, piece: this, special: game => this.promote(game, to, Queen) },
+            { from, to, piece: this, special: game => this.promote(game, to, Knight) },
+            { from, to, piece: this, special: game => this.promote(game, to, Bishop) },
         ]
     }
 
@@ -102,7 +104,7 @@ export default class Pawn extends ChessPiece {
             // Getting pushes we look one and two squares forward
             this.getPushes(game, square, super.moveForward(square, 1), super.moveForward(square, 2)),
 
-            // Getting enpassants we need to look at the square to the side, and the square behind
+            // Getting enpassants we need to look at the square to the side, and the square behind it
             this.getEnpassant(game, square, super.moveLeft(square, 1), super.moveForwardLeft(square, 1)),
             this.getEnpassant(game, square, super.moveRight(square, 1), super.moveForwardRight(square, 1)),
 
