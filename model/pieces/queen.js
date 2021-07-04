@@ -5,16 +5,9 @@ export default class Queen extends ChessPiece {
     static attackDirections = new Set([ChessPiece.ATTACKS_DIAGONALLY, ChessPiece.ATTACKS_CARDINALLY])
     constructor(team, id) { super(ChessPiece.QUEEN, team, id) }
 
-    getMoves(game, square) {
-        return [
-            super.getMoves(game, square, super.moveLeft.bind(this)),
-            super.getMoves(game, square, super.moveRight.bind(this)),
-            super.getMoves(game, square, super.moveForward.bind(this)),
-            super.getMoves(game, square, super.moveBackward.bind(this)),
-            super.getMoves(game, square, super.moveForwardLeft.bind(this)),
-            super.getMoves(game, square, super.moveForwardRight.bind(this)),
-            super.getMoves(game, square, super.moveBackwardLeft.bind(this)),
-            super.getMoves(game, square, super.moveBackwardRight.bind(this)),
-        ]
+    getMoves(game, from) {
+        return ChessPiece.moves.DIAGONALS.concat(ChessPiece.moves.CARDINALS).map(move => (
+            super.getMoves({ game, from, next: move.bind(this) })
+        ))
     }
 }

@@ -5,7 +5,7 @@ import { indexOf } from '../../model/utils.js'
 import { imageFromPiece } from './utils.js'
 
 export default function App() {
-  const [game, setGame] = useState(new ChessGame({ FEN: 'rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3' }))
+  const [game, setGame] = useState(new ChessGame({ FEN: 'rn1q1b1r/ppp1kppp/3p1n2/1b2p3/P3P3/5N2/1PPP1PPP/RNBQK2R w KQ - 0 7' }))
   const [selected, setSelected] = useState(null)
 
   window.game = game

@@ -9,7 +9,7 @@ export default class ChessGame {
 
   fenConstructor(FEN) {
     const [board, turn, castles, enpassant] = parseFEN(FEN)
-    
+
     // Metadata
     this.turn = turn
     this.castles = castles
@@ -47,6 +47,8 @@ export default class ChessGame {
   }
 
   getMoves(team = this.turn) {
+    debugger
+    
     return this.board
       .map((piece, square) => piece && piece.getTeam() === team && piece.getMoves(this, square))
       .flat()

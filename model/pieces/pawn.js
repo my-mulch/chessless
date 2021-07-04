@@ -48,9 +48,8 @@ export default class Pawn extends ChessPiece {
 
     // Enpassant
     getEnpassant(game, square, checkSquare, captureSquare) {
-        if (captureSquare !== game.enpassant)
+        if (!game.enpassant || captureSquare !== game.enpassant)
             return null
-
 
         const enpassant = {
             from: square,

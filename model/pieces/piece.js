@@ -7,17 +7,47 @@ export default class ChessPiece extends String {
   static BACKWARD = -1
 
   // Piece Constants
-  static ROOK = 'r'
-  static PAWN = 'p'
-  static KING = 'k'
-  static QUEEN = 'q'
-  static KNIGHT = 'n'
-  static BISHOP = 'b'
+  static ROOK = 'r'; static WHITE_ROOK = 'R'; static BLACK_ROOK = 'r'
+  static PAWN = 'p'; static WHITE_PAWN = 'P'; static BLACK_PAWN = 'p'
+  static KING = 'k'; static WHITE_KING = 'K'; static BLACK_KING = 'k'
+  static QUEEN = 'q'; static WHITE_QUEEN = 'Q'; static BLACK_QUEEN = 'q'
+  static KNIGHT = 'n'; static WHITE_KNIGHT = 'N'; static WHITE_BISHOP = 'B'
+  static BISHOP = 'b'; static BLACK_KNIGHT = 'n'; static BLACK_BISHOP = 'b'
 
   // Piece Attacks
   static ATTACKS_KNIGHTLY = 'k'
   static ATTACKS_DIAGONALLY = 'd'
   static ATTACKS_CARDINALLY = 'c'
+
+  // Piece Moves
+  static moves = {
+    RELATIVE: [
+      ChessPiece.prototype.moveKingSide = function (from, d = 1) { return this.isWhite() ? this.moveRight(from, d) : this.moveLeft(from, d) },
+      ChessPiece.prototype.moveQueenSide = function (from, d = 1) { return this.isWhite() ? this.moveLeft(from, d) : this.moveRight(from, d) },
+    ],
+    DIAGONALS: [
+      ChessPiece.prototype.moveForwardLeft = function (from, d = 1) { return this.moveForward(this.moveLeft(from, d), d) },
+      ChessPiece.prototype.moveForwardRight = function (from, d = 1) { return this.moveForward(this.moveRight(from, d), d) },
+      ChessPiece.prototype.moveBackwardLeft = function (from, d = 1) { return this.moveBackward(this.moveLeft(from, d), d) },
+      ChessPiece.prototype.moveBackwardRight = function (from, d = 1) { return this.moveBackward(this.moveRight(from, d), d) },
+    ],
+    CARDINALS: [
+      ChessPiece.prototype.moveLeft = function (from, d = 1) { return this.move(from, ChessPiece.FILE, d) },
+      ChessPiece.prototype.moveRight = function (from, d = 1) { return this.move(from, ChessPiece.FILE, d * -1) },
+      ChessPiece.prototype.moveForward = function (from, d = 1) { return this.move(from, ChessPiece.RANK, d) },
+      ChessPiece.prototype.moveBackward = function (from, d = 1) { return this.move(from, ChessPiece.RANK, d * -1) },
+    ],
+    KNIGHT: [
+      ChessPiece.prototype.hopLeftForward = function (from) { return this.moveForward(this.moveLeft(from, 2)) },
+      ChessPiece.prototype.hopForwardLeft = function (from) { return this.moveLeft(this.moveForward(from, 2)) },
+      ChessPiece.prototype.hopLeftBackward = function (from) { return this.moveBackward(this.moveLeft(from, 2)) },
+      ChessPiece.prototype.hopBackwardLeft = function (from) { return this.moveLeft(this.moveBackward(from, 2)) },
+      ChessPiece.prototype.hopRightForward = function (from) { return this.moveForward(this.moveRight(from, 2)) },
+      ChessPiece.prototype.hopForwardRight = function (from) { return this.moveRight(this.moveForward(from, 2)) },
+      ChessPiece.prototype.hopRightBackward = function (from) { return this.moveBackward(this.moveRight(from, 2)) },
+      ChessPiece.prototype.hopBackwardRight = function (from) { return this.moveRight(this.moveBackward(from, 2)) },
+    ]
+  }
 
   // Team Constants
   static WHITE = 'w'
@@ -38,13 +68,6 @@ export default class ChessPiece extends String {
     this.id = id || uuid()
   }
 
-  static doesAttack(piece, from, to, direction) {
-    return (
-      piece.constructor.attackDirections.has(direction) &&
-      piece.constructor.attackInRange(from, to)
-    )
-  }
-
   // Helper methods
   isWhite() { return this.toString() === this.toUpperCase() }
   isBlack() { return this.toString() !== this.toUpperCase() }
@@ -52,6 +75,14 @@ export default class ChessPiece extends String {
   getType() { return this.toLowerCase() }
   getTeam() { return this.isBlack() ? ChessPiece.BLACK : ChessPiece.WHITE }
   getOtherTeam() { return this.isBlack() ? ChessPiece.WHITE : ChessPiece.BLACK }
+
+  static isKingSide(square) { return rankAndFileOf(square)[ChessPiece.FILE] > 3 }
+  static isQueenSide(square) { return rankAndFileOf(square)[ChessPiece.FILE] < 4 }
+
+  static doesAttack(piece, from, to, direction) {
+    return piece.constructor.attackDirections.has(direction)
+      && piece.constructor.attackInRange(from, to)
+  }
 
   // Used when initting the board
   static getTeam(piece) {
@@ -65,31 +96,44 @@ export default class ChessPiece extends String {
   }
 
   // Get all moves for any piece. `next` determines how the piece moves. See subclasses
-  getMoves(game, from, next, steps = Infinity, kingCheckDirection = null) {
+  lookForChecks({ game, from, to, check }) {
+    if (game.isOtherTeam(to, this))
+      return ChessPiece.doesAttack(game.board[to], from, to, check)
+  }
+
+  lookForMoves({ game, move, to }) {
+    if (game.movePutsKingInCheck(move))
+      return
+
+    moves.push(move)
+
+    if (game.isOtherTeam(to, this))
+      return moves.concat(move)
+  }
+
+  getMoves({
+    game, // The current game
+    from, // from where to begin looking for moves or checks
+    next, // how this particular piece moves
+    steps = Infinity, // how many steps is this piece allowed to take in a given direction
+    check = null, // if we're looking for checks, how will the king be attacked? E.g diagonally or by a knight 
+    special = () => { }, // handles any side effects the move may have to perform
+    action = check ? this.lookForChecks : this.lookForMoves, // determines the logic of the while loop
+  }) {
     const moves = []
     let step = 0, to = next(from)
 
     while (step++ < steps && game.isInBounds(to) && !game.isSameTeam(to, this)) {
       // Add the move, as long as it is legal
-      const move = { to, from, piece: this }
+      const move = { to, from, piece: this, special }
 
-      // If we encounter the other team
-      if (game.isOtherTeam(to, this)) {
-        // Are we looking for checks?
-        if (kingCheckDirection) {
-          return ChessPiece.doesAttack(game.board[to], from, to, kingCheckDirection)
-        }
-        // Or just for legal moves?
-        else if (!game.movePutsKingInCheck(move)) {
-          return moves.concat(move)
-        }
-      }
+      // Either look for moves or checks
+      const result = action.call(this, { game, move, from, to, check })
 
-      // Otherwise just a blank square, but need to ensure we're not a king looking for checks
-      // and that the move is legal
-      if (!kingCheckDirection && !game.movePutsKingInCheck(move))
-        moves.push(move)
+      // If we've run into the other team, we're done
+      if (result !== undefined) return result
 
+      // Otherwise keep going
       to = next(to)
     }
 
@@ -98,29 +142,16 @@ export default class ChessPiece extends String {
   }
 
   // Returns the final index of a given move in a particular direction
-  move(from, direction, distance = 1) {
+  move(from, direction, d = 1) {
     if (isNaN(from)) return undefined
 
     const position = rankAndFileOf(from)
 
-    position[direction] += this.orient() * distance
+    position[direction] += this.orient() * d
 
     return indexOf(...position)
   }
 
   // Orients the piece on the board. Forward depends on which team you are on.
   orient() { return this.isWhite() ? ChessPiece.BACKWARD : ChessPiece.FORWARD }
-
-  // Move types
-  moveLeft(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance) }
-  moveRight(from, distance = 1) { return this.move(from, ChessPiece.FILE, distance * -1) }
-  moveForward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance) }
-  moveBackward(from, distance = 1) { return this.move(from, ChessPiece.RANK, distance * -1) }
-  moveKingSide(from, distance = 1) { return this.isWhite() ? this.moveRight(from, distance) : this.moveLeft(from, distance) }
-  moveQueenSide(from, distance = 1) { return this.isWhite() ? this.moveLeft(from, distance) : this.moveRight(from, distance) }
-
-  moveForwardLeft(from, distance = 1) { return this.moveForward(this.moveLeft(from, distance), distance) }
-  moveForwardRight(from, distance = 1) { return this.moveForward(this.moveRight(from, distance), distance) }
-  moveBackwardLeft(from, distance = 1) { return this.moveBackward(this.moveLeft(from, distance), distance) }
-  moveBackwardRight(from, distance = 1) { return this.moveBackward(this.moveRight(from, distance), distance) }
 }

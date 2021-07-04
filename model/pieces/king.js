@@ -25,17 +25,20 @@ export default class King extends ChessPiece {
     constructor(team, id) { super(ChessPiece.KING, team, id) }
 
     getCastle(game, square, moveCastleSide, rookStart) {
-        // If the king has moved, ya can't castle
-        if (game.hasMoved(this)) return null
+        // Which side are we castling on?
+        const castleSide = moveCastleSide.name.includes(ChessPiece.KING)
+            ? game.turn === ChessPiece.WHITE ? ChessPiece.WHITE_KING : ChessPiece.BLACK_KING
+            : game.turn === ChessPiece.WHITE ? ChessPiece.WHITE_QUEEN : ChessPiece.BLACK_QUEEN
+
+        // Check if we have castling rights (FEN concept)
+        if (!game.castles.includes(castleSide))
+            return null
 
         // If the king is in check, ya can't castle
         if (this.isInCheck(game, square)) return null
 
         // Get the rook
         const rook = game.board[rookStart]
-
-        // If the rook has moved, ya can't castle
-        if (!rook || game.hasMoved(rook)) return null
 
         // If the king moves through any attacked squares, ya can't castle
         if (this.isInCheck(game, moveCastleSide(square, 1)) ||
@@ -63,43 +66,39 @@ export default class King extends ChessPiece {
         }]
     }
 
-    isInCheck(game, square) {
+    isInCheck(game, from) {
         // Checks all possible directions from the King to find check
         return [
-            super.getMoves(game, square, super.moveLeft.bind(this), Infinity, ChessPiece.ATTACKS_CARDINALLY),
-            super.getMoves(game, square, super.moveRight.bind(this), Infinity, ChessPiece.ATTACKS_CARDINALLY),
-            super.getMoves(game, square, super.moveForward.bind(this), Infinity, ChessPiece.ATTACKS_CARDINALLY),
-            super.getMoves(game, square, super.moveBackward.bind(this), Infinity, ChessPiece.ATTACKS_CARDINALLY),
-            super.getMoves(game, square, super.moveForwardLeft.bind(this), Infinity, ChessPiece.ATTACKS_DIAGONALLY),
-            super.getMoves(game, square, super.moveForwardRight.bind(this), Infinity, ChessPiece.ATTACKS_DIAGONALLY),
-            super.getMoves(game, square, super.moveBackwardLeft.bind(this), Infinity, ChessPiece.ATTACKS_DIAGONALLY),
-            super.getMoves(game, square, super.moveBackwardRight.bind(this), Infinity, ChessPiece.ATTACKS_DIAGONALLY),
-
-            super.getMoves(game, square, Knight.prototype.hopForwardLeft.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
-            super.getMoves(game, square, Knight.prototype.hopForwardRight.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
-            super.getMoves(game, square, Knight.prototype.hopRightForward.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
-            super.getMoves(game, square, Knight.prototype.hopRightBackward.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
-            super.getMoves(game, square, Knight.prototype.hopBackwardLeft.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
-            super.getMoves(game, square, Knight.prototype.hopBackwardRight.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
-            super.getMoves(game, square, Knight.prototype.hopLeftForward.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
-            super.getMoves(game, square, Knight.prototype.hopLeftBackward.bind(this), 1, ChessPiece.ATTACKS_KNIGHTLY),
+            ...ChessPiece.moves.CARDINALS.map(move => (
+                super.getMoves({ game, from, next: move.bind(this), check: ChessPiece.ATTACKS_CARDINALLY })
+            )),
+            ...ChessPiece.moves.DIAGONALS.map(move => (
+                super.getMoves({ game, from, next: move.bind(this), check: ChessPiece.ATTACKS_DIAGONALLY })
+            )),
+            ...ChessPiece.moves.KNIGHT.map(move => (
+                super.getMoves({ game, from, next: move.bind(this), check: ChessPiece.ATTACKS_KNIGHTLY, steps: 1 })
+            ))
         ].some(Boolean)
     }
 
-    getMoves(game, square) {
-        return [
-            super.getMoves(game, square, super.moveLeft.bind(this), 1),
-            super.getMoves(game, square, super.moveRight.bind(this), 1),
-            super.getMoves(game, square, super.moveForward.bind(this), 1),
-            super.getMoves(game, square, super.moveBackward.bind(this), 1),
-            super.getMoves(game, square, super.moveForwardLeft.bind(this), 1),
-            super.getMoves(game, square, super.moveForwardRight.bind(this), 1),
-            super.getMoves(game, square, super.moveBackwardLeft.bind(this), 1),
-            super.getMoves(game, square, super.moveBackwardRight.bind(this), 1),
+    revokeCastlingRights(game) {
+        if (game.turn === ChessPiece.BLACK) {
+            game.castles.replace(ChessPiece.BLACK_KING, '')
+            game.castles.replace(ChessPiece.BLACK_QUEEN, '')
+        } else {
+            game.castles.replace(ChessPiece.WHITE_KING, '')
+            game.castles.replace(ChessPiece.WHITE_QUEEN, '')
+        }
+    }
 
-            // To castle, we need: (game, square, castleSide, rookPosition)
-            this.getCastle(game, square, super.moveKingSide.bind(this), super.moveKingSide(square, 3)),
-            this.getCastle(game, square, super.moveQueenSide.bind(this), super.moveQueenSide(square, 4))
+    getMoves(game, from) {
+        return [
+            ChessPiece.moves.CARDINALS.concat(ChessPiece.moves.DIAGONALS).map(move => (
+                super.getMoves({ game, from, next: move.bind(this), steps: 1, special: this.revokeCastlingRights })
+            )),
+            // To castle, we need: (game, from, castleSide, rookPosition)
+            this.getCastle(game, from, super.moveKingSide.bind(this), super.moveKingSide(from, 3)),
+            this.getCastle(game, from, super.moveQueenSide.bind(this), super.moveQueenSide(from, 4))
         ]
     }
 }
