@@ -1,37 +1,40 @@
 import ChessPiece from './piece.js'
-import Knight from './knight.js'
 
 export default class King extends ChessPiece {
     static attackDirections = new Set([
-        ChessPiece.ATTACKS_DIAGONALLY,
-        ChessPiece.ATTACKS_CARDINALLY
+        ChessPiece.attacks.DIAGONAL,
+        ChessPiece.attacks.CARDINAL
     ])
 
-    static attackInRange = (from, to) => {
-        // Don't wrap around the board!
-        if (!(to % 8) && to - from === 1) return false
-        if (!(from % 8) && from - to === 1) return false
-
+    attackInRange(from, to) {
         const distance = Math.abs(from - to)
 
-        return (
-            distance === 1 ||
-            distance === 7 ||
-            distance === 8 ||
-            distance === 9
-        )
+        return distance === 1 || distance === 7 || distance === 8 || distance === 9
     }
 
     constructor(team, id) { super(ChessPiece.KING, team, id) }
 
     getCastle(game, square, moveCastleSide, rookStart) {
         // Which side are we castling on?
-        const castleSide = moveCastleSide.name.includes(ChessPiece.KING)
+        const castleType = moveCastleSide.name.includes(ChessPiece.KING)
             ? game.turn === ChessPiece.WHITE ? ChessPiece.WHITE_KING : ChessPiece.BLACK_KING
             : game.turn === ChessPiece.WHITE ? ChessPiece.WHITE_QUEEN : ChessPiece.BLACK_QUEEN
 
-        // Check if we have castling rights (FEN concept)
-        if (!game.castles.includes(castleSide))
+        // If starting in the middle of the game, ensure that rookStart and square are correct
+        if (castleType === ChessPiece.WHITE_KING)
+            if (square !== 60 || rookStart !== 63) return null
+
+        if (castleType === ChessPiece.BLACK_KING)
+            if (square !== 4 || rookStart !== 7) return null
+
+        if (castleType === ChessPiece.WHITE_QUEEN)
+            if (square !== 60 || rookStart !== 56) return null
+
+        if (castleType === ChessPiece.BLACK_QUEEN)
+            if (square !== 4 || rookStart !== 0) return null
+
+        // Check if we have castling rights and that the rook is where it should be (FEN concept)
+        if (!game.castles.includes(castleType))
             return null
 
         // If the king is in check, ya can't castle
@@ -39,6 +42,10 @@ export default class King extends ChessPiece {
 
         // Get the rook
         const rook = game.board[rookStart]
+
+        // Make sure a rook is a rook
+        if (!rook || rook.getTeam() !== this.getTeam() || rook.getType() !== ChessPiece.ROOK)
+            return null
 
         // If the king moves through any attacked squares, ya can't castle
         if (this.isInCheck(game, moveCastleSide(square, 1)) ||
@@ -66,18 +73,21 @@ export default class King extends ChessPiece {
         }]
     }
 
+    considerCheck({ game, from, to, check }) {
+        if (game.isOtherTeam(to, this)) {
+            return ChessPiece.doesAttack(game.board[to], from, to, check)
+        }
+    }
+
     isInCheck(game, from) {
+        const args = { game, from, action: this.considerCheck }
+        const { CARDINAL, DIAGONAL, KNIGHT } = ChessPiece.attacks
+        const { CARDINALS, DIAGONALS, KNIGHT: KNIGHTS } = ChessPiece.moves
         // Checks all possible directions from the King to find check
         return [
-            ...ChessPiece.moves.CARDINALS.map(move => (
-                super.getMoves({ game, from, next: move.bind(this), check: ChessPiece.ATTACKS_CARDINALLY })
-            )),
-            ...ChessPiece.moves.DIAGONALS.map(move => (
-                super.getMoves({ game, from, next: move.bind(this), check: ChessPiece.ATTACKS_DIAGONALLY })
-            )),
-            ...ChessPiece.moves.KNIGHT.map(move => (
-                super.getMoves({ game, from, next: move.bind(this), check: ChessPiece.ATTACKS_KNIGHTLY, steps: 1 })
-            ))
+            ...CARDINALS.map(move => super.getMoves({ ...args, next: move.bind(this), check: CARDINAL })),
+            ...DIAGONALS.map(move => super.getMoves({ ...args, next: move.bind(this), check: DIAGONAL })),
+            ...KNIGHTS.map(move => super.getMoves({ ...args, next: move.bind(this), check: KNIGHT, steps: 1 }))
         ].some(Boolean)
     }
 
@@ -92,10 +102,11 @@ export default class King extends ChessPiece {
     }
 
     getMoves(game, from) {
+        const { CARDINALS, DIAGONALS } = ChessPiece.moves
+        const args = { game, from, special: this.revokeCastlingRights, steps: 1 }
+
         return [
-            ChessPiece.moves.CARDINALS.concat(ChessPiece.moves.DIAGONALS).map(move => (
-                super.getMoves({ game, from, next: move.bind(this), steps: 1, special: this.revokeCastlingRights })
-            )),
+            CARDINALS.concat(DIAGONALS).map(move => super.getMoves({ ...args, next: move.bind(this) })),
             // To castle, we need: (game, from, castleSide, rookPosition)
             this.getCastle(game, from, super.moveKingSide.bind(this), super.moveKingSide(from, 3)),
             this.getCastle(game, from, super.moveQueenSide.bind(this), super.moveQueenSide(from, 4))

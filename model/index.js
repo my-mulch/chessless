@@ -34,6 +34,8 @@ export default class ChessGame {
   copyConstructor(game) {
     this.turn = game.turn
     this.board = game.board.slice()
+    this.castles = game.castles
+    this.enpassant = game.enpassant
     this.previousMoves = game.previousMoves.slice()
     this.previousBoards = game.previousBoards.slice()
   }
@@ -47,13 +49,11 @@ export default class ChessGame {
   }
 
   getMoves(team = this.turn) {
-    debugger
-    
     return this.board
       .map((piece, square) => piece && piece.getTeam() === team && piece.getMoves(this, square))
-      .flat()
+      .flat(Infinity)
       .filter(Boolean)
-      .flat()
+      .flat(Infinity)
   }
 
   switchTurns() {

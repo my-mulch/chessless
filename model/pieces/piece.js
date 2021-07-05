@@ -6,6 +6,14 @@ export default class ChessPiece extends String {
   static FORWARD = 1
   static BACKWARD = -1
 
+  // Team Constants
+  static WHITE = 'w'
+  static BLACK = 'b'
+
+  // 2D piece indices are given as [RANK, FILE]
+  static RANK = 0
+  static FILE = 1
+
   // Piece Constants
   static ROOK = 'r'; static WHITE_ROOK = 'R'; static BLACK_ROOK = 'r'
   static PAWN = 'p'; static WHITE_PAWN = 'P'; static BLACK_PAWN = 'p'
@@ -15,9 +23,7 @@ export default class ChessPiece extends String {
   static BISHOP = 'b'; static BLACK_KNIGHT = 'n'; static BLACK_BISHOP = 'b'
 
   // Piece Attacks
-  static ATTACKS_KNIGHTLY = 'k'
-  static ATTACKS_DIAGONALLY = 'd'
-  static ATTACKS_CARDINALLY = 'c'
+  static attacks = { KNIGHT: 'k', DIAGONAL: 'd', CARDINAL: 'c' }
 
   // Piece Moves
   static moves = {
@@ -49,14 +55,6 @@ export default class ChessPiece extends String {
     ]
   }
 
-  // Team Constants
-  static WHITE = 'w'
-  static BLACK = 'b'
-
-  // 2D piece indices are given as [RANK, FILE]
-  static RANK = 0
-  static FILE = 1
-
   // Creates a piece with a unique ID
   constructor(type, team, id) {
     // By FEN convention, white pieces are uppercase
@@ -69,46 +67,35 @@ export default class ChessPiece extends String {
   }
 
   // Helper methods
-  isWhite() { return this.toString() === this.toUpperCase() }
-  isBlack() { return this.toString() !== this.toUpperCase() }
-
-  getType() { return this.toLowerCase() }
-  getTeam() { return this.isBlack() ? ChessPiece.BLACK : ChessPiece.WHITE }
-  getOtherTeam() { return this.isBlack() ? ChessPiece.WHITE : ChessPiece.BLACK }
-
   static isKingSide(square) { return rankAndFileOf(square)[ChessPiece.FILE] > 3 }
   static isQueenSide(square) { return rankAndFileOf(square)[ChessPiece.FILE] < 4 }
 
   static doesAttack(piece, from, to, direction) {
     return piece.constructor.attackDirections.has(direction)
-      && piece.constructor.attackInRange(from, to)
+      && (piece.attackInRange ? piece.attackInRange(from, to) : true)
   }
 
-  // Used when initting the board
-  static getTeam(piece) {
-    return piece.toLowerCase() === piece.toString() ? ChessPiece.BLACK : ChessPiece.WHITE
-  }
+  static getTeam(piece) { return piece.toLowerCase() === piece.toString() ? ChessPiece.BLACK : ChessPiece.WHITE }
 
-  isLastRank(square) {
-    const [rank] = rankAndFileOf(square)
+  getType() { return this.toLowerCase() }
+  isWhite() { return this.toString() === this.toUpperCase() }
+  isBlack() { return this.toString() !== this.toUpperCase() }
+  getTeam() { return this.isBlack() ? ChessPiece.BLACK : ChessPiece.WHITE }
+  getOtherTeam() { return this.isBlack() ? ChessPiece.WHITE : ChessPiece.BLACK }
 
+  isLastRank(square, [rank] = rankAndFileOf(square)) {
     return (this.isWhite() && rank === 0) || (this.isBlack() && rank === 7)
   }
 
   // Get all moves for any piece. `next` determines how the piece moves. See subclasses
-  lookForChecks({ game, from, to, check }) {
-    if (game.isOtherTeam(to, this))
-      return ChessPiece.doesAttack(game.board[to], from, to, check)
-  }
-
-  lookForMoves({ game, move, to }) {
+  considerMove({ game, move, to, moves }) {
     if (game.movePutsKingInCheck(move))
       return
 
     moves.push(move)
 
     if (game.isOtherTeam(to, this))
-      return moves.concat(move)
+      return moves
   }
 
   getMoves({
@@ -118,7 +105,7 @@ export default class ChessPiece extends String {
     steps = Infinity, // how many steps is this piece allowed to take in a given direction
     check = null, // if we're looking for checks, how will the king be attacked? E.g diagonally or by a knight 
     special = () => { }, // handles any side effects the move may have to perform
-    action = check ? this.lookForChecks : this.lookForMoves, // determines the logic of the while loop
+    action = this.considerMove, // determines the logic of the while loop
   }) {
     const moves = []
     let step = 0, to = next(from)
@@ -128,7 +115,7 @@ export default class ChessPiece extends String {
       const move = { to, from, piece: this, special }
 
       // Either look for moves or checks
-      const result = action.call(this, { game, move, from, to, check })
+      const result = action.call(this, { game, move, from, to, check, moves })
 
       // If we've run into the other team, we're done
       if (result !== undefined) return result
@@ -138,7 +125,7 @@ export default class ChessPiece extends String {
     }
 
     // Our return value differs if we are the king seeking checks or a piece seeking moves
-    return kingCheckDirection ? false : moves
+    return check ? false : moves
   }
 
   // Returns the final index of a given move in a particular direction

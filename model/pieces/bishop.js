@@ -2,7 +2,7 @@ import ChessPiece from './piece.js'
 
 export default class Bishop extends ChessPiece {
     static attackInRange = () => true
-    static attackDirections = new Set([ChessPiece.ATTACKS_DIAGONALLY])
+    static attackDirections = new Set([ChessPiece.attacks.DIAGONAL])
     constructor(team, id) { super(ChessPiece.BISHOP, team, id) }
 
     getMoves(game, from) {
