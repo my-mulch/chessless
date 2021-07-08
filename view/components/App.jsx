@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react'
 
-import ChessGame from '../../model'
-import BChessGame from '../../bmodel'
+import ChessGame from '../../bmodel'
 import { indexOf } from '../../model/utils.js'
 import { imageFromPiece } from './utils.js'
-
-window.game = new BChessGame({})
 
 export default function App() {
   const [game, setGame] = useState(new ChessGame({}))
@@ -43,7 +40,7 @@ export default function App() {
       flex: 1,
       backgroundSize: 'contain',
       backgroundRepeat: 'no-repeat',
-      backgroundImage: imageFromPiece[piece],
+      backgroundImage: imageFromPiece[piece && piece.toFEN()],
       backgroundColor: (rank + file) % 2 ? 'brown' : 'beige'
     }
   }

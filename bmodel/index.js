@@ -27,7 +27,7 @@ export default class ChessGame {
       const Piece = PieceMap[piece]
 
       // Create the new piece for the appropriate team
-      return new Piece({ team: ChessPiece.getTeam(piece), location })
+      return new Piece({ team: ChessPiece.getTeamFromFEN(piece), location })
     })
   }
 
