@@ -8,7 +8,7 @@ export default class King extends ChessPiece {
     const kr = [1, 2, 3].reduce(this.kingside.bind(this), s)
     const qr = [1, 2, 3, 4].reduce(this.queenside.bind(this), s)
 
-    const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq } = ChessPiece
+    const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq, ROOK } = ChessPiece
 
     const [k, r, side] = (
       (s == 60 && kr == 63 && [s, kr, wk]) || (s == 4 && kr == 7 && [s, kr, bk]) ||
@@ -16,6 +16,7 @@ export default class King extends ChessPiece {
     )
 
     if (!side || !game.castles.includes(side)) return null
+    if (!game.board[r] || game.board[r].team() !== game.turn || game.board[r].type() !== ROOK) return null
   }
 
   constructor(team, id) {
