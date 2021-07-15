@@ -8,7 +8,6 @@ import Knight from "./knight"
 
 export default class Pawn extends ChessPiece {
   static moves = [this.push, this.doublePush, this.capture]
-  static canCapture = [this.forwardLeft, this.forwardRight]
 
   // Promotions
   promotions = ({ start, end, capture = false, empty = false }) => (
