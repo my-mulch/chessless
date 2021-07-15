@@ -53,8 +53,7 @@ export default class ChessGame {
   sameTeam(square1, square2) { return this.board[square1] && this.board[square2] && this.board[square1].team() === this.board[square2].team() }
   otherTeam(square1, square2) { return this.board[square1] && this.board[square2] && this.board[square1].team() !== this.board[square2].team() }
 
-  // Actions
-  move(candidateMove, { start, end, empty, capture } = candidateMove) {
+  state(candidateMove, { start, end, empty, capture } = candidateMove) {
     if (end === false) return ChessGame.MOVES_EXHAUSTED // Takes us out of bounds
     if (this.sameTeam(start, end)) return ChessGame.MOVES_EXHAUSTED // Ran into teammate, work is done
     if (this.putsKingInCheck(candidateMove)) return ChessGame.PUTS_KING_IN_CHECK // Move is illegal
@@ -64,32 +63,29 @@ export default class ChessGame {
     return ChessGame.MOVES_EXHAUSTED // Move is invalid
   }
 
-  check(candidateMove) {
-
+  consider(candidateMoves, verifiedMoves) {
+    for (candidate of candidateMoves) {
+      for (const candidateMove of ChessMove.generator(this, piece, candidate, s)) {
+        switch (this.state(candidateMove)) {
+          case ChessGame.FOUND_CHECK: return true
+          case ChessGame.MOVES_EXHAUSTED: break
+          case ChessGame.PUTS_KING_IN_CHECK: continue
+          case ChessGame.EMPTY_SQUARE: verifiedMoves.push(candidateMove); continue
+          case ChessGame.CAPTURE_OPPORTUNITY: verifiedMoves.push(candidateMove); break
+        }
+      }
+    }
   }
 
-  // Get moves with a particular action
-  getMoves(action = this.move) {
+  getMoves() {
     const moves = []
 
     for (let s = 0; s < this.board.length; s++) {
-      const piece = this.board[s]
+      if (!this.board[s] || this.board[s].team() !== this.turn) continue
 
-      if (!piece || piece.team() !== this.turn) continue
-
-      for (move of piece.constructor.moves) {
-        for (const candidateMove of ChessMove.generator(this, piece, move, s)) {
-          switch (action.call(this, candidateMove)) {
-            case ChessGame.FOUND_CHECK: return true // only found when action is `this.check`
-
-            // states for action: `this.move`
-            case ChessGame.MOVES_EXHAUSTED: break
-            case ChessGame.PUTS_KING_IN_CHECK: continue
-            case ChessGame.EMPTY_SQUARE: moves.push(candidateMove); continue
-            case ChessGame.CAPTURE_OPPORTUNITY: moves.push(candidateMove); break
-          }
-        }
-      }
+      const result = this.consider(this.board[s].constructor.moves, moves)
+      
+      if (result !== undefined) return result
     }
 
     return moves
