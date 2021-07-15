@@ -7,6 +7,7 @@ import Bishop from "./bishop"
 import Knight from "./knight"
 
 export default class Pawn extends ChessPiece {
+  static limit = 1
   static moves = [this.push, this.doublePush, this.capture]
 
   // Promotions

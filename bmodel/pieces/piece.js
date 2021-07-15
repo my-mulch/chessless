@@ -58,6 +58,10 @@ export default class ChessPiece extends Number {
 
   // Movement types starting from a square (s)
   static moves = {
+    RELATIVE: [
+      ChessPiece.prototype.kingside = function (s) { return this.isWhite() ? this.right(s) : this.left(s) },
+      ChessPiece.prototype.queenside = function (s) { return this.isWhite() ? this.left(s) : this.right(s) },
+    ],
     CARDINALS: [
       ChessPiece.prototype.left = function (s) { return guardWrap(s, s + 1 * this.orient()) },
       ChessPiece.prototype.right = function (s) { return guardWrap(s, s - 1 * this.orient()) },
