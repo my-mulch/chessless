@@ -29,12 +29,12 @@ export default class ChessPiece extends Number {
   // FEN mapping
   toFEN() {
     switch (this.type()) {
-      case ChessPiece.ROOK: return this.team() === ChessPiece.BLACK ? ChessPiece.BLACK_ROOK : ChessPiece.WHITE_ROOK
-      case ChessPiece.PAWN: return this.team() === ChessPiece.BLACK ? ChessPiece.BLACK_PAWN : ChessPiece.WHITE_PAWN
-      case ChessPiece.KING: return this.team() === ChessPiece.BLACK ? ChessPiece.BLACK_KING : ChessPiece.WHITE_KING
-      case ChessPiece.QUEEN: return this.team() === ChessPiece.BLACK ? ChessPiece.BLACK_QUEEN : ChessPiece.WHITE_QUEEN
-      case ChessPiece.KNIGHT: return this.team() === ChessPiece.BLACK ? ChessPiece.BLACK_KNIGHT : ChessPiece.WHITE_KNIGHT
-      case ChessPiece.BISHOP: return this.team() === ChessPiece.BLACK ? ChessPiece.BLACK_BISHOP : ChessPiece.WHITE_BISHOP
+      case ChessPiece.ROOK: return this.team() ? ChessPiece.BLACK_ROOK : ChessPiece.WHITE_ROOK
+      case ChessPiece.PAWN: return this.team() ? ChessPiece.BLACK_PAWN : ChessPiece.WHITE_PAWN
+      case ChessPiece.KING: return this.team() ? ChessPiece.BLACK_KING : ChessPiece.WHITE_KING
+      case ChessPiece.QUEEN: return this.team() ? ChessPiece.BLACK_QUEEN : ChessPiece.WHITE_QUEEN
+      case ChessPiece.KNIGHT: return this.team() ? ChessPiece.BLACK_KNIGHT : ChessPiece.WHITE_KNIGHT
+      case ChessPiece.BISHOP: return this.team() ? ChessPiece.BLACK_BISHOP : ChessPiece.WHITE_BISHOP
     }
   }
 

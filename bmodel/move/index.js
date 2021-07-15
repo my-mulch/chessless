@@ -5,7 +5,7 @@ export default class ChessMove {
     Object.assign(this, { start, end, piece, empty, capture, special })
   }
 
-  static *generator({ game, piece, candidate, start, limit = null, end = start }) {
+  static *generator({ game, piece, candidate, start }) {
     // Special move
     if (piece.hasOwnProperty(candidate.name)) {
       const result = candidate.call(piece, game, start)
@@ -16,7 +16,8 @@ export default class ChessMove {
       return
     }
 
-    limit = limit || piece.constructor.limit
+    let end = start
+    let limit = candidate.limit
 
     do {
       end = move.call(piece, end)
