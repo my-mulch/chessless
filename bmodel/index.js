@@ -53,7 +53,9 @@ export default class ChessGame {
   sameTeam(square1, square2) { return this.board[square1] && this.board[square2] && this.board[square1].team() === this.board[square2].team() }
   otherTeam(square1, square2) { return this.board[square1] && this.board[square2] && this.board[square1].team() !== this.board[square2].team() }
 
-  state(candidateMove, { start, end, empty, capture } = candidateMove) {
+  state(candidateMove) {
+    const { start, end, empty, capture } = candidateMove
+
     if (end === false) return ChessGame.MOVES_EXHAUSTED // Takes us out of bounds
     if (this.sameTeam(start, end)) return ChessGame.MOVES_EXHAUSTED // Ran into teammate, work is done
     if (this.putsKingInCheck(candidateMove)) return ChessGame.PUTS_KING_IN_CHECK // Move is illegal
@@ -63,32 +65,33 @@ export default class ChessGame {
     return ChessGame.MOVES_EXHAUSTED // Move is invalid
   }
 
-  consider(candidateMoves, verifiedMoves) {
-    for (candidate of candidateMoves) {
-      for (const candidateMove of ChessMove.generator(this, piece, candidate, s)) {
+  consider({ start, piece, candidates, verifieds, limit }) {
+    for (candidate of candidates) {
+      for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start, limit })) {
         switch (this.state(candidateMove)) {
           case ChessGame.FOUND_CHECK: return true
           case ChessGame.MOVES_EXHAUSTED: break
           case ChessGame.PUTS_KING_IN_CHECK: continue
-          case ChessGame.EMPTY_SQUARE: verifiedMoves.push(candidateMove); continue
-          case ChessGame.CAPTURE_OPPORTUNITY: verifiedMoves.push(candidateMove); break
+          case ChessGame.EMPTY_SQUARE: verifieds.push(candidateMove); continue
+          case ChessGame.CAPTURE_OPPORTUNITY: verifieds.push(candidateMove); break
         }
       }
     }
   }
 
   getMoves() {
-    const moves = []
+    const verifieds = []
 
-    for (let s = 0; s < this.board.length; s++) {
-      if (!this.board[s] || this.board[s].team() !== this.turn) continue
+    for (let square = 0; square < this.board.length; square++) {
+      const piece = this.board[square]
+      const { limit, moves: candidates } = piece.constructor
 
-      const result = this.consider(this.board[s].constructor.moves, moves)
-      
-      if (result !== undefined) return result
+      if (!piece || piece.team() !== this.turn) continue
+
+      this.consider({ square, piece, candidates, verifieds, limit })
     }
 
-    return moves
+    return verifieds
   }
 
   clone() { return new ChessGame({ game: this }) }

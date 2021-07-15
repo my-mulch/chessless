@@ -5,10 +5,10 @@ export default class ChessMove {
     Object.assign(this, { start, end, piece, empty, capture, special })
   }
 
-  static *generator({ game, piece, move, start, limit = null, end = start }) {
+  static *generator({ game, piece, candidate, start, limit = null, end = start }) {
     // Special move
-    if (piece.hasOwnProperty(move.name)) {
-      const result = move.call(piece, game, start)
+    if (piece.hasOwnProperty(candidate.name)) {
+      const result = candidate.call(piece, game, start)
 
       if (isIterable(result)) yield* result
       else if (result) yield result
