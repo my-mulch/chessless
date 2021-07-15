@@ -1,10 +1,11 @@
 import ChessPiece from "./Piece";
 
 export default class King extends ChessPiece {
-  moves = [ChessPiece.moves.DIAGONALS, ChessPiece.moves.CARDINALS].flat()
-  captures = this.moves
+  static limit = 1
+  static moves = [ChessPiece.moves.DIAGONALS, ChessPiece.moves.CARDINALS].flat()
+  static canCapture = [ChessPiece.moves.DIAGONALS, ChessPiece.moves.CARDINALS].flat()
 
-  constructor({ team, location }) {
-    super({ team, location, type: ChessPiece.KING })
+  constructor(team, id) {
+    super(team, id, ChessPiece.KING)
   }
 }

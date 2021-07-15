@@ -8,6 +8,16 @@ export default class ChessPiece extends Number {
   static ROOK = 0; static PAWN = 1; static BISHOP = 2;
   static KNIGHT = 3; static QUEEN = 4; static KING = 5;
 
+  // Bit ranges: x|xxxxxx|xxx
+  static TEAM_BITS = [9, 9]
+  static IDEN_BITS = [8, 3]
+  static TYPE_BITS = [2, 0]
+
+  // Constructor
+  constructor(team, id, type) {
+    super(team << ChessPiece.TEAM_BITS[1] | id << ChessPiece.IDEN_BITS[1] | type << ChessPiece.TYPE_BITS[1])
+  }
+
   // FEN symbols
   static WHITE_ROOK = 'R'; static BLACK_ROOK = 'r';
   static WHITE_PAWN = 'P'; static BLACK_PAWN = 'p';
@@ -31,47 +41,44 @@ export default class ChessPiece extends Number {
   // FEN lookups
   static getTeamFromFEN(symbol) { return Number(symbol.toLowerCase() === symbol) }
 
-  // Bit ranges: x|xxxxxx|xxxxxx|xxx
-  static TEAM_BITS = [15, 15]
-  static LOCN_BITS = [14, 9]
-  static IDEN_BITS = [8, 3]
-  static TYPE_BITS = [2, 0]
-
-  // Constructor
-  constructor({ team, location, type }) {
-    super(
-      team << ChessPiece.TEAM_BITS[1] |
-      location << ChessPiece.LOCN_BITS[1] |
-      location << ChessPiece.IDEN_BITS[1] | // ID for the piece is its initial location
-      type << ChessPiece.TYPE_BITS[1]
-    )
-  }
-
   // Accessor
   bits(start, end) { return (this & (mask(start - end + 1) << end)) >> end }
 
   // Meta
   team() { return this.bits(...ChessPiece.TEAM_BITS) }
-  locn() { return this.bits(...ChessPiece.LOCN_BITS) }
   iden() { return this.bits(...ChessPiece.IDEN_BITS) }
   type() { return this.bits(...ChessPiece.TYPE_BITS) }
 
   // Orientation
   orient() { return this.team() ? 1 : -1 }
+  isWhite() { return this.team() === ChessPiece.WHITE }
+  isBlack() { return this.team() === ChessPiece.BLACK }
+  lastRank(s) { return Number.isInteger(s) && ((s <= 7 && this.isWhite()) || (s >= 56 && this.isBlack())) }
+  secondRank(s) { return (s >= 48 && s <= 55 && this.isWhite()) || (s >= 8 && s <= 15 && this.isBlack()) }
 
-  // Movement
+  // Movement types starting from a square (s)
   static moves = {
     CARDINALS: [
-      ChessPiece.prototype.left = function (d = 1) { return guardWrap(this.locn(), this.locn() + 1 * d * this.orient()) },
-      ChessPiece.prototype.right = function (d = 1) { return this.left(this.locn(), -1 * d) },
-      ChessPiece.prototype.forward = function (d = 1) { return guardBound(this.locn() + 8 * d * this.orient()) },
-      ChessPiece.prototype.backward = function (d = 1) { return this.forward(this.locn(), -1 * d) },
+      ChessPiece.prototype.left = function (s) { return guardWrap(s, s + 1 * this.orient()) },
+      ChessPiece.prototype.right = function (s) { return guardWrap(s, s - 1 * this.orient()) },
+      ChessPiece.prototype.forward = function (s) { return guardBound(s + 8 * this.orient()) },
+      ChessPiece.prototype.backward = function (s) { return guardBound(s - 8 * this.orient()) },
     ],
     DIAGONALS: [
-      ChessPiece.prototype.forwardLeft = function (d = 1) { return this.left(this.forward(this.locn(), d), d) },
-      ChessPiece.prototype.forwardRight = function (d = 1) { return this.right(this.forward(this.locn(), d), d) },
-      ChessPiece.prototype.backwardLeft = function (d = 1) { return this.left(this.backward(this.locn(), d), d) },
-      ChessPiece.prototype.backwardRight = function (d = 1) { return this.right(this.backward(this.locn(), d), d) },
+      ChessPiece.prototype.forwardLeft = function (s) { return this.left(this.forward(s)) },
+      ChessPiece.prototype.forwardRight = function (s) { return this.right(this.forward(s)) },
+      ChessPiece.prototype.backwardLeft = function (s) { return this.left(this.backward(s)) },
+      ChessPiece.prototype.backwardRight = function (s) { return this.right(this.backward(s)) },
+    ],
+    KNIGHT: [
+      ChessPiece.prototype.hopLeftForward = function (s) { return this.forward(this.left(this.left(s))) },
+      ChessPiece.prototype.hopForwardLeft = function (s) { return this.left(this.forward(this.forward(s))) },
+      ChessPiece.prototype.hopLeftBackward = function (s) { return this.backward(this.left(this.left(s))) },
+      ChessPiece.prototype.hopBackwardLeft = function (s) { return this.left(this.backward(this.backward(s))) },
+      ChessPiece.prototype.hopRightForward = function (s) { return this.forward(this.right(this.right(s))) },
+      ChessPiece.prototype.hopForwardRight = function (s) { return this.right(this.forward(this.forward(s))) },
+      ChessPiece.prototype.hopRightBackward = function (s) { return this.backward(this.right(this.right(s))) },
+      ChessPiece.prototype.hopBackwardRight = function (s) { return this.right(this.backward(this.backward(s))) },
     ]
   }
 }

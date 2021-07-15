@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import ChessGame from '../../bmodel'
+import ChessGame from '../../model'
 import { indexOf } from '../../model/utils.js'
 import { imageFromPiece } from './utils.js'
 
@@ -8,16 +8,16 @@ export default function App() {
   const [game, setGame] = useState(new ChessGame({}))
   const [selected, setSelected] = useState(null)
 
-  // useEffect(async () => {
-  //   await new Promise(_ => setTimeout(_, 1000));
-  //   const moves = game.getMoves()
+  useEffect(async () => {
+    await new Promise(_ => setTimeout(_, 1000));
+    const moves = game.getMoves()
 
-  //   const newGame = game
-  //     .makeMove(moves[Math.floor(Math.random() * moves.length)])
-  //     .switchTurns()
+    const newGame = game
+      .makeMove(moves[Math.floor(Math.random() * moves.length)])
+      .switchTurns()
 
-  //   setGame(newGame)
-  // }, [game])
+    setGame(newGame)
+  }, [game])
 
   const [ranks] = useState([8, 7, 6, 5, 4, 3, 2, 1])
   const [files] = useState(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
@@ -40,7 +40,7 @@ export default function App() {
       flex: 1,
       backgroundSize: 'contain',
       backgroundRepeat: 'no-repeat',
-      backgroundImage: imageFromPiece[piece && piece.toFEN()],
+      backgroundImage: imageFromPiece[piece],
       backgroundColor: (rank + file) % 2 ? 'brown' : 'beige'
     }
   }
