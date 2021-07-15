@@ -7,18 +7,13 @@ import Bishop from "./bishop"
 import Knight from "./knight"
 
 export default class Pawn extends ChessPiece {
-  static limit = 1
-  static moves = [this.push, this.capture, this.doublePush]
+  static moves = [this.push, this.doublePush, this.capture]
   static canCapture = [this.forwardLeft, this.forwardRight]
 
   // Promotions
   promotions = ({ start, end, capture = false, empty = false }) => (
     [Rook, Queen, Knight, Bishop].map(Piece => new ChessMove({
-      start,
-      end,
-      piece: this,
-      capture,
-      empty,
+      start, end, piece: this, capture, empty,
       special: game => game.board[end] = new Piece(this.getTeam(), this.id)
     }))
   )
@@ -26,10 +21,7 @@ export default class Pawn extends ChessPiece {
   // Enpassant
   enpassant = ({ game, start, end, side }) => (
     game.enpassant === side && new ChessMove({
-      start,
-      end,
-      piece: this,
-      empty: true,
+      start, end, piece: this, empty: true,
       special: game => game.board[side] = null
     })
   )
