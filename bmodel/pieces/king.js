@@ -11,8 +11,8 @@ export default class King extends ChessPiece {
     const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq } = ChessPiece
 
     const [k, r, side] = (
-      (kr == 63 && s == 60 && [kr, s, wk]) || (kr == 7 && s == 4 && [qr, s, bk]) ||
-      (qr == 56 && s == 60 && [qr, s, wq]) || (qr == 0 && s == 4 && [kr, s, bq]) || []
+      (s == 60 && kr == 63 && [s, kr, wk]) || (s == 4 && kr == 7 && [s, kr, bk]) ||
+      (s == 60 && qr == 56 && [s, qr, wq]) || (s == 4 && qr == 0 && [s, qr, bq]) || []
     )
 
     if (!side || !game.castles.includes(side)) return null
