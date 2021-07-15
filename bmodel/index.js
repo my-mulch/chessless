@@ -6,8 +6,9 @@ export default class ChessGame {
   static FOUND_CHECK = 0
   static EMPTY_SQUARE = 1
   static MOVES_EXHAUSTED = 2
-  static PUTS_KING_IN_CHECK = 3
-  static CAPTURE_OPPORTUNITY = 4
+  static KING_IS_IN_CHECK = 3
+  static PUTS_KING_IN_CHECK = 4
+  static CAPTURE_OPPORTUNITY = 5
 
   // Constructors
   constructor({ FEN = STARTING_FEN, game }) {
@@ -50,30 +51,31 @@ export default class ChessGame {
   }
 
   // Helpers
-  sameTeam(square1, square2) { return this.board[square1] && this.board[square2] && this.board[square1].team() === this.board[square2].team() }
-  otherTeam(square1, square2) { return this.board[square1] && this.board[square2] && this.board[square1].team() !== this.board[square2].team() }
+  empty(s) { return !this.board[s] }
+  sameTeam(s1, s2) { return this.board[s1] && this.board[s2] && this.board[s1].team() === this.board[s2].team() }
+  otherTeam(s1, s2) { return this.board[s1] && this.board[s2] && this.board[s1].team() !== this.board[s2].team() }
 
   state(candidateMove) {
     const { start, end, empty, capture } = candidateMove
 
     if (end === false) return ChessGame.MOVES_EXHAUSTED // Takes us out of bounds
     if (this.sameTeam(start, end)) return ChessGame.MOVES_EXHAUSTED // Ran into teammate, work is done
-    if (this.putsKingInCheck(candidateMove)) return ChessGame.PUTS_KING_IN_CHECK // Move is illegal
-    if (this.otherTeam(start, end) && capture) return ChessGame.CAPTURE_OPPORTUNITY // Ran into other team and can capture
+    if (this.empty(end) && empty) return ChessGame.EMPTY_SQUARE // Found empty square and can move there
     if (this.otherTeam(start, end)) return ChessGame.MOVES_EXHAUSTED // Ran into other team but can't capture
-    if (empty) return ChessGame.EMPTY_SQUARE // Found empty square and can move there
+    if (this.otherTeam(start, end) && capture) return ChessGame.CAPTURE_OPPORTUNITY // Ran into other team and can capture
+    if (this.putsKingInCheck(candidateMove)) return ChessGame.PUTS_KING_IN_CHECK // Move is illegal
+
     return ChessGame.MOVES_EXHAUSTED // Move is invalid
   }
 
-  consider({ start, piece, candidates, verifieds, limit }) {
+  consider({ start, piece, candidates, verifieds, check }) {
     for (candidate of candidates) {
-      for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start, limit })) {
+      for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start, check })) {
         switch (this.state(candidateMove)) {
-          case ChessGame.FOUND_CHECK: return true
           case ChessGame.MOVES_EXHAUSTED: break
           case ChessGame.PUTS_KING_IN_CHECK: continue
           case ChessGame.EMPTY_SQUARE: verifieds.push(candidateMove); continue
-          case ChessGame.CAPTURE_OPPORTUNITY: verifieds.push(candidateMove); break
+          case ChessGame.CAPTURE_OPPORTUNITY: if (check) return true; verifieds.push(candidateMove); break
         }
       }
     }

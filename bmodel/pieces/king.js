@@ -19,9 +19,10 @@ export default class King extends ChessPiece {
     if (!side || !game.castles.includes(side)) return null
   }
 
-  inCheck() {
+  inCheck = (game, start) => (
+    game.consider({ start, piece: this, candidates: this.constructor.checks, check: true })
+  )
 
-  }
 
   constructor(team, id) {
     super(team, id, ChessPiece.KING)
