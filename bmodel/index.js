@@ -54,25 +54,14 @@ export default class ChessGame {
   otherTeam(square1, square2) { return this.board[square1] && this.board[square2] && this.board[square1].team() !== this.board[square2].team() }
 
   // Actions
-  move(candidateMove) {
-    // If we run into our teammate, there are no more moves to consider in this direction
-    if (this.sameTeam(candidateMove.start, candidateMove.end))
-      return ChessGame.MOVES_EXHAUSTED
-
-    // if we put the king in check with this move, it's not valid
-    if (this.putsKingInCheck(candidateMove))
-      return ChessGame.PUTS_KING_IN_CHECK
-
-    // If we encouter the other team and can capture
-    if (this.otherTeam(candidateMove.start, candidateMove.end) && this.canCapture(candidateMove))
-      return ChessGame.CAPTURE_OPPORTUNITY
-
-    // If we encounter the other team but can't capture
-    if (this.otherTeam(candidateMove.start, candidateMove.end))
-      return ChessGame.MOVES_EXHAUSTED
-
-    // Otherwise we have an empty square
-    return ChessGame.EMPTY_SQUARE
+  move(candidateMove, { start, end, empty, capture } = candidateMove) {
+    if (end === false) return ChessGame.MOVES_EXHAUSTED // Takes us out of bounds
+    if (this.sameTeam(start, end)) return ChessGame.MOVES_EXHAUSTED // Ran into teammate, work is done
+    if (this.putsKingInCheck(candidateMove)) return ChessGame.PUTS_KING_IN_CHECK // Move is illegal
+    if (this.otherTeam(start, end) && capture) return ChessGame.CAPTURE_OPPORTUNITY // Ran into other team and can capture
+    if (this.otherTeam(start, end)) return ChessGame.MOVES_EXHAUSTED // Ran into other team but can't capture
+    if (empty) return ChessGame.EMPTY_SQUARE // Found empty square and can move there
+    return ChessGame.MOVES_EXHAUSTED // Move is invalid
   }
 
   check(candidateMove) {
