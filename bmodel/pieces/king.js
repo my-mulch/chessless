@@ -24,7 +24,7 @@ export default class King extends ChessPiece {
 
     return new ChessMove({
       start: s,
-      end: traverse[traverse.length - 2],
+      end: traverse[2],
       piece: this,
       empty: true,
       special: game => {
