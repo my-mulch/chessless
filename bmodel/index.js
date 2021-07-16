@@ -42,26 +42,25 @@ export default class ChessGame {
     this.boards = game.boards.slice()
   }
 
-  consider({ start, piece, candidates, verifieds, check }) {
-    for (candidate of candidates) {
-      for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start })) {
-        if (candidateMove.outOfBounds()) { break }
-        if (candidateMove.runsIntoTeammate(this)) { break }
-        if (!check && candidateMove.putsOwnKingInCheck(this)) { continue }
-        if (candidateMove.canMove(this)) { verifieds.push(candidateMove); continue }
-        if (candidateMove.canCapture(this)) { verifieds.push(candidateMove); break }
-        break
-      }
-    }
-  }
+  changeTurns() { this.turn = !this.turn }
 
-  getMoves() {
+  getMoves({ check = false }) {
     const verifieds = []
 
-    for (let square = 0; square < this.board.length; square++) {
-      const piece = this.board[square]
+    for (let start = 0; start < this.board.length; start++) {
+      const piece = this.board[start]
       if (!piece || piece.team() !== this.turn) continue
-      this.consider({ square, piece, candidates: piece.constructor.moves, verifieds })
+
+      for (candidate of piece.constructor.moves) {
+        for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start })) {
+          if (candidateMove.outOfBounds()) { break }
+          if (candidateMove.runsIntoTeammate(this)) { break }
+          if (!check && candidateMove.putsOwnKingInCheck(this)) { continue }
+          if (candidateMove.canMove(this)) { verifieds.push(candidateMove); continue }
+          if (candidateMove.canCapture(this)) { verifieds.push(candidateMove); break }
+          break
+        }
+      }
     }
 
     return verifieds
