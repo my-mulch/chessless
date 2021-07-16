@@ -3,7 +3,6 @@ import ChessPiece from "./Piece";
 export default class King extends ChessPiece {
   static limit = 1
   static moves = [this.castles, ChessPiece.moves.DIAGONALS, ChessPiece.moves.CARDINALS].flat()
-  static checks = [ChessPiece.moves.DIAGONALS, ChessPiece.moves.CARDINALS, ChessPiece.moves.KNIGHT].flat()
 
   castles = (game, s) => {
     const kr = [1, 2, 3].reduce(this.kingside.bind(this), s)
@@ -18,11 +17,6 @@ export default class King extends ChessPiece {
 
     if (!side || !game.castles.includes(side)) return null
   }
-
-  inCheck = (game, start) => (
-    game.consider({ start, piece: this, candidates: this.constructor.checks, check: true })
-  )
-
 
   constructor(team, id) {
     super(team, id, ChessPiece.KING)

@@ -1,4 +1,3 @@
-import { ChessPiece } from "../pieces"
 import { isIterable } from "../utils"
 
 export default class ChessMove {
@@ -27,7 +26,6 @@ export default class ChessMove {
     }
 
     let end = start, limit = piece.constructor.limit
-    if (check) { limit = ChessPiece.moves.KNIGHT.includes(candidate) ? 1 : 8 }
 
     do {
       end = move.call(piece, end)
