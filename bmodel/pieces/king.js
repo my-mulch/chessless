@@ -2,11 +2,13 @@ import ChessPiece from "./Piece";
 
 export default class King extends ChessPiece {
   static limit = 1
-  static moves = [this.castles, ChessPiece.moves.DIAGONALS, ChessPiece.moves.CARDINALS].flat()
+  static moves = [King.prototype.castles, ChessPiece.moves.DIAGONALS, ChessPiece.moves.CARDINALS].flat()
 
-  castles = (game, s) => {
-    const kr = [1, 2, 3].reduce(this.kingside.bind(this), s)
-    const qr = [1, 2, 3, 4].reduce(this.queenside.bind(this), s)
+  castles(game, s, check) {
+    if (check) return null
+
+    const kr = [0, 0, 0].reduce(this.kingside.bind(this), s)
+    const qr = [0, 0, 0, 0].reduce(this.queenside.bind(this), s)
 
     const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq } = ChessPiece
 
@@ -18,7 +20,5 @@ export default class King extends ChessPiece {
     if (!side || !game.castles.includes(side)) return null
   }
 
-  constructor(team, id) {
-    super(team, id, ChessPiece.KING)
-  }
+  constructor(team, id) { super(team, id, ChessPiece.KING) }
 }

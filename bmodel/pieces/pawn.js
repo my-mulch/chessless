@@ -8,26 +8,26 @@ import Knight from "./knight"
 
 export default class Pawn extends ChessPiece {
   static limit = 1
-  static moves = [this.push, this.doublePush, this.capture]
+  static moves = [Pawn.prototype.push, Pawn.prototype.doublePush, Pawn.prototype.capture]
 
   // Promotions
-  promotions = ({ start, end, capture = false, empty = false }) => (
-    [Rook, Queen, Knight, Bishop].map(Piece => new ChessMove({
+  promotions({ start, end, capture = false, empty = false }) {
+    return [Rook, Queen, Knight, Bishop].map(Piece => new ChessMove({
       start, end, piece: this, capture, empty,
       special: game => game.board[end] = new Piece(this.getTeam(), this.id)
     }))
-  )
+  }
 
   // Enpassant
-  enpassant = ({ game, start, end, side }) => (
-    game.enpassant === side && new ChessMove({
+  enpassant({ game, start, end, side }) {
+    return game.enpassant === side && new ChessMove({
       start, end, piece: this, empty: true,
       special: game => game.board[side] = null
     })
-  )
+  }
 
   // Pushes
-  push = (_, start) => {
+  push(_, start) {
     const end = this.forward(start)
 
     if (this.lastRank(end)) return this.promotions({ start, end, empty: true })
@@ -35,7 +35,7 @@ export default class Pawn extends ChessPiece {
     return new ChessMove({ start, end, piece: this, empty: true })
   }
 
-  doublePush = (game, start) => {
+  doublePush(game, start) {
     const step = this.forward(start)
     const end = this.forward(step)
 
@@ -45,7 +45,7 @@ export default class Pawn extends ChessPiece {
   }
 
   // Captures
-  capture = (game, start) => {
+  capture(game, start) {
     const forwardLeft = this.forwardLeft(start)
     const forwardRight = this.forwardRight(start)
 
@@ -63,7 +63,5 @@ export default class Pawn extends ChessPiece {
     ].filter(Boolean)
   }
 
-  constructor(team, id) {
-    super(team, id, ChessPiece.PAWN)
-  }
+  constructor(team, id) { super(team, id, ChessPiece.PAWN) }
 }

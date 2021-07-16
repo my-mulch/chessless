@@ -16,10 +16,6 @@ export default class ChessGame {
     this.castles = castles
     this.enpassant = enpassant
 
-    // Record the history
-    this.moves = []
-    this.boards = []
-
     // Map the board of strings into a board of piece objects
     this.board = board.map((piece, location) => {
       if (!piece) return null
@@ -52,7 +48,7 @@ export default class ChessGame {
       if (!piece || piece.team() !== this.turn) continue
 
       for (candidate of piece.constructor.moves) {
-        for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start })) {
+        for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start, check })) {
           if (candidateMove.outOfBounds()) { break }
           if (candidateMove.runsIntoTeammate(this)) { break }
           if (!check && candidateMove.putsOwnKingInCheck(this)) { continue }

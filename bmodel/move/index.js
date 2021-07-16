@@ -3,7 +3,7 @@ import { isIterable } from "../utils"
 
 export default class ChessMove {
   constructor({ start, end, piece, empty = false, capture = false, check = false, special = () => { } }) {
-    Object.assign(this, { start, end, piece, empty, capture, special })
+    Object.assign(this, { start, end, piece, empty, capture, check, special })
   }
 
   outOfBounds() { return this.end === false }
@@ -23,11 +23,9 @@ export default class ChessMove {
   make(game) {
     const newGame = game.clone()
 
-    // Move the piece on the new game board
     newGame.board[this.end] = newGame.board[this.start]
     newGame.board[this.start] = null
 
-    // Execute any specialities (castling, enpassant, etc)
     this.special(newGame)
 
     newGame.changeTurns()
@@ -36,10 +34,10 @@ export default class ChessMove {
   }
 
   // Move generator
-  static *generator({ game, piece, candidate, start, check = false }) {
+  static *generator({ game, piece, candidate, start, check }) {
     // Special move
-    if (piece.hasOwnProperty(candidate.name)) {
-      const result = candidate.call(piece, game, start)
+    if (piece.constructor.prototype.hasOwnProperty(candidate.name)) {
+      const result = candidate.call(piece, game, start, check)
 
       if (isIterable(result)) yield* result
       else if (result) yield result
