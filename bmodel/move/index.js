@@ -6,6 +6,15 @@ export default class ChessMove {
     Object.assign(this, { start, end, piece, empty, capture, special })
   }
 
+  // Helpers
+  outOfBounds() { return this.end === false }
+  canMove(game) { return !game.board[this.end] && this.empty }
+  canCapture(game) { return this.runsIntoOpponent(game) && this.capture }
+  runsIntoOpponent(game) { return game.board[this.end] && game.board[this.start].team() !== game.board[this.end].team() }
+  runsIntoTeammate(game) { return game.board[this.end] && game.board[this.start].team() === game.board[this.end].team() }
+  putsOwnKingInCheck(game) {  }
+
+  // Move generator
   static *generator({ game, piece, candidate, start, check = false }) {
     // Special move
     if (piece.hasOwnProperty(candidate.name)) {
@@ -17,10 +26,7 @@ export default class ChessMove {
       return
     }
 
-    let end = start
-    let limit = piece.constructor.limit
-
-    // If we're running things in reverse looking for checks
+    let end = start, limit = piece.constructor.limit
     if (check) { limit = ChessPiece.moves.KNIGHT.includes(candidate) ? 1 : 8 }
 
     do {
