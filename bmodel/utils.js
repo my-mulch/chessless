@@ -45,7 +45,3 @@ export const indexOf = function (rank, file) {
 
   return rank * 8 + file
 }
-
-export const isIterable = function (value) {
-  return Symbol.iterator in Object(value)
-}

@@ -38,7 +38,22 @@ export default class ChessGame {
     this.boards = game.boards.slice()
   }
 
-  changeTurns() { this.turn = !this.turn }
+  changeTurns() {
+    this.turn = !this.turn
+    return this
+  }
+
+  kingIsInCheck() {
+    this.changeTurns()
+
+    const check = this
+      .getMoves({ check: true })
+      .some(move => this[move.end] && this[move.end].type() === ChessPiece.King)
+
+    this.changeTurns()
+
+    return check
+  }
 
   getMoves({ check = false }) {
     const verifieds = []
