@@ -43,13 +43,9 @@ export default class ChessGame {
     return this
   }
 
-  kingIsInCheck() {
+  kingIsInCheck(square) {
     this.changeTurns()
-
-    const check = this
-      .getMoves({ check: true })
-      .some(move => this[move.end] && this[move.end].type() === ChessPiece.King)
-
+    const check = this.getMoves({ check: true }).some(move => move.end === square)
     this.changeTurns()
 
     return check

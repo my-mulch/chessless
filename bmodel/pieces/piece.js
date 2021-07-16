@@ -73,16 +73,6 @@ export default class ChessPiece extends Number {
       ChessPiece.prototype.forwardRight = function (s) { return this.right(this.forward(s)) },
       ChessPiece.prototype.backwardLeft = function (s) { return this.left(this.backward(s)) },
       ChessPiece.prototype.backwardRight = function (s) { return this.right(this.backward(s)) },
-    ],
-    KNIGHT: [
-      ChessPiece.prototype.hopLeftForward = function (s) { return this.forward(this.left(this.left(s))) },
-      ChessPiece.prototype.hopForwardLeft = function (s) { return this.left(this.forward(this.forward(s))) },
-      ChessPiece.prototype.hopLeftBackward = function (s) { return this.backward(this.left(this.left(s))) },
-      ChessPiece.prototype.hopBackwardLeft = function (s) { return this.left(this.backward(this.backward(s))) },
-      ChessPiece.prototype.hopRightForward = function (s) { return this.forward(this.right(this.right(s))) },
-      ChessPiece.prototype.hopForwardRight = function (s) { return this.right(this.forward(this.forward(s))) },
-      ChessPiece.prototype.hopRightBackward = function (s) { return this.backward(this.right(this.right(s))) },
-      ChessPiece.prototype.hopBackwardRight = function (s) { return this.right(this.backward(this.backward(s))) },
     ]
   }
 }
