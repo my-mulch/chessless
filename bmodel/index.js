@@ -4,8 +4,7 @@ import { PieceMap, ChessPiece } from './pieces'
 export default class ChessGame {
   // Constructors
   constructor({ FEN = STARTING_FEN, game }) {
-    if (game) this.copyConstructor(game)
-    else this.fenConstructor(FEN)
+    game ? this.copyConstructor(game) : this.fenConstructor(FEN)
   }
 
   fenConstructor(FEN) {
@@ -16,16 +15,9 @@ export default class ChessGame {
     this.castles = castles
     this.enpassant = enpassant
 
-    // Map the board of strings into a board of piece objects
-    this.board = board.map((piece, location) => {
-      if (!piece) return null
-
-      // Grab the class from the PieceMap
-      const Piece = PieceMap[piece]
-
-      // Create the new piece for the appropriate team
-      return new Piece(ChessPiece.getTeamFromFEN(piece), location)
-    })
+    this.board = board.map((piece, location) => (
+      piece ? new PieceMap[piece](ChessPiece.getTeamFromFEN(piece), location) : null
+    ))
   }
 
   copyConstructor(game) {
@@ -54,11 +46,10 @@ export default class ChessGame {
   getMoves({ check = false }) {
     const verifieds = []
 
-    for (let start = 0; start < this.board.length; start++) {
-      const piece = this.board[start]
+    this.board.forEach((piece, start) => {
       if (!piece || piece.team() !== this.turn) continue
 
-      for (candidate of piece.constructor.moves) {
+      piece.constructor.moves.forEach(candidate => {
         for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start, check })) {
           if (candidateMove.outOfBounds()) { break }
           if (candidateMove.runsIntoTeammate(this)) { break }
@@ -67,8 +58,8 @@ export default class ChessGame {
           if (candidateMove.canCapture(this)) { verifieds.push(candidateMove); break }
           break
         }
-      }
-    }
+      })
+    })
 
     return verifieds
   }

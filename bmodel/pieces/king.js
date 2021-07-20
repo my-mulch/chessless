@@ -1,14 +1,25 @@
 import ChessMove from "../move";
 import ChessPiece from "./Piece";
 
+const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq } = ChessPiece
+
 export default class King extends ChessPiece {
   static limit = 1
-  static moves = [King.prototype.castles, ChessPiece.moves.DIAGONALS, ChessPiece.moves.CARDINALS].flat()
+
+  moves = [
+    King.prototype.castles,
+    ChessPiece.moves.DIAGONALS.map(this.revokeCastlingRights, this),
+    ChessPiece.moves.CARDINALS.map(this.revokeCastlingRights, this)
+  ].flat()
+
+  castlingRights = new RegExp((this.isBlack() ? [bk, bq] : [wk, wq]).join('|'), 'g')
+
+  revokeCastlingRights(move) {
+    return (move.special = game => game.castles.replace(this.castlingRights, '')) && move
+  }
 
   castles(game, s, check) {
     if (check) return null
-
-    const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq } = ChessPiece
 
     const kr = [0, 0, 0].reduce(this.kingside.bind(this), s)
     const qr = [0, 0, 0, 0].reduce(this.queenside.bind(this), s)
