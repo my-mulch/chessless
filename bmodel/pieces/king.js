@@ -14,8 +14,8 @@ export default class King extends ChessPiece {
 
   castlingRights = new RegExp((this.isBlack() ? [bk, bq] : [wk, wq]).join('|'), 'g')
 
-  revokeCastlingRights(move) {
-    return (move.special = game => game.castles.replace(this.castlingRights, '')) && move
+  revokeCastlingRights(candidate) {
+    return (candidate.special = game => game.castles.replace(this.castlingRights, '')) && candidate
   }
 
   castles(game, s, check) {

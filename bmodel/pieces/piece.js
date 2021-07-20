@@ -1,3 +1,4 @@
+import { rankAndFileOf } from "../utils"
 import { guardBound, guardWrap, mask } from "./utils"
 
 export default class ChessPiece extends Number {
@@ -53,6 +54,8 @@ export default class ChessPiece extends Number {
   orient() { return this.team() ? 1 : -1 }
   isWhite() { return this.team() === ChessPiece.WHITE }
   isBlack() { return this.team() === ChessPiece.BLACK }
+  isKingside(s) { return rankAndFileOf(s)[1] > 3 }
+  isQueenside(s) { return rankAndFileOf(s)[1] <= 3 }
   lastRank(s) { return Number.isInteger(s) && ((s <= 7 && this.isWhite()) || (s >= 56 && this.isBlack())) }
   secondRank(s) { return (s >= 48 && s <= 55 && this.isWhite()) || (s >= 8 && s <= 15 && this.isBlack()) }
 

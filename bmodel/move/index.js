@@ -31,9 +31,9 @@ export default class ChessMove {
       return
     }
 
-    let end = candidate.call(piece, start), limit = piece.constructor.limit
+    let end = candidate.call(piece, start), { limit } = piece.constructor, { special } = candidate
 
     while (Number.isInteger(end) && limit--)
-      yield new ChessMove({ start, end, piece, empty: true, capture: true, check })
+      yield new ChessMove({ start, end, piece, empty: true, capture: true, check, special })
   }
 }
