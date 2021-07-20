@@ -8,7 +8,7 @@ import Knight from "./knight"
 
 export default class Pawn extends ChessPiece {
   static limit = 1
-  static moves = [Pawn.prototype.push, Pawn.prototype.doublePush, Pawn.prototype.capture]
+  moves = [Pawn.prototype.push, Pawn.prototype.doublePush, Pawn.prototype.capture]
 
   // Promotions
   promotions({ start, end, capture = false, empty = false }) {

@@ -2,7 +2,7 @@ import ChessPiece from "./Piece";
 
 export default class Knight extends ChessPiece {
   static limit = 1
-  static moves = [
+  moves = [
     Knight.prototype.hopLeftForward = function (s) { return this.forward(this.left(this.left(s))) },
     Knight.prototype.hopForwardLeft = function (s) { return this.left(this.forward(this.forward(s))) },
     Knight.prototype.hopLeftBackward = function (s) { return this.backward(this.left(this.left(s))) },

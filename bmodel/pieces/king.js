@@ -34,10 +34,7 @@ export default class King extends ChessPiece {
     if (traverse.slice(0, 3).some(game.kingIsInCheck, game)) return null
 
     return new ChessMove({
-      start: s,
-      end: traverse[2],
-      piece: this,
-      empty: true,
+      start: s, end: traverse[2], piece: this, empty: true,
       special: game => {
         game.board[traverse[1]] = game.board[traverse[traverse.length - 1]]
         game.board[traverse[traverse.length - 1]] = null
