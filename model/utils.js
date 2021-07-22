@@ -5,7 +5,7 @@ export const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
 export const parseFEN = function (FEN) {
   // Split FEN into constituent parts
-  const [position, turn, castles, enPassant] = FEN.split(' ')
+  const [position, turn, castles, enpassant] = FEN.split(' ')
 
   // Create the board
   const board = new Array(64).fill(null)
@@ -21,7 +21,7 @@ export const parseFEN = function (FEN) {
   }
 
   // Return the board and turn
-  return [board, turn, castles, convertFromAlgebraic(enPassant)]
+  return [board, turn, castles, convertFromAlgebraic(enpassant) || null]
 }
 
 export const convertToAlgebraic = function (index) {

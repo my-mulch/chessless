@@ -16,7 +16,8 @@ export default class ChessMove {
 
     newGame.board[this.end] = newGame.board[this.start]
     newGame.board[this.start] = null
-
+    newGame.enpassant = null
+    
     this.special(newGame)
 
     return newGame
