@@ -1,8 +1,4 @@
 
-export function mask(size) {
-  return 2 ** size - 1
-}
-
 export function row(square) {
   return Math.floor(square / 8)
 }

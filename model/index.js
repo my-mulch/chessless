@@ -14,7 +14,7 @@ export default class ChessGame {
     // Metadata
     this.castles = castles
     this.enpassant = enpassant
-    this.turn = ChessPiece.getTeamFromFENPiece(turn)
+    this.turn = ChessPiece.getTeamFromFENTeam(turn)
 
     this.board = board.map((piece, location) => (
       piece ? new PieceMap[piece](ChessPiece.getTeamFromFENPiece(piece), location) : null
@@ -60,7 +60,7 @@ export default class ChessGame {
           break
         }
       })
-    })
+    }, this)
 
     return verifieds
   }

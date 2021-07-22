@@ -1,62 +1,26 @@
 import { rankAndFileOf } from "../utils"
-import { guardBound, guardWrap, mask } from "./utils"
+import { guardBound, guardWrap } from "./utils"
 
-export default class ChessPiece extends Number {
-  // Teams
-  static WHITE = 0; static BLACK = 1
-
-  // Types
-  static ROOK = 0; static PAWN = 1; static BISHOP = 2;
-  static KNIGHT = 3; static QUEEN = 4; static KING = 5;
-
-  // Bit ranges: x|xxxxxx|xxx
-  static TEAM_BITS = [9, 9]
-  static IDEN_BITS = [8, 3]
-  static TYPE_BITS = [2, 0]
-
-  // Constructor
-  constructor(team, id, type) {
-    super(team << ChessPiece.TEAM_BITS[1] | id << ChessPiece.IDEN_BITS[1] | type << ChessPiece.TYPE_BITS[1])
-  }
-
+export default class ChessPiece extends String {
   // FEN symbols
-  static WHITE_ROOK = 'R'; static BLACK_ROOK = 'r';
-  static WHITE_PAWN = 'P'; static BLACK_PAWN = 'p';
-  static WHITE_KING = 'K'; static BLACK_KING = 'k';
-  static WHITE_QUEEN = 'Q'; static BLACK_QUEEN = 'q';
-  static WHITE_KNIGHT = 'N'; static BLACK_KNIGHT = 'n';
-  static WHITE_BISHOP = 'B'; static BLACK_BISHOP = 'b';
+  static WHITE = 'w'; static BLACK = 'b'
+  static ROOK = 'r'; static WHITE_ROOK = 'R'; static BLACK_ROOK = 'r'
+  static PAWN = 'p'; static WHITE_PAWN = 'P'; static BLACK_PAWN = 'p'
+  static KING = 'k'; static WHITE_KING = 'K'; static BLACK_KING = 'k'
+  static QUEEN = 'q'; static WHITE_QUEEN = 'Q'; static BLACK_QUEEN = 'q'
+  static KNIGHT = 'n'; static WHITE_KNIGHT = 'N'; static BLACK_KNIGHT = 'n'
+  static BISHOP = 'b'; static WHITE_BISHOP = 'B'; static BLACK_BISHOP = 'b'
 
-  // FEN mapping
-  toFEN() {
-    switch (this.type()) {
-      case ChessPiece.ROOK: return this.team() ? ChessPiece.BLACK_ROOK : ChessPiece.WHITE_ROOK
-      case ChessPiece.PAWN: return this.team() ? ChessPiece.BLACK_PAWN : ChessPiece.WHITE_PAWN
-      case ChessPiece.KING: return this.team() ? ChessPiece.BLACK_KING : ChessPiece.WHITE_KING
-      case ChessPiece.QUEEN: return this.team() ? ChessPiece.BLACK_QUEEN : ChessPiece.WHITE_QUEEN
-      case ChessPiece.KNIGHT: return this.team() ? ChessPiece.BLACK_KNIGHT : ChessPiece.WHITE_KNIGHT
-      case ChessPiece.BISHOP: return this.team() ? ChessPiece.BLACK_BISHOP : ChessPiece.WHITE_BISHOP
-    }
-  }
-
-  // FEN lookups
-  static getTeamFromFENTeam(symbol) { return symbol === 'b' ? this.BLACK : this.WHITE }
-  static getTeamFromFENPiece(symbol) { return Number(symbol.toLowerCase() === symbol) }
-
-  // Accessor
-  bits(start, end) { return (this & (mask(start - end + 1) << end)) >> end }
-
-  // Meta
-  team() { return this.bits(...ChessPiece.TEAM_BITS) }
-  iden() { return this.bits(...ChessPiece.IDEN_BITS) }
-  type() { return this.bits(...ChessPiece.TYPE_BITS) }
+  // FEN helpers
+  static getTeamFromFEN(piece) { return piece.toLowerCase() === piece ? this.BLACK : this.WHITE }
+  static assignTeamForFEN(piece, team) { return team === this.WHITE ? piece.toUpperCase() : piece.toLowerCase() }
 
   // Orientation
-  orient() { return this.team() ? 1 : -1 }
-  isWhite() { return this.team() === ChessPiece.WHITE }
-  isBlack() { return this.team() === ChessPiece.BLACK }
+  orient() { return this.isWhite() ? 1 : -1 }
   isKingside(s) { return rankAndFileOf(s)[1] > 3 }
-  isQueenside(s) { return rankAndFileOf(s)[1] <= 3 }
+  isQueenside(s) { return rankAndFileOf(s)[1] < 4 }
+  isWhite() { return this.toString() === this.toUpperCase() }
+  isBlack() { return this.toString() !== this.toUpperCase() }
   lastRank(s) { return Number.isInteger(s) && ((s <= 7 && this.isWhite()) || (s >= 56 && this.isBlack())) }
   secondRank(s) { return (s >= 48 && s <= 55 && this.isWhite()) || (s >= 8 && s <= 15 && this.isBlack()) }
 
