@@ -8,9 +8,9 @@ import livereload from "rollup-plugin-livereload";
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 export default {
-  input: "./index.jsx",
+  input: "./view/index.jsx",
   output: {
-    file: "dist/bundle.js",
+    file: "./dist/bundle.js",
     format: "iife",
     sourcemap: true,
   },
@@ -36,7 +36,7 @@ export default {
     serve({
       open: true,
       verbose: true,
-      contentBase: ["", "public"],
+      contentBase: ["dist"],
       host: "localhost",
       port: 1234,
     }),

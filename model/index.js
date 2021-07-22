@@ -1,10 +1,11 @@
-import { parseFEN, STARTING_FEN } from "./utils.js"
-import { PieceMap, ChessPiece } from './pieces/index.js'
+import { parseFEN, STARTING_FEN } from "./utils"
+import { PieceMap, ChessPiece } from './pieces'
+
 
 export default class ChessGame {
-  constructor({ FEN = STARTING_FEN, game }) {
-    if (game) this.copyConstructor(game)
-    else this.fenConstructor(FEN)
+  // Constructors
+  constructor({ FEN, game } = { FEN: STARTING_FEN, game: null }) {
+    game ? this.copyConstructor(game) : this.fenConstructor(FEN)
   }
 
   fenConstructor(FEN) {
@@ -15,106 +16,54 @@ export default class ChessGame {
     this.castles = castles
     this.enpassant = enpassant
 
-    // Record the history
-    this.previousMoves = []
-    this.previousBoards = []
-
-    // Map the board of strings into a board of piece objects
-    this.board = board.map((piece) => {
-      if (!piece) return null
-
-      // Grab the class from the PieceMap
-      const Piece = PieceMap[piece]
-
-      // Create the new piece for the appropriate team
-      return new Piece(ChessPiece.getTeam(piece))
-    })
+    this.board = board.map((piece, location) => (
+      piece ? new PieceMap[piece](ChessPiece.getTeamFromFEN(piece), location) : null
+    ))
   }
 
   copyConstructor(game) {
     this.turn = game.turn
-    this.board = game.board.slice()
     this.castles = game.castles
     this.enpassant = game.enpassant
-    this.previousMoves = game.previousMoves.slice()
-    this.previousBoards = game.previousBoards.slice()
+
+    this.moves = game.moves.slice()
+    this.board = game.board.slice()
+    this.boards = game.boards.slice()
   }
 
-  hasMoved(piece) {
-    return this.previousMoves.some(move => move.piece.id === piece.id)
-  }
-
-  getLastMove() {
-    return this.previousMoves[this.previousMoves.length - 1]
-  }
-
-  getMoves(team = this.turn) {
-    return this.board
-      .map((piece, square) => piece && piece.getTeam() === team && piece.getMoves(this, square))
-      .flat(Infinity)
-      .filter(Boolean)
-      .flat(Infinity)
-  }
-
-  switchTurns() {
-    this.turn = this.turn === ChessPiece.WHITE ? ChessPiece.BLACK : ChessPiece.WHITE
-
+  changeTurns() {
+    this.turn = !this.turn
     return this
   }
 
-  clearEnpassant() {
-    this.enpassant = null
+  kingIsInCheck(square) {
+    this.changeTurns()
+    const check = this.getMoves({ check: true }).some(move => move.end === square)
+    this.changeTurns()
+
+    return check
   }
 
-  makeMove(move) {
-    const newGame = this.clone()
+  getMoves({ check } = { check: false }) {
+    const verifieds = []
 
-    // Save the state so we can undo the move
-    newGame.previousMoves.push(move)
-    newGame.previousBoards.push(this.board)
+    this.board.forEach((piece, start) => {
+      if (!piece || piece.team() !== this.turn) return
 
-    // Move the piece on the new game board
-    newGame.board[move.to] = newGame.board[move.from]
-    newGame.board[move.from] = null
+      piece.moves.forEach(candidate => {
+        for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start, check })) {
+          if (candidateMove.outOfBounds()) { break }
+          if (candidateMove.runsIntoTeammate(this)) { break }
+          if (!check && candidateMove.putsOwnKingInCheck(this)) { continue }
+          if (candidateMove.canMove(this)) { verifieds.push(candidateMove); continue }
+          if (candidateMove.canCapture(this)) { verifieds.push(candidateMove); break }
+          break
+        }
+      })
+    })
 
-    // Execute any specialities (castling, enpassant, etc)
-    move.special ? move.special(newGame) : newGame.clearEnpassant()
-
-    return newGame
+    return verifieds
   }
-
-  undoMove() {
-    const newGame = game.clone()
-
-    newGame.previousMoves.pop()
-    newGame.previousBoards.pop()
-
-    return newGame
-  }
-
-  movePutsKingInCheck(move) {
-    const newGame = this.makeMove(move)
-
-    let king = null
-    let kingSquare = null
-
-    newGame.board.forEach((piece, square) => {
-      if (
-        piece &&
-        piece.getType() === ChessPiece.KING &&
-        piece.getTeam() === this.turn
-      )
-        king = piece, kingSquare = square
-    }, this)
-
-    return king.isInCheck(newGame, kingSquare)
-  }
-
-  isEmpty(square) { return this.board[square] === null }
-  isInBounds(square) { return this.board[square] !== undefined }
-  isOutOfBounds(square) { return this.board[square] === undefined }
-  isSameTeam(square, piece) { return this.board[square] && this.board[square].getTeam() === piece.getTeam() }
-  isOtherTeam(square, piece) { return this.board[square] && this.board[square].getTeam() !== piece.getTeam() }
 
   clone() { return new ChessGame({ game: this }) }
 }

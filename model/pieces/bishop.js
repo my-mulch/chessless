@@ -1,13 +1,8 @@
-import ChessPiece from './piece.js'
+import ChessPiece from "./Piece";
 
 export default class Bishop extends ChessPiece {
-    static attackInRange = () => true
-    static attackDirections = new Set([ChessPiece.attacks.DIAGONAL])
-    constructor(team, id) { super(ChessPiece.BISHOP, team, id) }
+  static limit = 8
+  moves = ChessPiece.moves.DIAGONALS
 
-    getMoves(game, from) {
-        return ChessPiece.moves.DIAGONALS.map(move => (
-            super.getMoves({ game, from, next: move.bind(this) })
-        ))
-    }
+  constructor(team, id) { super(team, id, ChessPiece.BISHOP) }
 }

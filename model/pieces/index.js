@@ -1,11 +1,11 @@
-import Rook from './rook.js'
-import King from './king.js'
-import Pawn from './pawn.js'
-import Queen from './queen.js'
-import Bishop from './bishop.js'
-import Knight from './knight.js'
+import Rook from './rook'
+import King from './king'
+import Pawn from './pawn'
+import Queen from './queen'
+import Bishop from './bishop'
+import Knight from './knight'
 
-import ChessPiece from './piece.js'
+import ChessPiece from './piece'
 
 const PieceMap = {
   [ChessPiece.BLACK_PAWN]: Pawn, [ChessPiece.WHITE_PAWN]: Pawn,

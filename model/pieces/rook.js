@@ -1,32 +1,16 @@
-import ChessPiece from './piece.js'
+import ChessPiece from "./Piece";
+
+const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq } = ChessPiece
 
 export default class Rook extends ChessPiece {
-    static attackDirections = new Set([ChessPiece.attacks.CARDINAL])
-    constructor(team, id) { super(ChessPiece.ROOK, team, id) }
+  static limit = 8
 
-    revokeCastlingRights(game, square) {
-        if (!game.castles) return
+  moves = ChessPiece.moves.CARDINALS.map(this.revokeCastlingRights, this)
+  castlingRights = this.isBlack() ? this.isKingside(this.id) ? bk : bq : this.isKingside(this.id) ? wk: wq
 
-        if (game.turn === ChessPiece.WHITE)
-            if (ChessPiece.isKingSide(square))
-                game.castles.replace(ChessPiece.WHITE_KING, '')
-            else
-                game.castles.replace(ChessPiece.WHITE_QUEEN, '')
-        else
-            if (ChessPiece.isKingSide(square))
-                game.castles.replace(ChessPiece.BLACK_KING, '')
-            else
-                game.castles.replace(ChessPiece.BLACK_QUEEN, '')
-    }
+  revokeCastlingRights(move) {
+    return (move.special = game => game.castles.replace(this.castlingRights, '')) && move
+  }
 
-    getMoves(game, from) {
-        return ChessPiece.moves.CARDINALS.map(move => (
-            super.getMoves({
-                game,
-                from,
-                next: move.bind(this),
-                special: game => this.revokeCastlingRights(game, from)
-            })
-        ))
-    }
+  constructor(team, id) { super(team, id, ChessPiece.ROOK) }
 }

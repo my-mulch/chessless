@@ -1,11 +1,8 @@
-import ChessPiece from './piece.js'
+import ChessPiece from "./Piece";
 
 export default class Queen extends ChessPiece {
-    static attackDirections = new Set([ChessPiece.attacks.DIAGONAL, ChessPiece.attacks.CARDINAL])
-    constructor(team, id) { super(ChessPiece.QUEEN, team, id) }
+  static limit = 8
+  moves = [ChessPiece.moves.CARDINALS, ChessPiece.moves.DIAGONALS].flat()
 
-    getMoves(game, from) {
-        const { CARDINALS, DIAGONALS } = ChessPiece.moves
-        return DIAGONALS.concat(CARDINALS).map(move => super.getMoves({ game, from, next: move.bind(this) }))
-    }
+  constructor(team, id) { super(team, id, ChessPiece.QUEEN) }
 }

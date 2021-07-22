@@ -1,7 +1,3 @@
-export const NUM_RANKS = 8
-export const NUM_FILES = 8
-export const NUM_SQUARES = 8 * 8
-
 export const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 export const RANKS = [8, 7, 6, 5, 4, 3, 2, 1]
@@ -12,7 +8,7 @@ export const parseFEN = function (FEN) {
   const [position, turn, castles, enPassant] = FEN.split(' ')
 
   // Create the board
-  const board = new Array(NUM_SQUARES).fill(null)
+  const board = new Array(64).fill(null)
 
   // Fill up the board with pieces
   let i = 0
@@ -41,12 +37,11 @@ export const convertFromAlgebraic = function (square) {
 }
 
 export const rankAndFileOf = function (index) {
-  return [Math.floor(index / NUM_RANKS), index % NUM_FILES]
+  return [Math.floor(index / 8), index % 8]
 }
 
 export const indexOf = function (rank, file) {
-  if (rank < 0 || rank >= NUM_RANKS || file < 0 || file >= NUM_FILES) return undefined
+  if (rank < 0 || rank >= 8 || file < 0 || file >= 8) return undefined
 
-  return rank * NUM_RANKS + file
+  return rank * 8 + file
 }
-
