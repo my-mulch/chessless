@@ -1,6 +1,14 @@
 import ChessMove from "./move"
+import ChessPiece from './pieces'
+
+import Rook from './pieces/rook'
+import Pawn from './pieces/pawn'
+import King from './pieces/king'
+import Queen from './pieces/queen'
+import Knight from './pieces/knight'
+import Bishop from './pieces/bishop'
+
 import { parseFEN, STARTING_FEN } from "./utils"
-import { PieceMap, ChessPiece } from './pieces'
 
 export default class ChessGame {
   // Constructors
@@ -12,13 +20,22 @@ export default class ChessGame {
     const [board, turn, castles, enpassant] = parseFEN(FEN)
 
     // Metadata
+    this.turn = turn
     this.castles = castles
     this.enpassant = enpassant
-    this.turn = ChessPiece.getTeamFromFENTeam(turn)
 
-    this.board = board.map((piece, location) => (
-      piece ? new PieceMap[piece](ChessPiece.getTeamFromFENPiece(piece), location) : null
-    ))
+    this.board = board.map((piece, location) => {
+      if (!piece) return null
+
+      switch (piece.toLowerCase()) {
+        case ChessPiece.KING: return new King(piece, location)
+        case ChessPiece.PAWN: return new Pawn(piece, location)
+        case ChessPiece.ROOK: return new Rook(piece, location)
+        case ChessPiece.QUEEN: return new Queen(piece, location)
+        case ChessPiece.KNIGHT: return new Knight(piece, location)
+        case ChessPiece.BISHOP: return new Bishop(piece, location)
+      }
+    })
   }
 
   copyConstructor(game) {

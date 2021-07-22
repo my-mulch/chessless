@@ -1,16 +1,15 @@
-import ChessPiece from "./Piece";
-
-const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq } = ChessPiece
+import ChessMove from "../move";
+import ChessPiece from ".";
 
 export default class Rook extends ChessPiece {
-  static limit = 8
+  static moves = this.CARDINALS.map(ChessMove.special(this.revokeCastles))
 
-  moves = ChessPiece.moves.CARDINALS.map(this.revokeCastlingRights, this)
-  castlingRights = this.isBlack() ? this.isKingside(this.id) ? bk : bq : this.isKingside(this.id) ? wk: wq
+  constructor(fen, location) {
+    super(fen)
 
-  revokeCastlingRights(move) {
-    return (move.special = game => game.castles.replace(this.castlingRights, '')) && move
+    if (location === 0) return this.castlingRights = ChessPiece.BLACK_QUEEN
+    if (location === 7) return this.castlingRights = ChessPiece.BLACK_KING
+    if (location === 56) return this.castlingRights = ChessPiece.WHITE_QUEEN
+    if (location === 63) return this.castlingRights = ChessPiece.WHITE_KING
   }
-
-  constructor(team, id) { super(team, id, ChessPiece.ROOK) }
 }

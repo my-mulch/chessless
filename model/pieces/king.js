@@ -5,17 +5,17 @@ const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq } = Che
 
 export default class King extends ChessPiece {
   static limit = 1
-
-  moves = [
+  static moves = [
     King.prototype.castles,
-    ChessPiece.moves.DIAGONALS.map(this.revokeCastlingRights, this),
-    ChessPiece.moves.CARDINALS.map(this.revokeCastlingRights, this)
-  ].flat()
+    ...this.DIAGONALS.map(ChessMove.special(this.revokeCastles)),
+    ...this.CARDINALS.map(ChessMove.special(this.revokeCastles))
+  ]
 
-  castlingRights = new RegExp((this.isBlack() ? [bk, bq] : [wk, wq]).join('|'), 'g')
+  constructor(fen, location) {
+    super(fen)
 
-  revokeCastlingRights(candidate) {
-    return (candidate.special = game => game.castles.replace(this.castlingRights, '')) && candidate
+    if (location === 4) return this.rights = new RegExp(`${bk}|${bq}`, 'g')
+    if (location === 60) return this.rights = new RegExp(`${wk}|${wq}`, 'g')
   }
 
   castles(game, s, check) {
@@ -43,6 +43,4 @@ export default class King extends ChessPiece {
       }
     })
   }
-
-  constructor(team, id) { super(team, id, ChessPiece.KING) }
 }

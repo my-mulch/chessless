@@ -1,4 +1,3 @@
-
 export default class ChessMove {
   constructor({ start, end, piece, empty = false, capture = false, check = false, special = () => { } }) {
     Object.assign(this, { start, end, piece, empty, capture, check, special })
@@ -10,6 +9,7 @@ export default class ChessMove {
   canCapture(game) { return this.runsIntoOpponent(game) && this.capture }
   runsIntoOpponent(game) { return game.board[this.end] && game.board[this.start].team() !== game.board[this.end].team() }
   runsIntoTeammate(game) { return game.board[this.end] && game.board[this.start].team() === game.board[this.end].team() }
+  static special(effect) { return candidate => candidate.special = effect && candidate }
 
   make(game) {
     const newGame = game.clone()
@@ -18,7 +18,7 @@ export default class ChessMove {
     newGame.board[this.start] = null
     newGame.enpassant = null
 
-    this.special(newGame)
+    this.special.call(this.piece, newGame)
 
     return newGame
   }

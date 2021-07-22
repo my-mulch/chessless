@@ -8,13 +8,13 @@ import Knight from "./knight"
 
 export default class Pawn extends ChessPiece {
   static limit = 1
-  moves = [Pawn.prototype.push, Pawn.prototype.doublePush, Pawn.prototype.capture]
+  static moves = [Pawn.prototype.push, Pawn.prototype.doublePush, Pawn.prototype.capture]
 
   // Promotions
   promotions({ start, end, capture = false, empty = false }) {
     return [Rook, Queen, Knight, Bishop].map(Piece => new ChessMove({
       start, end, piece: this, capture, empty,
-      special: game => game.board[end] = new Piece(this.getTeam(), this.id)
+      special: game => game.board[end] = new Piece(Piece.assignTeamForFEN(Piece.name))
     }))
   }
 
@@ -62,6 +62,4 @@ export default class Pawn extends ChessPiece {
       new ChessMove({ start, end: forwardRight, piece: this, capture: true })
     ].filter(Boolean)
   }
-
-  constructor(team, id) { super(team, id, ChessPiece.PAWN) }
 }
