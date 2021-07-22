@@ -49,7 +49,7 @@ export default class ChessGame {
     this.board.forEach((piece, start) => {
       if (!piece || piece.team() !== this.turn) continue
 
-      piece.constructor.moves.forEach(candidate => {
+      piece.moves.forEach(candidate => {
         for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start, check })) {
           if (candidateMove.outOfBounds()) { break }
           if (candidateMove.runsIntoTeammate(this)) { break }
