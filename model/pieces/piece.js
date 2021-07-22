@@ -40,7 +40,8 @@ export default class ChessPiece extends Number {
   }
 
   // FEN lookups
-  static getTeamFromFEN(symbol) { return Number(symbol.toLowerCase() === symbol) }
+  static getTeamFromFENTeam(symbol) { return symbol === 'b' ? this.BLACK : this.WHITE }
+  static getTeamFromFENPiece(symbol) { return Number(symbol.toLowerCase() === symbol) }
 
   // Accessor
   bits(start, end) { return (this & (mask(start - end + 1) << end)) >> end }

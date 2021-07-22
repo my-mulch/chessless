@@ -17,24 +17,27 @@ export default class ChessMove {
     newGame.board[this.end] = newGame.board[this.start]
     newGame.board[this.start] = null
     newGame.enpassant = null
-    
+
     this.special(newGame)
 
     return newGame
   }
 
-  static *generator({ game, piece, candidate, start, check }) {
+  static generator({ game, piece, candidate, start, check }) {
     if (piece.constructor.prototype.hasOwnProperty(candidate.name)) {
-      const result = candidate.call(piece, game, start, check)
+      const moves = candidate.call(piece, game, start, check)
 
-      if (result) yield* [result].flat()
-
-      return
+      return [moves].filter(Boolean).flat()
     }
 
-    let end = candidate.call(piece, start), { limit } = piece.constructor, { special } = candidate
+    let end = start, { limit } = piece.constructor
+    const moves = [], { special } = candidate
 
-    while (Number.isInteger(end) && limit--)
-      yield new ChessMove({ start, end, piece, empty: true, capture: true, check, special })
+    do {
+      end = candidate.call(piece, end)
+      moves.push(new ChessMove({ start, end, piece, empty: true, capture: true, check, special }))
+    } while (Number.isInteger(end) && --limit);
+
+    return moves
   }
 }

@@ -1,6 +1,6 @@
+import ChessMove from "./move"
 import { parseFEN, STARTING_FEN } from "./utils"
 import { PieceMap, ChessPiece } from './pieces'
-
 
 export default class ChessGame {
   // Constructors
@@ -12,12 +12,12 @@ export default class ChessGame {
     const [board, turn, castles, enpassant] = parseFEN(FEN)
 
     // Metadata
-    this.turn = turn
     this.castles = castles
     this.enpassant = enpassant
+    this.turn = ChessPiece.getTeamFromFENPiece(turn)
 
     this.board = board.map((piece, location) => (
-      piece ? new PieceMap[piece](ChessPiece.getTeamFromFEN(piece), location) : null
+      piece ? new PieceMap[piece](ChessPiece.getTeamFromFENPiece(piece), location) : null
     ))
   }
 
@@ -26,13 +26,11 @@ export default class ChessGame {
     this.castles = game.castles
     this.enpassant = game.enpassant
 
-    this.moves = game.moves.slice()
     this.board = game.board.slice()
-    this.boards = game.boards.slice()
   }
 
   changeTurns() {
-    this.turn = !this.turn
+    this.turn = +!this.turn
     return this
   }
 
@@ -50,10 +48,12 @@ export default class ChessGame {
     this.board.forEach((piece, start) => {
       if (!piece || piece.team() !== this.turn) return
 
+      debugger
+
       piece.moves.forEach(candidate => {
         for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start, check })) {
-          if (candidateMove.outOfBounds()) { break }
-          if (candidateMove.runsIntoTeammate(this)) { break }
+          if (candidateMove.outOfBounds()) { continue }
+          if (candidateMove.runsIntoTeammate(this)) { continue }
           if (!check && candidateMove.putsOwnKingInCheck(this)) { continue }
           if (candidateMove.canMove(this)) { verifieds.push(candidateMove); continue }
           if (candidateMove.canCapture(this)) { verifieds.push(candidateMove); break }
