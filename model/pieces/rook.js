@@ -7,9 +7,11 @@ export default class Rook extends ChessPiece {
   constructor(fen, location) {
     super(fen)
 
-    if (location === 0) return this.castlingRights = ChessPiece.BLACK_QUEEN
-    if (location === 7) return this.castlingRights = ChessPiece.BLACK_KING
-    if (location === 56) return this.castlingRights = ChessPiece.WHITE_QUEEN
-    if (location === 63) return this.castlingRights = ChessPiece.WHITE_KING
+    switch (location) {
+      case 0: this.rights = ChessPiece.BLACK_QUEEN; break
+      case 7: this.rights = ChessPiece.BLACK_KING; break
+      case 56: this.rights = ChessPiece.WHITE_QUEEN; break
+      case 63: this.rights = ChessPiece.WHITE_KING; break
+    }
   }
 }

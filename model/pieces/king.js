@@ -1,5 +1,5 @@
 import ChessMove from "../move";
-import ChessPiece from "./Piece";
+import ChessPiece from ".";
 
 const { WHITE_KING: wk, WHITE_QUEEN: wq, BLACK_KING: bk, BLACK_QUEEN: bq } = ChessPiece
 
@@ -14,8 +14,10 @@ export default class King extends ChessPiece {
   constructor(fen, location) {
     super(fen)
 
-    if (location === 4) return this.rights = new RegExp(`${bk}|${bq}`, 'g')
-    if (location === 60) return this.rights = new RegExp(`${wk}|${wq}`, 'g')
+    switch (location) {
+      case 4: this.rights = new RegExp(`${bk}|${bq}`, 'g'); break
+      case 60: this.rights = new RegExp(`${wk}|${wq}`, 'g'); break
+    }
   }
 
   castles(game, s, check) {

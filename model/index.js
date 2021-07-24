@@ -25,7 +25,7 @@ export default class ChessGame {
     this.enpassant = enpassant
 
     this.board = board.map((piece, location) => {
-      switch (piece.toLowerCase?.()) {
+      switch (piece?.toLowerCase()) {
         case ChessPiece.KING: return new King(piece, location)
         case ChessPiece.PAWN: return new Pawn(piece, location)
         case ChessPiece.ROOK: return new Rook(piece, location)

@@ -1,4 +1,4 @@
-import ChessPiece from "./Piece";
+import ChessPiece from ".";
 
 export default class Knight extends ChessPiece {
   static limit = 1

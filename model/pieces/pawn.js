@@ -1,5 +1,5 @@
 import ChessMove from "../move"
-import ChessPiece from "./piece"
+import ChessPiece from "."
 
 import Rook from "./rook"
 import Queen from "./queen"
