@@ -11,11 +11,11 @@ export default function App() {
   window.game = game
   // useEffect(async () => {
   //   await new Promise(_ => setTimeout(_, 1000));
-  //   const moves = game.getMoves()
+  //   const moves = game.getMoves({})
 
-  //   const newGame = game
-  //     .makeMove(moves[Math.floor(Math.random() * moves.length)])
-  //     .switchTurns()
+  //   const newGame = moves[Math.floor(Math.random() * moves.length)]
+  //     .make(game)
+  //     .changeTurns()
 
   //   setGame(newGame)
   // }, [game])
@@ -56,14 +56,15 @@ export default function App() {
             onMouseDown={() => { setSelected(indexOf(ri, fi)) }}
             onMouseUp={() => {
               setSelected(null)
-              const to = indexOf(ri, fi)
-              const moves = game.getMoves()
 
-              const selectedMove = moves.filter(move => move.from === selected && move.to === to)
+              const end = indexOf(ri, fi)
+              const moves = game.getMoves({})
 
-              const newGame = game
-                .makeMove(selectedMove[Math.floor(Math.random() * selectedMove.length)])
-                .switchTurns()
+              const selectedMove = moves.filter(move => move.start === selected && move.end === end)
+              
+              const newGame = selectedMove[Math.floor(Math.random() * selectedMove.length)]
+                .make(game)
+                .changeTurns()
 
               setGame(newGame)
             }}

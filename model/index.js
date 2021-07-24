@@ -45,7 +45,7 @@ export default class ChessGame {
     this.board = game.board.slice()
   }
 
-  empty(square) { return !game.board[square] }
+  empty(square) { return !this.board[square] }
 
   changeTurns() { this.turn = ChessPiece.otherTeamFEN(this.turn); return this }
 
@@ -66,7 +66,7 @@ export default class ChessGame {
 
     this.board.forEach((piece, start) => {
       if (piece?.team() !== this.turn) return
-      
+
       piece.constructor.moves.forEach(move => {
         const { candidates, sequential } = ChessMove.generator({ game: this, piece, move, start, checking })
 
@@ -74,7 +74,7 @@ export default class ChessGame {
           if (candidate.outOfBounds()) { if (sequential) break; else continue }
           if (candidate.runsIntoTeammate(this)) { if (sequential) break; else continue }
           if (!checking && candidate.putsOwnKingInCheck(this)) { continue }
-          if (!checking && candidate.canMove(this)) { verifieds.push(candidate); continue }
+          if (candidate.canMove(this)) { verifieds.push(candidate); continue }
           if (candidate.canCapture(this)) { verifieds.push(candidate); if (sequential) break }
         }
       })

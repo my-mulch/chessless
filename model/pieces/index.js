@@ -24,7 +24,7 @@ export default class ChessPiece extends String {
   secondRank(s) { return (s >= 48 && s <= 55 && this.isWhite()) || (s >= 8 && s <= 15 && this.isBlack()) }
 
   // Specials
-  revokeCastles(game) { return game.castles.replace(this.rights, '') }
+  revokeCastles(game) { game.castles = game.castles.replace(this.rights, '') }
 
   // Movement starting from a square (s)
   static limit = 8

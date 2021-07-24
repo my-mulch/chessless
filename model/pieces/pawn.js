@@ -11,41 +11,43 @@ export default class Pawn extends ChessPiece {
   static moves = [Pawn.prototype.push, Pawn.prototype.doublePush, Pawn.prototype.capture]
 
   // Promotions
-  promotions({ start, end, capture = false, empty = false }) {
+  promotions({ start, end, capture = false, empty = false, checking }) {
     return [Rook, Queen, Knight, Bishop].map(Piece => new ChessMove({
-      start, end, piece: this, capture, empty,
+      start, end, piece: this, capture, empty, checking,
       special: game => game.board[end] = new Piece(Piece.assignTeamForFEN(Piece.name[0]))
     }))
   }
 
   // Enpassant
-  enpassant({ game, start, end, side }) {
+  enpassant({ game, start, end, side, checking }) {
     return game.enpassant !== end ? [] : [new ChessMove({
-      start, end, piece: this, empty: true,
+      start, end, piece: this, empty: true, checking,
       special: game => game.board[side] = null
     })]
   }
 
   // Pushes
-  push(_, start) {
+  push(_, start, checking) {
     const end = this.forward(start)
 
-    if (this.lastRank(end)) return this.promotions({ start, end, empty: true })
+    if (this.lastRank(end)) return this.promotions({ start, end, empty: true, checking })
 
     return [new ChessMove({ start, end, piece: this, empty: true })]
   }
 
-  doublePush(game, start) {
+  doublePush(game, start, checking) {
     const step = this.forward(start)
     const end = this.forward(step)
 
-    if (game.board[step] || !this.secondRank(start)) return null
+    if (game.board[step] || !this.secondRank(start)) return []
 
-    return [new ChessMove({ start, end, piece: this, empty: true, special: game => game.enpassant = step })]
+    return [new ChessMove({
+      start, end, piece: this, empty: true, checking, special: game => game.enpassant = step
+    })]
   }
 
   // Captures
-  capture(game, start) {
+  capture(game, start, checking) {
     const forwardLeft = this.forwardLeft(start)
     const forwardRight = this.forwardRight(start)
 
@@ -58,8 +60,8 @@ export default class Pawn extends ChessPiece {
     return [
       this.enpassant({ game, start, end: forwardLeft, side: this.left(start) }),
       this.enpassant({ game, start, end: forwardRight, side: this.right(start) }),
-      new ChessMove({ start, end: forwardLeft, piece: this, capture: true }),
-      new ChessMove({ start, end: forwardRight, piece: this, capture: true })
+      new ChessMove({ start, end: forwardLeft, piece: this, capture: true, checking }),
+      new ChessMove({ start, end: forwardRight, piece: this, capture: true, checking })
     ].flat()
   }
 }

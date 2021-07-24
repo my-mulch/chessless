@@ -26,23 +26,27 @@ export default class King extends ChessPiece {
     const kr = [0, 0, 0].reduce(this.kingside.bind(this), s)
     const qr = [0, 0, 0, 0].reduce(this.queenside.bind(this), s)
 
-    const [side, traverse] = (
-      (s == 4 && kr == 7 && [bk, [4, 5, 6, 7]]) ||
-      (s == 4 && qr == 0 && [bq, [4, 3, 2, 1, 0]]) ||
-      (s == 60 && kr == 63 && [wk, [60, 61, 62, 63]]) ||
-      (s == 60 && qr == 56 && [wq, [60, 59, 58, 57, 56]]) || []
-    )
+    const options = [
+      (s == 4 && kr == 7 && [bk, [4, 5, 6, 7]]),
+      (s == 4 && qr == 0 && [bq, [4, 3, 2, 1, 0]]),
+      (s == 60 && kr == 63 && [wk, [60, 61, 62, 63]]),
+      (s == 60 && qr == 56 && [wq, [60, 59, 58, 57, 56]])
+    ].filter(Boolean)
 
-    if (!side || !game.castles.includes(side)) return []
-    if (!traverse.slice(1, -1).every(game.empty, game)) return []
-    if (traverse.slice(0, 3).some(game.kingIsInCheck, game)) return []
+    return options.map(([side, traverse]) => {
+      if (!side || !game.castles.includes(side)) return []
+      if (!traverse.slice(1, -1).every(game.empty, game)) return []
+      if (traverse.slice(0, 3).some(game.kingIsInCheck, game)) return []
 
-    return [new ChessMove({
-      start: s, end: traverse[2], piece: this, empty: true,
-      special: game => {
-        game.board[traverse[1]] = game.board[traverse[traverse.length - 1]]
-        game.board[traverse[traverse.length - 1]] = null
-      }
-    })]
+      return [new ChessMove({
+        start: s, end: traverse[2], piece: this, empty: true,
+        special: game => {
+          game.board[traverse[1]] = game.board[traverse[traverse.length - 1]]
+          game.board[traverse[traverse.length - 1]] = null
+
+          this.revokeCastles(game)
+        }
+      })]
+    }).flat()
   }
 }

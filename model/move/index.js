@@ -3,15 +3,15 @@ export default class ChessMove {
     Object.assign(this, { start, end, piece, empty, capture, checking, special })
   }
 
-  static special(effect) { return move => move.special = effect && move }
-  
-  outOfBounds() {return this.end === false}
-  canMove(game) {return game.empty(this.end) && this.empty}
-  putsOwnKingInCheck(game) {return this.make(game).kingIsInCheck()}
-  canCapture(game) {return this.runsIntoOpponent(game) && this.capture}
-  runsIntoOpponent({ board, empty }) {return !empty(this.end) && board[this.start].team() !== board[this.end].team()}
-  runsIntoTeammate({ board, empty }) {return !empty(this.end) && board[this.start].team() === board[this.end].team()}
-  
+  static special(effect) { return move => (move.special = effect) && move }
+
+  outOfBounds() { return this.end === false }
+  canMove(game) { return game.empty(this.end) && this.empty }
+  putsOwnKingInCheck(game) { return this.make(game).kingIsInCheck() }
+  canCapture(game) { return this.runsIntoOpponent(game) && this.capture }
+  runsIntoOpponent(game) { return !game.empty(this.end) && game.board[this.start].team() !== game.board[this.end].team() }
+  runsIntoTeammate(game) { return !game.empty(this.end) && game.board[this.start].team() === game.board[this.end].team() }
+
   make(game) {
     const newGame = game.clone()
 
