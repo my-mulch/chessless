@@ -48,25 +48,31 @@ export default class ChessGame {
   changeTurns() { this.turn = ChessPiece.otherTeamFEN(this.turn); return this }
 
   kingIsInCheck(square = null) {
-    return this
-      .getMoves({ turn: ChessPiece.otherTeamFEN(this.turn) })
+    this.changeTurns()
+
+    const check = this
+      .getMoves({ checking: true })
       .some(({ end }) => end === square || this.board[end]?.toLowerCase() === ChessPiece.KING)
+
+    this.changeTurns()
+
+    return check
   }
 
-  getMoves({ turn = this.turn, check = false }) {
+  getMoves({ checking = false }) {
     const verifieds = []
 
     this.board.forEach((piece, start) => {
-      if (piece.team?.() !== turn) return
+      if (piece.team?.() !== this.turn) return
 
       piece.moves.forEach(move => {
-        const { candidates, sequential } = ChessMove.generator({ game: this, piece, move, start, check })
+        const { candidates, sequential } = ChessMove.generator({ game: this, piece, move, start, checking })
 
         for (const candidate of candidates) {
           if (candidate.outOfBounds()) { if (sequential) break }
           if (candidate.runsIntoTeammate(this)) { if (sequential) break }
-          if (!check && candidate.putsOwnKingInCheck(this)) { if (sequential) continue }
-          if (candidate.canMove(this)) { verifieds.push(candidate); if (sequential) continue }
+          if (!checking && candidate.putsOwnKingInCheck(this)) { if (sequential) continue }
+          if (!checking && candidate.canMove(this)) { verifieds.push(candidate); if (sequential) continue }
           if (candidate.canCapture(this)) { verifieds.push(candidate); if (sequential) break }
         }
       })
