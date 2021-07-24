@@ -9,7 +9,7 @@ export default class ChessMove {
   canCapture(game) { return this.runsIntoOpponent(game) && this.capture }
   runsIntoOpponent(game) { return game.board[this.end] && game.board[this.start].team() !== game.board[this.end].team() }
   runsIntoTeammate(game) { return game.board[this.end] && game.board[this.start].team() === game.board[this.end].team() }
-  static special(effect) { return candidate => candidate.special = effect && candidate }
+  static special(effect) { return move => move.special = effect && move }
 
   make(game) {
     const newGame = game.clone()
@@ -23,21 +23,21 @@ export default class ChessMove {
     return newGame
   }
 
-  static generator({ game, piece, candidate, start, check }) {
-    if (piece.constructor.prototype.hasOwnProperty(candidate.name)) {
-      const moves = candidate.call(piece, game, start, check)
+  static generator({ game, piece, move, start, check }) {
+    if (piece.constructor.prototype.hasOwnProperty(move.name)) {
+      const candidates = move.call(piece, game, start, check)
 
-      return [moves].filter(Boolean).flat()
+      return { candidates: [candidates].filter(Boolean).flat(), sequential: false }
     }
 
     let end = start, { limit } = piece.constructor
-    const moves = [], { special } = candidate
+    const candidates = [], { special } = move
 
     do {
-      end = candidate.call(piece, end)
-      moves.push(new ChessMove({ start, end, piece, empty: true, capture: true, check, special }))
+      end = move.call(piece, end)
+      candidates.push(new ChessMove({ start, end, piece, empty: true, capture: true, check, special }))
     } while (Number.isInteger(end) && --limit);
 
-    return moves
+    return { candidates, sequential: true }
   }
 }

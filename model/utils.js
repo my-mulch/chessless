@@ -21,7 +21,7 @@ export const parseFEN = function (FEN) {
   }
 
   // Return the board and turn
-  return [board, turn, castles, convertFromAlgebraic(enpassant) || null]
+  return [board, turn, castles, convertFromAlgebraic(enpassant)]
 }
 
 export const convertToAlgebraic = function (index) {

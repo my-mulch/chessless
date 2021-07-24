@@ -1,4 +1,3 @@
-import { rankAndFileOf } from "../utils"
 import { guardBound, guardWrap } from "./utils"
 
 export default class ChessPiece extends String {
@@ -12,13 +11,12 @@ export default class ChessPiece extends String {
   static BISHOP = 'b'; static WHITE_BISHOP = 'B'; static BLACK_BISHOP = 'b'
 
   // FEN helpers
+  static otherTeamFEN(team) { return team === this.WHITE ? this.BLACK : this.WHITE }
   static getTeamFromFEN(piece) { return piece.toLowerCase() === piece ? this.BLACK : this.WHITE }
   static assignTeamForFEN(piece, team) { return team === this.WHITE ? piece.toUpperCase() : piece.toLowerCase() }
 
   // Orientation
   orient() { return this.isWhite() ? 1 : -1 }
-  isKingside(s) { return rankAndFileOf(s)[1] > 3 }
-  isQueenside(s) { return rankAndFileOf(s)[1] < 4 }
   isWhite() { return this.toString() === this.toUpperCase() }
   isBlack() { return this.toString() !== this.toUpperCase() }
   lastRank(s) { return Number.isInteger(s) && ((s <= 7 && this.isWhite()) || (s >= 56 && this.isBlack())) }
@@ -27,7 +25,7 @@ export default class ChessPiece extends String {
   // Specials
   revokeCastles(game) { return game.castles.replace(this.rights, '') }
 
-  // Movement types starting from a square (s)
+  // Movement starting from a square (s)
   static limit = 8
 
   static RELATIVE = [
@@ -41,7 +39,7 @@ export default class ChessPiece extends String {
     ChessPiece.prototype.forward = function (s) { return guardBound(s + 8 * this.orient()) },
     ChessPiece.prototype.backward = function (s) { return guardBound(s - 8 * this.orient()) },
   ]
-  
+
   static DIAGONALS = [
     ChessPiece.prototype.forwardLeft = function (s) { return this.left(this.forward(s)) },
     ChessPiece.prototype.forwardRight = function (s) { return this.right(this.forward(s)) },

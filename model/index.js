@@ -25,9 +25,7 @@ export default class ChessGame {
     this.enpassant = enpassant
 
     this.board = board.map((piece, location) => {
-      if (!piece) return null
-
-      switch (piece.toLowerCase()) {
+      switch (piece?.toLowerCase()) {
         case ChessPiece.KING: return new King(piece, location)
         case ChessPiece.PAWN: return new Pawn(piece, location)
         case ChessPiece.ROOK: return new Rook(piece, location)
@@ -46,35 +44,29 @@ export default class ChessGame {
     this.board = game.board.slice()
   }
 
-  changeTurns() {
-    this.turn = +!this.turn
+  changeTurns() { this.turn = ChessPiece.otherTeamFEN(this.turn); return this }
+
+  kingIsInCheck(square = null) {
     return this
+      .getMoves({ turn: ChessPiece.otherTeamFEN(this.turn) })
+      .some(({ end }) => end === square || this.board[end]?.toLowerCase() === ChessPiece.KING)
   }
 
-  kingIsInCheck(square) {
-    this.changeTurns()
-    const check = this.getMoves({ check: true }).some(move => move.end === square)
-    this.changeTurns()
-
-    return check
-  }
-
-  getMoves({ check } = { check: false }) {
+  getMoves({ turn = this.turn, check = false }) {
     const verifieds = []
 
     this.board.forEach((piece, start) => {
-      if (!piece || piece.team() !== this.turn) return
+      if (piece.team?.() !== turn) return
 
-      debugger
-
-      piece.moves.forEach(candidate => {
-        for (const candidateMove of ChessMove.generator({ game: this, piece, candidate, start, check })) {
-          if (candidateMove.outOfBounds()) { continue }
-          if (candidateMove.runsIntoTeammate(this)) { continue }
-          if (!check && candidateMove.putsOwnKingInCheck(this)) { continue }
-          if (candidateMove.canMove(this)) { verifieds.push(candidateMove); continue }
-          if (candidateMove.canCapture(this)) { verifieds.push(candidateMove); break }
-          break
+      piece.moves.forEach(move => {
+        const { candidates, sequential } = ChessMove.generator({ game: this, piece, move, start, check })
+        
+        for (const candidate of candidates) {
+          if (candidate.outOfBounds()) { if (sequential) break }
+          if (candidate.runsIntoTeammate(this)) { if (sequential) break }
+          if (!check && candidate.putsOwnKingInCheck(this)) { if (sequential) continue }
+          if (candidate.canMove(this)) { verifieds.push(candidate); if (sequential) continue }
+          if (candidate.canCapture(this)) { verifieds.push(candidate); if (sequential) break }
         }
       })
     }, this)
