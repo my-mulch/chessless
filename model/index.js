@@ -25,13 +25,14 @@ export default class ChessGame {
     this.enpassant = enpassant
 
     this.board = board.map((piece, location) => {
-      switch (piece?.toLowerCase()) {
+      switch (piece.toLowerCase?.()) {
         case ChessPiece.KING: return new King(piece, location)
         case ChessPiece.PAWN: return new Pawn(piece, location)
         case ChessPiece.ROOK: return new Rook(piece, location)
         case ChessPiece.QUEEN: return new Queen(piece, location)
         case ChessPiece.KNIGHT: return new Knight(piece, location)
         case ChessPiece.BISHOP: return new Bishop(piece, location)
+        default: return null
       }
     })
   }
@@ -60,7 +61,7 @@ export default class ChessGame {
 
       piece.moves.forEach(move => {
         const { candidates, sequential } = ChessMove.generator({ game: this, piece, move, start, check })
-        
+
         for (const candidate of candidates) {
           if (candidate.outOfBounds()) { if (sequential) break }
           if (candidate.runsIntoTeammate(this)) { if (sequential) break }
