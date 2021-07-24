@@ -45,6 +45,8 @@ export default class ChessGame {
     this.board = game.board.slice()
   }
 
+  empty(square) { return !game.board[square] }
+
   changeTurns() { this.turn = ChessPiece.otherTeamFEN(this.turn); return this }
 
   kingIsInCheck(square = null) {
@@ -63,16 +65,16 @@ export default class ChessGame {
     const verifieds = []
 
     this.board.forEach((piece, start) => {
-      if (piece.team?.() !== this.turn) return
-
-      piece.moves.forEach(move => {
+      if (piece?.team() !== this.turn) return
+      
+      piece.constructor.moves.forEach(move => {
         const { candidates, sequential } = ChessMove.generator({ game: this, piece, move, start, checking })
 
         for (const candidate of candidates) {
-          if (candidate.outOfBounds()) { if (sequential) break }
-          if (candidate.runsIntoTeammate(this)) { if (sequential) break }
-          if (!checking && candidate.putsOwnKingInCheck(this)) { if (sequential) continue }
-          if (!checking && candidate.canMove(this)) { verifieds.push(candidate); if (sequential) continue }
+          if (candidate.outOfBounds()) { if (sequential) break; else continue }
+          if (candidate.runsIntoTeammate(this)) { if (sequential) break; else continue }
+          if (!checking && candidate.putsOwnKingInCheck(this)) { continue }
+          if (!checking && candidate.canMove(this)) { verifieds.push(candidate); continue }
           if (candidate.canCapture(this)) { verifieds.push(candidate); if (sequential) break }
         }
       })

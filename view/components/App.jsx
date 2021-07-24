@@ -37,7 +37,6 @@ export default function App() {
   }
 
   const getSquareStyle = function (rank, file, piece) {
-    console.log(piece)
     return {
       flex: 1,
       backgroundSize: 'contain',

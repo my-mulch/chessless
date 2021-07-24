@@ -14,16 +14,16 @@ export default class Pawn extends ChessPiece {
   promotions({ start, end, capture = false, empty = false }) {
     return [Rook, Queen, Knight, Bishop].map(Piece => new ChessMove({
       start, end, piece: this, capture, empty,
-      special: game => game.board[end] = new Piece(Piece.assignTeamForFEN(Piece.name))
+      special: game => game.board[end] = new Piece(Piece.assignTeamForFEN(Piece.name[0]))
     }))
   }
 
   // Enpassant
   enpassant({ game, start, end, side }) {
-    return game.enpassant === side && new ChessMove({
+    return game.enpassant !== end ? [] : [new ChessMove({
       start, end, piece: this, empty: true,
       special: game => game.board[side] = null
-    })
+    })]
   }
 
   // Pushes
@@ -32,7 +32,7 @@ export default class Pawn extends ChessPiece {
 
     if (this.lastRank(end)) return this.promotions({ start, end, empty: true })
 
-    return new ChessMove({ start, end, piece: this, empty: true })
+    return [new ChessMove({ start, end, piece: this, empty: true })]
   }
 
   doublePush(game, start) {
@@ -41,7 +41,7 @@ export default class Pawn extends ChessPiece {
 
     if (game.board[step] || !this.secondRank(start)) return null
 
-    return new ChessMove({ start, end, piece: this, empty: true, special: game => game.enpassant = step })
+    return [new ChessMove({ start, end, piece: this, empty: true, special: game => game.enpassant = step })]
   }
 
   // Captures
@@ -60,6 +60,6 @@ export default class Pawn extends ChessPiece {
       this.enpassant({ game, start, end: forwardRight, side: this.right(start) }),
       new ChessMove({ start, end: forwardLeft, piece: this, capture: true }),
       new ChessMove({ start, end: forwardRight, piece: this, capture: true })
-    ].filter(Boolean)
+    ].flat()
   }
 }

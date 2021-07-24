@@ -7,8 +7,8 @@ export default class King extends ChessPiece {
   static limit = 1
   static moves = [
     King.prototype.castles,
-    ...this.DIAGONALS.map(ChessMove.special(this.revokeCastles)),
-    ...this.CARDINALS.map(ChessMove.special(this.revokeCastles))
+    ...this.DIAGONALS.map(ChessMove.special(this.prototype.revokeCastles)),
+    ...this.CARDINALS.map(ChessMove.special(this.prototype.revokeCastles))
   ]
 
   constructor(fen, location) {
@@ -21,7 +21,7 @@ export default class King extends ChessPiece {
   }
 
   castles(game, s, check) {
-    if (check) return null
+    if (check) return []
 
     const kr = [0, 0, 0].reduce(this.kingside.bind(this), s)
     const qr = [0, 0, 0, 0].reduce(this.queenside.bind(this), s)
@@ -33,16 +33,16 @@ export default class King extends ChessPiece {
       (s == 60 && qr == 56 && [wq, [60, 59, 58, 57, 56]]) || []
     )
 
-    if (!side || !game.castles.includes(side)) return null
-    if (!traverse.slice(1, -1).every(game.empty, game)) return null
-    if (traverse.slice(0, 3).some(game.kingIsInCheck, game)) return null
+    if (!side || !game.castles.includes(side)) return []
+    if (!traverse.slice(1, -1).every(game.empty, game)) return []
+    if (traverse.slice(0, 3).some(game.kingIsInCheck, game)) return []
 
-    return new ChessMove({
+    return [new ChessMove({
       start: s, end: traverse[2], piece: this, empty: true,
       special: game => {
         game.board[traverse[1]] = game.board[traverse[traverse.length - 1]]
         game.board[traverse[traverse.length - 1]] = null
       }
-    })
+    })]
   }
 }
