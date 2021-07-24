@@ -10,7 +10,7 @@ export default function App() {
 
   window.game = game
   // useEffect(async () => {
-  //   await new Promise(_ => setTimeout(_, 1000));
+  //   await new Promise(_ => setTimeout(_, 0));
   //   const moves = game.getMoves({})
 
   //   const newGame = moves[Math.floor(Math.random() * moves.length)]

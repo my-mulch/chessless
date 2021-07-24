@@ -6,15 +6,17 @@ import Queen from "./queen"
 import Bishop from "./bishop"
 import Knight from "./knight"
 
+const { ROOK: r, BISHOP: b, QUEEN: q, KNIGHT: n } = ChessPiece
+
 export default class Pawn extends ChessPiece {
   static limit = 1
   static moves = [Pawn.prototype.push, Pawn.prototype.doublePush, Pawn.prototype.capture]
 
   // Promotions
   promotions({ start, end, capture = false, empty = false, checking }) {
-    return [Rook, Queen, Knight, Bishop].map(Piece => new ChessMove({
+    return [[Rook, r], [Queen, q], [Knight, n], [Bishop, b]].map(([Piece, type]) => new ChessMove({
       start, end, piece: this, capture, empty, checking,
-      special: game => game.board[end] = new Piece(Piece.assignTeamForFEN(Piece.name[0]))
+      special: game => game.board[end] = new Piece(ChessPiece.assignTeamForFEN(type, this.team()))
     }))
   }
 

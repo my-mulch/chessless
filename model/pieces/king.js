@@ -34,7 +34,7 @@ export default class King extends ChessPiece {
     ].filter(Boolean)
 
     return options.map(([side, traverse]) => {
-      if (!side || !game.castles.includes(side)) return []
+      if (!game.castles.includes(side)) return []
       if (!traverse.slice(1, -1).every(game.empty, game)) return []
       if (traverse.slice(0, 3).some(game.kingIsInCheck, game)) return []
 
