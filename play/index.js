@@ -2,7 +2,9 @@
 /* eslint-disable import/extensions */
 
 import puppeteer from 'puppeteer';
-import { login, prepare, timeControl } from './actions/index.js';
+import {
+  login, move, prepare, timeControl,
+} from './actions/index.js';
 import { installMouseHelper } from './helper.js';
 import { sleep, getElementByXPath, expose } from './utils.js';
 
@@ -19,35 +21,28 @@ import { sleep, getElementByXPath, expose } from './utils.js';
     prepare,
   ]);
 
-  // // Chess.com
-  // await page.goto('https://www.chess.com/login').then(() => sleep(5));
+  // Chess.com
+  await page.goto('https://www.chess.com/login').then(() => sleep(5));
 
-  // // Login
-  // await page
-  //   .evaluate(login, JSON.stringify({
-  //     username: 'admin@cyphr.live',
-  //     password: 'Smores44!',
-  //   }))
-  //   .then(() => sleep(5));
+  // Login
+  await page
+    .evaluate(login, JSON.stringify({
+      username: 'admin@cyphr.live', password: 'Smores44!',
+    }))
+    .then(() => sleep(5));
 
-  // Explore
-  await page.goto('https://www.chess.com/explorer').then(() => sleep(10));
+  // // Explore
+  // await page.goto('https://www.chess.com/explorer').then(() => sleep(5));
 
-  // // Play
-  // await page.goto('https://www.chess.com/play/online').then(() => sleep(1));
+  // Play
+  await page.goto('https://www.chess.com/play/online').then(() => sleep(1));
 
-  // // Choose time controls
-  // await page.evaluate(timeControl, '30 min');
+  // Choose time controls
+  await page.evaluate(timeControl, '30 min');
 
   // Prepare a move
   const { from, to } = await page.evaluate(prepare, 'e2', 'e4');
 
   // Make the move
-  await page.mouse.move(...from);
-  await sleep(1);
-  await page.mouse.down();
-  await sleep(1);
-  await page.mouse.move(...to);
-  await sleep(1);
-  await page.mouse.up();
+  await move(page, from, to);
 })();

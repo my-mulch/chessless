@@ -53,3 +53,13 @@ export function start() {
   const button = getElementByXPath("//button[contains(text(), 'Play')]");
   button.click();
 }
+
+export async function move(page, from, to) {
+  await page.mouse.move(...from);
+  // await sleep(1);
+  await page.mouse.down();
+  // await sleep(1);
+  await page.mouse.move(...to);
+  // await sleep(1);
+  await page.mouse.up();
+}
