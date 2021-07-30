@@ -1,91 +1,80 @@
+/* eslint-disable no-eval */
+/* eslint-disable import/extensions */
+
 import puppeteer from 'puppeteer';
-import ChessGame from '../model/index.js'
+import { login } from './actions/index.js';
+import { installMouseHelper } from './helper.js';
+import { sleep, getElementByXPath, serialize } from './utils.js';
 
 (async () => {
-  // Launch the browser
   const browser = await puppeteer.launch({ headless: false, defaultViewport: null });
   const page = await browser.newPage();
 
-  // Enable console.log in evaluate fn
-  page.on('console', consoleObj => console.log(consoleObj.text()));
+  await installMouseHelper(page);
 
-  // Head to the login page
-  await page.goto('https://www.chess.com/login_and_go');
+  // Initialize helpers
+  await page.evaluateOnNewDocument((functions) => {
+    functions
+      .map(JSON.parse)
+      .map(eval)
+      .map((fn) => ({ [fn.name]: fn }))
+      .forEach((fnObj) => Object.assign(window, fnObj));
+  }, serialize(sleep, getElementByXPath));
 
-  // Let yourself in
-  await page.evaluate(() => {
-    const login = document.getElementById('login')
-    const username = document.getElementById('username')
-    const password = document.getElementById('password')
+  // Chess.com
+  await page.goto('https://www.chess.com/login').then(() => sleep(0.5));
 
-    username.value = 'admin@cyphr.live'
-    password.value = 'Smores44!'
+  // Login
+  await page.evaluate(login).then(() => sleep(0.5));
 
-    login.click()
-  });
+  // Play
+  await page.goto('https://www.chess.com/play/online').then(() => sleep(0.5));
 
-  // Sleep for a sec, give the browser some time
-  await new Promise(_ => setTimeout(_, 2000));
-
-  // Let's play a little
-  await page.goto('https://www.chess.com/play/online')
-
-  await page.evaluate(async () => {
-    // Utility for button selection
-    function getElementByXPath(xpath) {
-      return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
-    }
-
-    await new Promise(_ => setTimeout(_, 2000));
-
-    // If we've just finished a game, start a new one
-    const newGame = getElementByXPath("//span[text()='New Game']")
-    if (newGame) newGame.click()
-
-    // Waitttt
-    await new Promise(_ => setTimeout(_, 2000));
-
+  await page.evaluate(async (timeControl) => {
     // Grab the time selector and click
-    const timeSelector = document.getElementsByClassName('time-selector-button')[0]
-    timeSelector.click()
+    const timeSelector = document.getElementsByClassName('time-selector-button')[0];
+    timeSelector.click();
 
-    // Wait for the browser
-    await new Promise(_ => setTimeout(_, 2000));
+    // Give the browser time
+    await sleep(1);
 
-    // Select this time setting
-    const timeSelection = getElementByXPath("//button[text()='30 min']")
-    timeSelection.click()
+    // Choose time length
+    const timeSelection = getElementByXPath(`//button[text()='${timeControl}']`);
+    timeSelection.click();
+  }, '5 min');
 
-    // Hol up
-    await new Promise(_ => setTimeout(_, 2000));
+  // await page.evaluate(async () => {
+  // // If we've just finished a game, start a new one
+  // const newGame = getElementByXPath("//span[text()='New Game']");
+  // if (newGame) newGame.click();
 
-    // Get the play button and kick it off!
-    const play = getElementByXPath("//button[contains(text(), 'Play')]")
-    play.click()
-  })
+  // // Waitttt
+  // await new Promise((_) => setTimeout(_, 2000));
 
-  // Play the game
-  await page.evaluate(async (game) => {
-    // Let things settle
-    await new Promise(_ => setTimeout(_, 2000));
+  // Grab the time selector and click
+  // const timeSelector = document.getElementsByClassName('time-selector-button')[0];
+  // timeSelector.click();
 
-    // Get all the pregame state
-    const board = Array.from(document.getElementsByClassName('board')).pop()
-    const screen = Array.from(document.getElementsByClassName('user-logged-in')).pop()
-    const moveList = Array.from(document.getElementsByTagName('vertical-move-list')).pop()
-    const playingAs = Boolean(document.getElementsByClassName('flipped').length) ? game.constructor.TEAMS.BLACK : game.constructor.TEAMS.WHITE
+  // Wait for the browser
+  // await sleep(1);
 
-    // Get parameters for automation
-    const sample = Array.from(document.getElementsByClassName('wk')).pop()
-    const { width: nextFile, height: nextRank } = sample.getBoundingClientRect()
+  // Select this time setting
+  // const timeSelection = getElementByXPath("//button[text()='10 min']");
+  // await sleep(1);
+  // timeSelection.click();
 
-    // Observe the move list for moves
-    const observer = new MutationObserver(function () {
-      console.log('moved\n\n\n\n\n\n')
-    })
+  // // Hol up
+  // await sleep(1);
 
-    observer.observe(moveList, { attributes: true })
-
-  }, new ChessGame({}))
-
+  // // Get the play button and kick it off!
+  // const play = getElementByXPath("//button[contains(text(), 'Play')]");
+  // play.click();
+  // });
+  // await page.mouse.move(220, 643);
+  // await new Promise(_ => setTimeout(_, 1000));
+  // await page.mouse.down();
+  // await new Promise(_ => setTimeout(_, 1000));
+  // await page.mouse.move(220, 543);
+  // await new Promise(_ => setTimeout(_, 1000));
+  // await page.mouse.up();
 })();
