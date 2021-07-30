@@ -2,9 +2,9 @@
 /* eslint-disable import/extensions */
 
 import puppeteer from 'puppeteer';
-import { login } from './actions/index.js';
+import { login, timeControl } from './actions/index.js';
 import { installMouseHelper } from './helper.js';
-import { sleep, getElementByXPath, serialize } from './utils.js';
+import { sleep, getElementByXPath, expose } from './utils.js';
 
 (async () => {
   const browser = await puppeteer.launch({ headless: false, defaultViewport: null });
@@ -12,36 +12,25 @@ import { sleep, getElementByXPath, serialize } from './utils.js';
 
   await installMouseHelper(page);
 
-  // Initialize helpers
-  await page.evaluateOnNewDocument((functions) => {
-    functions
-      .map(JSON.parse)
-      .map(eval)
-      .map((fn) => ({ [fn.name]: fn }))
-      .forEach((fnObj) => Object.assign(window, fnObj));
-  }, serialize(sleep, getElementByXPath));
+  // Expose helpers
+  await expose(page, [sleep, getElementByXPath]);
 
   // Chess.com
   await page.goto('https://www.chess.com/login').then(() => sleep(0.5));
 
   // Login
-  await page.evaluate(login).then(() => sleep(0.5));
+  await page
+    .evaluate(login, JSON.stringify({
+      username: 'admin@cyphr.live',
+      password: 'Smores44!',
+    }))
+    .then(() => sleep(0.5));
 
   // Play
   await page.goto('https://www.chess.com/play/online').then(() => sleep(0.5));
 
-  await page.evaluate(async (timeControl) => {
-    // Grab the time selector and click
-    const timeSelector = document.getElementsByClassName('time-selector-button')[0];
-    timeSelector.click();
-
-    // Give the browser time
-    await sleep(1);
-
-    // Choose time length
-    const timeSelection = getElementByXPath(`//button[text()='${timeControl}']`);
-    timeSelection.click();
-  }, '5 min');
+  // Choose time controls
+  await page.evaluate(timeControl, '5 min');
 
   // await page.evaluate(async () => {
   // // If we've just finished a game, start a new one
