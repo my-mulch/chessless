@@ -1,9 +1,27 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable import/extensions */
 /* eslint-disable no-shadow */
 /* eslint-disable no-eval */
 /* eslint-disable no-new-func */
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+import { rollup } from 'rollup';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+
+export const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export async function sleep(time) {
   return new Promise((_) => setTimeout(_, time * 1000));
+}
+
+export async function bundle(input) {
+  const build = await rollup({ input, plugins: [nodeResolve({ extensions: ['.js'] })] });
+
+  const { output } = await build.generate({ format: 'iife' });
+
+  return output;
 }
 
 export function getElementByXPath(xpath) {
@@ -12,8 +30,10 @@ export function getElementByXPath(xpath) {
     .singleNodeValue;
 }
 
-export function serialize(fns) {
-  return fns.map((fn) => JSON.stringify(`(${fn.toString()})`));
+export function serialize(fn) {
+  if (fn.constructor === String) return JSON.stringify(fn);
+
+  return JSON.stringify(`(${fn.toString()})`);
 }
 
 export async function expose(page, fns) {
@@ -23,5 +43,5 @@ export async function expose(page, fns) {
       .map(eval)
       .map((fn) => ({ [fn.name]: fn }))
       .forEach((fnObj) => Object.assign(window, fnObj));
-  }, serialize(fns));
+  }, fns.map(serialize));
 }

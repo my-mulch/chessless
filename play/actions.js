@@ -1,6 +1,6 @@
 /* eslint-disable object-curly-newline */
 /* eslint-disable import/extensions */
-import { getElementByXPath, sleep } from '../utils.js';
+import { getElementByXPath, sleep } from './utils.js';
 
 export async function login(credentials) {
   const { username, password } = JSON.parse(credentials);
@@ -56,10 +56,7 @@ export function start() {
 
 export async function move(page, from, to) {
   await page.mouse.move(...from);
-  // await sleep(1);
   await page.mouse.down();
-  // await sleep(1);
   await page.mouse.move(...to);
-  // await sleep(1);
   await page.mouse.up();
 }

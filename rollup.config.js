@@ -1,6 +1,6 @@
 import serve from 'rollup-plugin-serve';
 import image from '@rollup/plugin-image';
-import babel from '@rollup/plugin-babel';
+import { babel } from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
 import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
@@ -16,7 +16,7 @@ export default {
   },
   plugins: [
     nodeResolve({
-      extensions: ['.js'],
+      extensions: ['.js', '.jsx'],
     }),
     image(),
     postcss({
