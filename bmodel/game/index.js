@@ -4,8 +4,6 @@
 
 import ChessPiece from '../piece';
 import { parseFEN } from './utils';
-import { cardinals, diagonals, knights, queens } from '../moves/attacks';
-import { bitBoardToString, printBitBoard } from '../moves/utils';
 
 export default class ChessGame {
   // Constructors

@@ -16,4 +16,4 @@ export const cardinalBlockerMap = createMoves((board, r, c) => {
   rr = r; cr = c; while (++rr < 7) { board[rr * 8 + cr] = 1; } // bottom
 });
 
-export const numCardinalBlockingBits = cardinalMap.map(countBits);
+export const numCardinalBlockingBits = cardinalBlockerMap.map(countBits);

@@ -1,3 +1,4 @@
+import { d6, e4, printBitBoard } from '../game/utils.js';
 import { countBits, createMoves } from './utils.js';
 
 export const diagonalAttackMap = createMoves((board, r, c) => {
@@ -16,4 +17,10 @@ export const diagonalBlockerMap = createMoves((board, r, c) => {
   rr = r; cr = c; while (++rr < 7 && ++cr < 7) { board[rr * 8 + cr] = 1; } // bottom right
 });
 
-export const numDiagonalBlockingBits = diagonalMap.map(countBits);
+export const numDiagonalBlockingBits = diagonalBlockerMap.map(countBits);
+
+export function diagonalBlockers(square, key) {
+  printBitBoard(diagonalBlockerMap[square]);
+}
+
+diagonalBlockers(e4);

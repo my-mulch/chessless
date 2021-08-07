@@ -1,4 +1,6 @@
 // FEN
+export const RANKS = [8, 7, 6, 5, 4, 3, 2, 1];
+export const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 export const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 export const WHITE = 'w', BLACK = 'b';
@@ -13,14 +15,14 @@ export function getTeamFromFEN(piece) { return piece.toLowerCase() === piece ? B
 export function getOtherTeamFEN(team) { return team === WHITE ? BLACK : WHITE; }
 
 // Squares
-export const a8 = 0, b8 = 1, c8 = 2, d8 = 3, e8 = 4, f8 = 5, g8 = 6, h8 = 7;
-export const a7 = 8, b7 = 9, c7 = 10, d7 = 11, e7 = 12, f7 = 13, g7 = 14, h7 = 15;
-export const a6 = 16, b6 = 17, c6 = 18, d6 = 19, e6 = 20, f6 = 21, g6 = 22, h6 = 23;
-export const a5 = 24, b5 = 25, c5 = 26, d5 = 27, e5 = 28, f5 = 29, g5 = 30, h5 = 31;
-export const a4 = 32, b4 = 33, c4 = 34, d4 = 35, e4 = 36, f4 = 37, g4 = 38, h4 = 39;
-export const a3 = 40, b3 = 41, c3 = 42, d3 = 43, e3 = 44, f3 = 45, g3 = 46, h3 = 47;
-export const a2 = 48, b2 = 49, c2 = 50, d2 = 51, e2 = 52, f2 = 53, g2 = 54, h2 = 55;
-export const a1 = 56, b1 = 57, c1 = 58, d1 = 59, e1 = 60, f1 = 61, g1 = 62, h1 = 63;
+export const a8 = 0n, b8 = 1n, c8 = 2n, d8 = 3n, e8 = 4n, f8 = 5n, g8 = 6n, h8 = 7n;
+export const a7 = 8n, b7 = 9n, c7 = 10n, d7 = 11n, e7 = 12n, f7 = 13n, g7 = 14n, h7 = 15n;
+export const a6 = 16n, b6 = 17n, c6 = 18n, d6 = 19n, e6 = 20n, f6 = 21n, g6 = 22n, h6 = 23n;
+export const a5 = 24n, b5 = 25n, c5 = 26n, d5 = 27n, e5 = 28n, f5 = 29n, g5 = 30n, h5 = 31n;
+export const a4 = 32n, b4 = 33n, c4 = 34n, d4 = 35n, e4 = 36n, f4 = 37n, g4 = 38n, h4 = 39n;
+export const a3 = 40n, b3 = 41n, c3 = 42n, d3 = 43n, e3 = 44n, f3 = 45n, g3 = 46n, h3 = 47n;
+export const a2 = 48n, b2 = 49n, c2 = 50n, d2 = 51n, e2 = 52n, f2 = 53n, g2 = 54n, h2 = 55n;
+export const a1 = 56n, b1 = 57n, c1 = 58n, d1 = 59n, e1 = 60n, f1 = 61n, g1 = 62n, h1 = 63n;
 
 export function parseFEN(FEN = STARTING_FEN) {
   // Split FEN into constituent parts
@@ -38,4 +40,16 @@ export function parseFEN(FEN = STARTING_FEN) {
 
   // Return the board and turn
   return [pieces, turn, castles];
+}
+
+export function printBitBoard(board) {
+  console.log(
+    board
+      .toString(2).padStart(64, 0) // to binary
+      .split('').reverse().join('') // reverse the string
+      .match(/.{1,8}/g) // split into groups of 8 bits
+      .map((row, i) => `${RANKS[i]}    ${row.split('').join(' ')}`)
+      .concat(`\n     ${FILES.join(' ')}\n`)
+      .join('\n'), // create the board string
+  );
 }
