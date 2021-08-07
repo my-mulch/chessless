@@ -8,6 +8,7 @@ module.exports = {
     'plugin:react/recommended',
     'airbnb',
   ],
+  parser: '@babel/eslint-parser',
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -19,5 +20,15 @@ module.exports = {
     'react',
   ],
   rules: {
+    'import/extensions': [0],
+    'no-undef': [0],
+    'no-param-reassign': [0],
+    'no-plusplus': [0],
+    'one-var': [0],
+    'no-bitwise': [0],
+    'newline-per-chained-call': [0],
+    'no-console': [0],
+    'one-var-declaration-per-line': [0],
+    'import/prefer-default-export': [0],
   },
 };

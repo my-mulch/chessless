@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 
-import ChessGame from '../../model'
+import ChessGame from '../../bmodel/game'
 import { indexOf } from '../../model/utils.js'
 import { imageFromPiece } from './utils.js'
 
 export default function App() {
-  const [game, setGame] = useState(new ChessGame())
+  const [game, setGame] = useState(new ChessGame({}))
   const [selected, setSelected] = useState(null)
 
   window.game = game
@@ -52,7 +52,7 @@ export default function App() {
         {files.map((file, fi) =>
           <div
             key={file}
-            style={getSquareStyle(ri, fi, game.board[indexOf(ri, fi)])}
+            style={getSquareStyle(ri, fi, /* game.board[indexOf(ri, fi)] */)}
             onMouseDown={() => { setSelected(indexOf(ri, fi)) }}
             onMouseUp={() => {
               setSelected(null)
@@ -61,7 +61,7 @@ export default function App() {
               const moves = game.getMoves({})
 
               const selectedMove = moves.filter(move => move.start === selected && move.end === end)
-              
+
               const newGame = selectedMove[Math.floor(Math.random() * selectedMove.length)]
                 .make(game)
                 .changeTurns()
