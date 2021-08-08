@@ -18,3 +18,5 @@ export const diagonalBlockerMap = createMoves((board, r, c) => {
 });
 
 export const numDiagonalBlockingBits = diagonalBlockerMap.map(countBits);
+
+console.log(numDiagonalBlockingBits);
