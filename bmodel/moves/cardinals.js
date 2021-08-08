@@ -1,4 +1,5 @@
-import { countBits, createMoves } from './utils.js';
+import { countBits } from '../game/utils.js';
+import { createMoves } from './utils.js';
 
 export const cardinalAttackMap = createMoves((board, r, c) => {
   let rr, cr;

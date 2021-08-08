@@ -53,3 +53,21 @@ export function printBitBoard(board) {
       .join('\n'), // create the board string
   );
 }
+
+export function arrayToBitBoard(array) {
+  return BigInt(`0b${array.join('')}`);
+}
+
+export function countBits(board) {
+  let count = 0n;
+
+  while (board) { count += board & 1n; board >>= 1n; }
+
+  return count;
+}
+
+// board, square
+export function setBit(b, s) { return b |= (1n << s); }
+export function getBit(b, s) { return b & (1n << s); }
+export function clearBit(b, s) { return getBit(b, s) ? (b ^= (1n << s)) : b; }
+export function getLeastSignificantBit(b) { return countBits((b & -b) - 1n); }

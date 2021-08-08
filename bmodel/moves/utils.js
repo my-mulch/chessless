@@ -1,13 +1,18 @@
-export function arrayToBitBoard(array) {
-  return BigInt(`0b${array.join('')}`);
-}
+import { arrayToBitBoard, clearBit, countBits, getBit, getLeastSignificantBit, setBit } from '../game/utils.js';
 
-export function countBits(board) {
-  let count = 0n;
+export function getBlockers(blockerMap, key) {
+  let blockers = 0n;
 
-  while (board) { count += board & 1n; board >>= 1n; }
+  const bits = countBits(blockerMap);
+  for (let bit = 0n; bit < bits; bit++) {
+    const flipSquare = getLeastSignificantBit(blockerMap);
 
-  return Number(count);
+    blockerMap = clearBit(blockerMap, flipSquare);
+
+    if (getBit(key, bit)) { blockers = setBit(blockers, flipSquare); }
+  }
+
+  return blockers;
 }
 
 export function createMoves(func) {
