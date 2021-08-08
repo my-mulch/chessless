@@ -44,13 +44,13 @@ export function parseFEN(FEN = STARTING_FEN) {
 
 export function printBitBoard(board) {
   console.log(
-    board
+    `\n${board
       .toString(2).padStart(64, 0) // to binary
       .split('').reverse().join('') // reverse the string
       .match(/.{1,8}/g) // split into groups of 8 bits
-      .map((row, i) => `${RANKS[i]}    ${row.split('').join(' ')}`)
-      .concat(`\n     ${FILES.join(' ')}\n`)
-      .join('\n'), // create the board string
+      .map((row, i) => `${RANKS[i]}    ${row.split('').join(' ')}`) // print the bits
+      .concat(`\n     ${FILES.join(' ')}     ${board}\n`) // print the footer
+      .join('\n')}`,
   );
 }
 
