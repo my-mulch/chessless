@@ -1,20 +1,23 @@
-import { countBits } from '../game/utils.js';
-import { createMoves } from './utils.js';
+import { bot, left, generateMap, right, top } from './utils';
+import { countBits, getBit, indexOf, SQUARES } from '../game/utils.js';
 
-export const cardinalAttackMap = createMoves((board, r, c) => {
-  let rr, cr;
-  rr = r; cr = c; while (--rr >= 0) { board[rr * 8 + cr] = 1; } // top
-  rr = r; cr = c; while (--cr >= 0) { board[rr * 8 + cr] = 1; } // left
-  rr = r; cr = c; while (++cr <= 7) { board[rr * 8 + cr] = 1; } // right
-  rr = r; cr = c; while (++rr <= 7) { board[rr * 8 + cr] = 1; } // bottom
-});
+export const blockMaps = SQUARES.map(generateMap.bind(null, {
+  moves: [noEdge(top), noEdge(bot), noEdge(left), noEdge(right)],
+}));
 
-export const cardinalBlockerMap = createMoves((board, r, c) => {
-  let rr; let cr;
-  rr = r; cr = c; while (--rr > 0) { board[rr * 8 + cr] = 1; } // top
-  rr = r; cr = c; while (--cr > 0) { board[rr * 8 + cr] = 1; } // left
-  rr = r; cr = c; while (++cr < 7) { board[rr * 8 + cr] = 1; } // right
-  rr = r; cr = c; while (++rr < 7) { board[rr * 8 + cr] = 1; } // bottom
-});
+export const attackMaps = SQUARES.map(generateMap.bind(null, {
+  moves: [top, bot, left, right],
+}));
 
-export const numCardinalBlockingBits = cardinalBlockerMap.map(countBits);
+export function getCardinalMoveMapFromBlockMap(square, blockMap) {
+  return generateMap({
+    moves: [
+      (r, f, board) => top(true, r, f) && !(getBit(board, indexOf(r, f)) & blockMap),
+      (r, f, board) => bot(true, r, f) && !(getBit(board, indexOf(r, f)) & blockMap),
+      (r, f, board) => left(true, r, f) && !(getBit(board, indexOf(r, f)) & blockMap),
+      (r, f, board) => right(true, r, f) && !(getBit(board, indexOf(r, f)) & blockMap),
+    ],
+  }, square);
+}
+
+export const numCardinalBlockingBits = blockMaps.map(countBits);

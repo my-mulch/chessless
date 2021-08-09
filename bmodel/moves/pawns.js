@@ -1,13 +1,12 @@
-import { createMoves } from './utils';
+import { SQUARES } from '../game/utils';
+import { moves } from './utils';
 
-export const blackPawns = createMoves((board, r, c) => {
-  let rr; let cr;
-  rr = r + 1; cr = c + 1; if (rr < 8 && cr < 8) { board[rr * 8 + cr] = 1; } // capture left
-  rr = r + 1; cr = c - 1; if (rr < 8 && cr >= 0) { board[rr * 8 + cr] = 1; } // capture right
-});
+export const blackPawnAttackTable = SQUARES.map(moves.bind(null, {
+  botLeft: (rr, cr) => ++rr[0] <= 7 && --cr[0] >= 0,
+  botRight: (rr, cr) => ++rr[0] <= 7 && ++cr[0] <= 7,
+}));
 
-export const whitePawns = createMoves((board, r, c) => {
-  let rr; let cr;
-  rr = r - 1; cr = c + 1; if (rr >= 0 && cr < 8) { board[rr * 8 + cr] = 1; } // capture left
-  rr = r - 1; cr = c - 1; if (rr >= 0 && cr >= 0) { board[rr * 8 + cr] = 1; } // capture right
-});
+export const whitePawnAttackTable = SQUARES.map(moves.bind(null, {
+  topLeft: (rr, cr) => --rr[0] >= 0 && --cr[0] >= 0,
+  topRight: (rr, cr) => --rr[0] >= 0 && ++cr[0] <= 7,
+}));

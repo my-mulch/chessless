@@ -10,16 +10,13 @@ export function randInt32() {
 
 export function randInt64() {
   function helper() {
-    const a = BigInt(randInt32() & (0xFFFF >>> 0));
-    const b = BigInt(randInt32() & (0xFFFF >>> 0));
-    const c = BigInt(randInt32() & (0xFFFF >>> 0));
-    const d = BigInt(randInt32() & (0xFFFF >>> 0));
+    const a = BigInt(randInt32() & 0xFFFF);
+    const b = BigInt(randInt32() & 0xFFFF);
+    const c = BigInt(randInt32() & 0xFFFF);
+    const d = BigInt(randInt32() & 0xFFFF);
 
     return a | (b << 16n) | (c << 32n) | (d << 48n);
   }
 
-  return helper();
+  return helper() & helper() & helper();
 }
-randInt32();
-randInt32();
-console.log(randInt64());

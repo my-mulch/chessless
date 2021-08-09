@@ -1,13 +1,13 @@
-import { createMoves } from './utils.js';
+import { moves } from './utils.js';
 
-export const kingAttackTable = createMoves((board, r, c) => {
-  let rr; let cr;
-  rr = r - 1; cr = c; if (rr >= 0) { board[rr * 8 + cr] = 1; } // top
-  rr = r; cr = c - 1; if (cr >= 0) { board[rr * 8 + cr] = 1; } // left
-  rr = r; cr = c + 1; if (cr < 8) { board[rr * 8 + cr] = 1; } // right
-  rr = r + 1; cr = c; if (rr < 8) { board[rr * 8 + cr] = 1; } // bottom
-  rr = r - 1; cr = c - 1; if (rr >= 0 && cr >= 0) { board[rr * 8 + cr] = 1; } // top left
-  rr = r - 1; cr = c + 1; if (rr >= 0 && cr < 8) { board[rr * 8 + cr] = 1; } // top right
-  rr = r + 1; cr = c - 1; if (rr < 8 && cr >= 0) { board[rr * 8 + cr] = 1; } // bottom left
-  rr = r + 1; cr = c + 1; if (rr < 8 && cr < 8) { board[rr * 8 + cr] = 1; } // bottom right
-});
+export const kingAttackTable = [...new Array(64).keys()].map(moves.bind(null, {
+  limit: 1,
+  top: ({ rr }) => rr[0] >= 0,
+  bot: ({ rr }) => rr[0] <= 7,
+  left: ({ cr }) => cr[0] >= 0,
+  right: ({ cr }) => cr[0] <= 7,
+  topLeft: ({ rr, cr }) => rr[0] >= 0 && cr[0] >= 0,
+  botLeft: ({ rr, cr }) => rr[0] <= 7 && cr[0] >= 0,
+  topRight: ({ rr, cr }) => rr[0] >= 0 && cr[0] <= 7,
+  botRight: ({ rr, cr }) => rr[0] <= 7 && cr[0] <= 7,
+}));
