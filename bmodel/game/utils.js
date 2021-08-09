@@ -8,9 +8,10 @@ export const KNIGHT = 'n', WHITE_KNIGHT = 'N', BLACK_KNIGHT = 'n';
 export const BISHOP = 'b', WHITE_BISHOP = 'B', BLACK_BISHOP = 'b';
 export const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-export function getTeamFromFEN(piece) { return piece.toLowerCase() === piece ? BLACK : WHITE; }
-export function getOtherTeamFEN(team) { return team === WHITE ? BLACK : WHITE; }
-export function parseFEN(FEN = STARTING_FEN) {
+export const getTeamFromFEN = (piece) => (piece.toLowerCase() === piece ? BLACK : WHITE);
+export const getOtherTeamFEN = (team) => (team === WHITE ? BLACK : WHITE);
+
+export const parseFEN = (FEN = STARTING_FEN) => {
   const [position, turn, castles] = FEN.split(' ');
 
   let i = 0n;
@@ -24,42 +25,27 @@ export function parseFEN(FEN = STARTING_FEN) {
 
   // Return the board and turn
   return [pieces, turn, castles];
-}
+};
 
 export const RANKS = [8, 7, 6, 5, 4, 3, 2, 1];
 export const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 export const SQUARES = [...new Array(64).keys()];
 
-export function printBitBoard(board) {
-  console.log(
-    `\n${board
-      .toString(2).padStart(64, 0) // to binary
-      .split('').reverse().join('') // reverse the string
-      .match(/.{1,8}/g) // split into groups of 8 bits
-      .map((row, i) => `${RANKS[i]}    ${row.split('').join(' ')}`) // print the bits
-      .concat(`\n     ${FILES.join(' ')}     ${board}\n`) // print the footer
-      .join('\n')}`,
-  );
-}
+export const printBoard = (board) => {
+  const string = board
+    .toString(2).padStart(64, 0).split('').reverse().join('') // reverse binary string
+    .match(/.{1,8}/g).map((row, i) => `${RANKS[i]}    ${row.split('').join(' ')}`) // split into groups of 8 bits and lay them out
+    .concat(`\n     ${FILES.join(' ')}     ${board}\n`).join('\n'); // print the footer and add new lines
 
-export function indexOf(r, c) {
-  if (Array.isArray(r)) { return r[0] * 8 + c[0]; }
+  console.log(`\n${string}`);
+};
 
-  return r * 8 + c;
-}
-
-export function rankAndFileOf(index) { return [Math.floor(index / 8), index % 8]; }
-
-export function countBits(board) {
-  let count = 0n;
-
-  while (board) { count += board & 1n; board >>= 1n; }
-
-  return count;
-}
+export const indexOf = (r, f) => (Array.isArray(r) ? r[0] * 8n + f[0] : r * 8n + f);
+export const rankAndFileOf = (index) => [Math.floor(index / 8), index % 8].map(BigInt);
 
 // board, square
-export function setBit(b, s) { return b |= (1n << s); }
-export function getBit(b, s) { return b & (1n << s); }
-export function clearBit(b, s) { return getBit(b, s) ? (b ^= (1n << s)) : b; }
-export function getLeastSignificantBit(b) { return countBits((b & -b) - 1n); }
+export const countBits = (b) => { let c = 0n; while (b) { c += b & 1n; b >>= 1n; } return c; };
+export const getLSB = (b) => countBits((b & -b) - 1n);
+export const getBit = (b, s) => b & (1n << BigInt(s));
+export const setBit = (b, s) => b |= (1n << BigInt(s));
+export const clearBit = (b, s) => (getBit(b, s) ? (b ^= (1n << BigInt(s))) : b);
