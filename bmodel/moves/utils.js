@@ -26,7 +26,7 @@ export const generateMap = ({ limit = 8n, moves }, square) => {
   moves.forEach((move) => {
     r[0] = rank; f[0] = file; l = limit;
 
-    while (l-- && move(r, f, board)) {
+    while (l-- && move(r, f)) {
       board = setBit(board, indexOf(r, f));
     }
   });

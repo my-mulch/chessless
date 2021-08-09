@@ -27,9 +27,9 @@ export const parseFEN = (FEN = STARTING_FEN) => {
   return [pieces, turn, castles];
 };
 
-export const RANKS = [8, 7, 6, 5, 4, 3, 2, 1];
+export const RANKS = [8, 7, 6, 5, 4, 3, 2, 1].map(BigInt);
 export const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-export const SQUARES = [...new Array(64).keys()];
+export const SQUARES = [...new Array(64).keys()].map(BigInt);
 
 export const printBoard = (board) => {
   const string = board
@@ -40,12 +40,12 @@ export const printBoard = (board) => {
   console.log(`\n${string}`);
 };
 
-export const indexOf = (r, f) => (Array.isArray(r) ? r[0] * 8n + f[0] : r * 8n + f);
-export const rankAndFileOf = (index) => [Math.floor(index / 8), index % 8].map(BigInt);
+export const rankAndFileOf = (index) => [index / 8n, index % 8n];
+export const indexOf = (r, f) => (Array.isArray(r) ? r[0n] * 8n + f[0n] : r * 8n + f);
 
 // board, square
 export const countBits = (b) => { let c = 0n; while (b) { c += b & 1n; b >>= 1n; } return c; };
 export const getLSB = (b) => countBits((b & -b) - 1n);
-export const getBit = (b, s) => b & (1n << BigInt(s));
-export const setBit = (b, s) => b |= (1n << BigInt(s));
-export const clearBit = (b, s) => (getBit(b, s) ? (b ^= (1n << BigInt(s))) : b);
+export const getBit = (b, s) => b & (1n << s);
+export const setBit = (b, s) => b |= (1n << s);
+export const clearBit = (b, s) => (getBit(b, s) ? (b ^= (1n << s)) : b);
