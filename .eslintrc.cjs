@@ -20,6 +20,7 @@ module.exports = {
     'react',
   ],
   rules: {
+    'no-continue': [0],
     'no-return-assign': [0],
     'object-curly-newline': [0],
     'no-unused-expressions': [0],
