@@ -18,3 +18,5 @@ export const randInt64 = () => {
 };
 
 export const magicNumberCandidate = () => randInt64() & randInt64() & randInt64();
+
+export const findMagicNumber = (square) => {};
