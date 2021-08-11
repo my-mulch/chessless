@@ -44,8 +44,8 @@ export const rankAndFileOf = (index) => [index / 8n, index % 8n];
 export const indexOf = (r, f) => (Array.isArray(r) ? r[0n] * 8n + f[0n] : r * 8n + f);
 
 // board, square
-export const countBits = (b) => { let c = 0n; while (b) { c += b & 1n; b >>= 1n; } return c; };
-export const getLSB = (b) => countBits((b & -b) - 1n);
 export const getBit = (b, s) => b & (1n << s);
 export const setBit = (b, s) => b |= (1n << s);
+export const getLSB = (b) => countBits((b & -b) - 1n);
 export const clearBit = (b, s) => (getBit(b, s) ? (b ^= (1n << s)) : b);
+export const countBits = (b) => { let c = 0n; while (b) { c++; b &= b - 1n; } return c; };
