@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {
   clearBit, countBits, getBit, getLSB, setBit, SQUARES, rankAndFileOf, indexOf,
 } from '../game/utils.js';
@@ -6,7 +7,7 @@ import {
 export const ne = (move) => (r, f) => move(r, f, false);
 
 // Stop moves if blocked
-export const wb = (move, blockMap) => (r, f) => !getBit(blockMap, indexOf(r, f)) && move(r, f);
+export const wb = (move, blockerMap) => (r, f) => !getBit(blockerMap, indexOf(r, f)) && move(r, f);
 
 // r: rank, f: file, b: current bitboard, e: all the way to edge
 export const top = (r, f, e = true) => (e ? --r[0] >= 0 : --r[0] > 0);
@@ -26,8 +27,8 @@ export const botBotRight = (r, f, e = true) => bot(r, f, e) && bot(r, f, e) && r
 export const topRightRight = (r, f, e = true) => top(r, f, e) && right(r, f, e) && right(r, f, e);
 export const botRightRight = (r, f, e = true) => bot(r, f, e) && right(r, f, e) && right(r, f, e);
 
-export const generateBlockMap = (key, attackMap) => {
-  let blockMap = 0n;
+export const generateBlockerMap = (configuration, attackMap) => {
+  let blockerMap = 0n;
 
   const bits = countBits(attackMap);
   for (let bit = 0n; bit < bits; bit++) {
@@ -35,10 +36,10 @@ export const generateBlockMap = (key, attackMap) => {
 
     attackMap = clearBit(attackMap, flipSquare);
 
-    if (getBit(key, bit)) { blockMap = setBit(blockMap, flipSquare); }
+    if (getBit(configuration, bit)) { blockerMap = setBit(blockerMap, flipSquare); }
   }
 
-  return blockMap;
+  return blockerMap;
 };
 
 export const generateAttackMap = ({ limit = 8n, moves }, square) => {
@@ -62,6 +63,6 @@ export const generateAttackMaps = (moves, limit = 8) => (
   SQUARES.map(generateAttackMap.bind(null, { moves, limit }))
 );
 
-export const attackMapFromBlockMapGenerator = (moves) => (square, blockMap) => generateAttackMap({
-  moves: moves.map((move) => wb(move, blockMap)),
+export const attackMapFromBlockerMapGenerator = (moves) => (square, blockerMap) => generateAttackMap({
+  moves: moves.map((move) => wb(move, blockerMap)),
 }, square);

@@ -1,3 +1,6 @@
+/* eslint-disable max-len */
+import { generateBlockerMap } from '../moves/utils';
+
 let state = 1804289383 >>> 0;
 
 export const randInt32 = () => {
@@ -19,4 +22,19 @@ export const randInt64 = () => {
 
 export const magicNumberCandidate = () => randInt64() & randInt64() & randInt64();
 
-export const findMagicNumber = (square) => {};
+export const findMagicNumber = (
+  square,
+  generateAttackMapFromBlockerMap,
+  attackMapForPotentiallyBlockedBoard,
+  numberOfBlockerConfigurations,
+) => {
+  const blockerMaps = new Array(4096);
+
+  const attackMapsForBlockedBoard = new Array(4096);
+  const usedAttackMapsForBlockedBoard = new Array(4096);
+
+  for (let configuration = 0; i < numberOfBlockerConfigurations; i++) {
+    blockerMaps[configuration] = generateBlockerMap(configuration, attackMapForPotentiallyBlockedBoard);
+    attackMapsForBlockedBoard[configuration] = generateAttackMapFromBlockerMap(square, blockerMaps[configuration]);
+  }
+};
